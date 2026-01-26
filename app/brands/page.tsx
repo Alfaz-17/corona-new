@@ -64,7 +64,7 @@ export default function BrandsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Link href={`/brand/${brand.name.toLowerCase()}`} className="absolute inset-0 p-8 flex items-center justify-center">
+              <Link href={`/brand/${brand.name.toLowerCase().replace(/\s+/g, '-')}`} className="absolute inset-0 p-8 flex items-center justify-center">
                 <img
                   src={brand.logo}
                   alt={brand.name}

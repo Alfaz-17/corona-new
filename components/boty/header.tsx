@@ -71,7 +71,7 @@ export function Header() {
       href: "/brands",
       dropdown: brands.map(brand => ({ 
         name: brand.name, 
-        href: `/brands`, 
+        href: `/brand/${brand.name.toLowerCase().replace(/\s+/g, '-')}`, 
         description: brand.description || "Strategic maritime partner."
       }))
     },
@@ -84,7 +84,7 @@ export function Header() {
       <nav 
         className={`max-w-full mx-auto px-6 lg:px-12 marine-transition border-b ${
           (isScrolled || !isHome)
-            ? "bg-background/90 backdrop-blur-xl border-border py-4 shadow-sm" 
+            ? "bg-primary/95 backdrop-blur-2xl border-white/10 py-4 shadow-[0_4px_30px_rgba(0,0,0,0.3)]" 
             : "bg-transparent border-transparent py-8"
         }`}
       >
@@ -93,7 +93,7 @@ export function Header() {
           <button
             type="button"
             className={`lg:hidden p-2 marine-transition transition-colors ${
-              (isScrolled || !isHome) ? "text-foreground/80 hover:text-foreground" : "text-white hover:text-accent"
+              (isScrolled || !isHome) ? "text-white hover:text-accent" : "text-white hover:text-accent"
             }`}
             onClick={() => setIsMenuOpen(true)}
             aria-label="Toggle menu"
@@ -113,7 +113,7 @@ export function Header() {
                 <Link
                   href={link.href}
                   className={`text-[10px] font-bold uppercase tracking-[0.3em] marine-transition flex items-center gap-2 ${
-                    (isScrolled || !isHome) ? "text-foreground/70 hover:text-accent" : "text-white/80 hover:text-white"
+                    (isScrolled || !isHome) ? "text-white/80 hover:text-white" : "text-white/80 hover:text-white"
                   }`}
                 >
                   {link.name}
@@ -155,9 +155,9 @@ export function Header() {
           </div>
 
           {/* Logo - Centered */}
-          <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center h-16">
+          <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center h-24">
             <Logo 
-              variant={(isScrolled || !isHome) ? 'dark' : 'white'} 
+              variant="white" 
               size="md" 
             />
           </Link>
@@ -175,7 +175,7 @@ export function Header() {
                   <Link
                     href={link.href}
                     className={`text-[10px] font-bold uppercase tracking-[0.3em] marine-transition flex items-center gap-2 ${
-                      (isScrolled || !isHome) ? "text-foreground/70 hover:text-accent" : "text-white/80 hover:text-white"
+                      (isScrolled || !isHome) ? "text-white/80 hover:text-white" : "text-white/80 hover:text-white"
                     }`}
                   >
                     {link.name}
@@ -220,7 +220,7 @@ export function Header() {
               <Link
                 href="/admin"
                 className={`p-2 marine-transition transition-colors ${
-                  (isScrolled || !isHome) ? "text-foreground/70 hover:text-accent" : "text-white/70 hover:text-accent"
+                  (isScrolled || !isHome) ? "text-white/80 hover:text-white" : "text-white/80 hover:text-white"
                 }`}
               >
                 <User className="w-5 h-5" />
@@ -314,6 +314,12 @@ export function Header() {
             </>
           )}
         </AnimatePresence>
+        {/* Decorative Bottom Lining - Gold Palette */}
+        <div 
+          className={`absolute bottom-0 left-0 right-0 h-[2px] marine-transition ${
+            (isScrolled || !isHome) ? "bg-gradient-to-r from-transparent via-accent to-transparent opacity-100" : "bg-white/10 opacity-0"
+          }`} 
+        />
       </nav>
     </header>
   )

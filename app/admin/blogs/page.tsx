@@ -91,6 +91,9 @@ export default function AdminBlogListPage() {
                   <div className="flex justify-between items-center border-t border-border pt-4">
                      <span className="text-[9px] font-extrabold text-accent uppercase tracking-widest">Published State</span>
                      <div className="flex gap-2">
+                        <Link href={`/admin/blogs/${blog._id}`} className="p-2 text-primary hover:bg-muted transition-colors">
+                           <Edit2 className="w-4 h-4" />
+                        </Link>
                         <button onClick={() => handleDelete(blog._id)} className="p-2 text-red-500 hover:bg-red-50 transition-colors">
                            <Trash2 className="w-4 h-4" />
                         </button>

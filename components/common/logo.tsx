@@ -8,9 +8,9 @@ interface LogoProps {
 
 export function Logo({ className = "", variant = 'dark', size = 'md' }: LogoProps) {
   const sizes = {
-    sm: 'h-8 w-auto',
-    md: 'h-12 w-auto',
-    lg: 'h-20 w-auto'
+    sm: 'h-27 w-auto',
+    md: 'h-27 w-auto',
+    lg: 'h-27 w-auto'
   }
 
   const textColors = {
