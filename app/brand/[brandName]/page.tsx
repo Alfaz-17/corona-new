@@ -19,8 +19,14 @@ export default function BrandDetailPage() {
     const fetchBrandProducts = async () => {
       try {
         setLoading(true);
-        // The API might expect brand name or we filter products by brand name
-        const res = await api.get(`/products?brand=${encodeURIComponent(brandName)}`);
+        // Find the brand first to get its ID, or directly query products if brandName is ID
+        const brandsRes = await api.get('/brands');
+        const targetBrand = brandsRes.data.find((b: any) => 
+          b._id === brandName || 
+          b.name.toLowerCase().replace(/\s+/g, '-') === brandName.toLowerCase()
+        );
+
+        const res = await api.get(`/products?brand=${targetBrand ? targetBrand._id : brandName}`);
         setProducts(res.data);
       } catch (error) {
         console.error("Error fetching brand products:", error);

@@ -33,9 +33,9 @@ export default function AdminProductListPage() {
   }, []);
 
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (product.brand && product.brand.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesSearch = product.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (product.brand?.name && product.brand.name.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = !selectedCategory || product.category?._id === selectedCategory;
     return matchesSearch && matchesCategory;
   });

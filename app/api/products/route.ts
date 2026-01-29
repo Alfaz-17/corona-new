@@ -9,13 +9,15 @@ export async function GET(req: Request) {
     await connectToDatabase();
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category');
+    const brand = searchParams.get('brand');
     const featured = searchParams.get('featured');
 
     const query: any = {};
     if (category) query.category = category;
+    if (brand) query.brand = brand;
     if (featured === 'true') query.featured = true;
 
-    const products = await Product.find(query).populate('category').sort({ createdAt: -1 });
+    const products = await Product.find(query).populate('category').populate('brand').sort({ createdAt: -1 });
     return NextResponse.json(products);
   } catch (error) {
     console.error('Products GET error:', error);

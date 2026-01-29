@@ -93,7 +93,7 @@ export default function BlogDetailPage() {
                   <div className="flex items-center gap-4">
                      <div className="w-12 h-12 bg-accent text-white flex items-center justify-center font-bold">CM</div>
                      <div>
-                        <h4 className="font-bold text-primary uppercase text-sm">Corona Marine Engineering</h4>
+                        <h4 className="font-bold text-primary uppercase text-sm">Corona Marine Parts Engineering</h4>
                         <p className="text-xs text-muted-foreground">Certified Marine Automation Specialists</p>
                      </div>
                   </div>

@@ -56,8 +56,8 @@ export function ProductGrid() {
   );
 
   return (
-    <section className="pb-24 pt-12 bg-background">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-12">
+    <section className="pb-16 sm:pb-20 md:pb-24 pt-8 sm:pt-10 md:pt-12 bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-8 sm:mb-10 md:mb-12">
         <div ref={headerRef} className="space-y-6">
             <motion.span 
               initial={{ opacity: 0, y: 10 }}
@@ -70,23 +70,21 @@ export function ProductGrid() {
               initial={{ opacity: 0, y: 20 }}
               animate={headerVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.2 }}
-              className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-primary leading-tight uppercase tracking-tighter"
-            >
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-extrabold text-primary leading-tight uppercase tracking-tighter">
               Strategic *Marine* Components
             </motion.h2>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={headerVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.4 }}
-              className="text-lg text-muted-foreground max-w-2xl mx-auto italic font-medium"
-            >
+              className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto italic font-medium">
               Professional-grade reconditioned equipment, inspected for maximum operational efficiency in global commercial fleets.
             </motion.p>
         </div>
 
       </div>
 
-      <div className="max-w-[100vw] overflow-x-auto overflow-y-hidden px-6 lg:px-12 pb-12 no-scrollbar snap-x snap-mandatory">
+      <div className="max-w-[100vw] overflow-x-auto overflow-y-hidden px-6  lg:px-12 pb-12 no-scrollbar snap-x snap-mandatory">
         <div className="flex gap-8 md:gap-12 min-w-max">
           <AnimatePresence mode="popLayout">
             {filteredProducts.map((product, index) => (
@@ -96,7 +94,7 @@ export function ProductGrid() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ delay: index * 0.05, duration: 0.6 }}
-                className="w-[300px] md:w-[400px] flex-none snap-center"
+                className="w-[260px] sm:w-[300px] md:w-[400px] flex-none snap-center"
                 layout
               >
                 <Link href={`/product/${product._id}`} className="group block relative bg-white border border-border/50 transition-all duration-700 hover:shadow-[inset_0_0_60px_rgba(0,0,0,0.05)] h-full">
@@ -132,13 +130,12 @@ export function ProductGrid() {
         </div>
       </div>
 
-      <div className="text-center mt-32">
+      <div className="text-center mt-16 sm:mt-24 md:mt-32">
         <Link
           href="/products"
-          className="inline-flex items-center gap-8 bg-primary text-white px-12 py-6 text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-accent transition-all duration-500 shadow-2xl relative group overflow-hidden"
-        >
+          className="inline-flex items-center gap-4 sm:gap-6 md:gap-8 bg-primary text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.3em] sm:tracking-[0.4em] hover:bg-accent transition-all duration-500 shadow-2xl relative group overflow-hidden">
           <span className="relative z-10">View Full Collection</span>
-          <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-2 transition-transform" />
+          <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 relative z-10 group-hover:translate-x-2 transition-transform" />
           <div className="absolute inset-0 bg-accent translate-y-full hover:translate-y-0 transition-transform duration-500" />
         </Link>
       </div>

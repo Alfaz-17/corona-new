@@ -99,13 +99,12 @@ export function FeatureSection() {
   }, [])
 
   return (
-    <section className="py-24 bg-background overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <section className="py-12 sm:py-16 md:py-24 bg-background overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Bento Grid */}
         <div 
           ref={bentoRef}
-          className="grid md:grid-cols-4 mb-32 md:grid-rows-[300px_300px] gap-8"
-        >
+          className="grid md:grid-cols-4 mb-16 sm:mb-24 md:mb-32 md:grid-rows-[300px_300px] gap-4 sm:gap-6 md:gap-8">
           {/* Left Large Block - Engineering Image */}
           <div 
             className={`relative rounded-none overflow-hidden h-[500px] md:h-auto md:col-span-2 md:row-span-2 transition-all duration-1000 ease-out border border-border bg-primary ${
@@ -114,18 +113,18 @@ export function FeatureSection() {
             style={{ transitionDelay: '0ms' }}
           >
             <img
-              src="/pexels-mali-70418.jpg"
+              src="/hero-bg.png"
               alt="Marine Bridge"
               className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-multiply transition-transform duration-1000 group-hover:scale-110"
             />
             {/* Overlay Card */}
-            <div className="absolute bottom-10 left-10 right-10 bg-primary/95 backdrop-blur-md p-10 border border-white/10">
+            <div className="absolute bottom-4 sm:bottom-6 md:bottom-10 left-4 sm:left-6 md:left-10 right-4 sm:right-6 md:right-10 bg-primary/95 backdrop-blur-md p-5 sm:p-6 md:p-10 border border-white/10">
               <div className="flex items-start gap-4">
                 <div>
-                  <h3 className="text-2xl text-white mb-4 font-bold uppercase tracking-tight">
-                    24/7 <span className="text-accent underline underline-offset-8">Monitoring</span>
+                  <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-2 sm:mb-3 md:mb-4 font-bold uppercase tracking-tight">
+                    24/7 <span className="text-accent underline underline-offset-4 sm:underline-offset-8">Monitoring</span>
                   </h3>
-                  <p className="text-xs text-white/70 leading-relaxed font-medium italic">
+                  <p className="text-[10px] sm:text-xs text-white/70 leading-relaxed font-medium italic">
                     Our proprietary telemetry systems provide continuous physiological feedback from engine blocks to ensure peak operational reliability.
                   </p>
                 </div>
@@ -141,16 +140,16 @@ export function FeatureSection() {
             style={{ transitionDelay: '150ms' }}
           >
             <img 
-               src="/pexels-pixabay-163726.jpg"
+               src="/industrial-electronics-new.png"
                alt="Security"
                className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay"
             />
             
             <div className="relative z-10">
-              <h3 className="text-4xl text-white mb-2 font-extrabold tracking-tighter uppercase">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl text-white mb-2 font-extrabold tracking-tighter uppercase">
                 Fortified
               </h3>
-              <h3 className="text-2xl text-accent mb-6 font-medium italic opacity-80">
+              <h3 className="text-lg sm:text-xl md:text-2xl text-accent mb-4 sm:mb-5 md:mb-6 font-medium italic opacity-80">
                 Encrypted Logistics Grid
               </h3>
               
@@ -179,7 +178,7 @@ export function FeatureSection() {
             style={{ transitionDelay: '300ms' }}
           >
              <img 
-               src="/pexels-azazzelp-7276216.jpg"
+               src="/global-fleet-new.png"
                alt="Logistics"
                className="absolute inset-0 w-full h-full object-cover transition-all duration-1000"
             />
@@ -201,8 +200,7 @@ export function FeatureSection() {
 
         <div 
           ref={videoSectionRef}
-          className="grid lg:grid-cols-2 gap-20 items-center mt-20"
-        >
+          className="grid lg:grid-cols-2 gap-10 sm:gap-14 lg:gap-20 items-center mt-12 sm:mt-16 md:mt-20">
           {/* Static Image */}
           <div 
             className={`relative aspect-[3/4] rounded-none overflow-hidden transition-all duration-1000 ease-out border border-border shadow-[inset_0_0_60px_rgba(0,0,0,0.1)] ${
@@ -210,7 +208,7 @@ export function FeatureSection() {
             }`}
           >
              <img 
-               src="/pexels-ranjith-ar-6835-40642.jpg"
+               src="/marine-automation-new.png"
                alt="Automation"
                className="absolute inset-0 w-full h-full object-cover brightness-75 hover:brightness-100 transition-all duration-1000"
             />
@@ -224,28 +222,26 @@ export function FeatureSection() {
             }`}
             style={{ transitionDelay: '200ms' }}
           >
-            <span className={`text-[10px] tracking-[0.4em] uppercase text-accent font-bold mb-6 block ${headerVisible ? 'animate-blur-in opacity-0' : 'opacity-0'}`} style={headerVisible ? { animationDelay: '0.2s', animationFillMode: 'forwards' } : {}}>
+            <span className={`text-[9px] sm:text-[10px] tracking-[0.3em] sm:tracking-[0.4em] uppercase text-accent font-bold mb-4 sm:mb-5 md:mb-6 block ${headerVisible ? 'animate-blur-in opacity-0' : 'opacity-0'}`} style={headerVisible ? { animationDelay: '0.2s', animationFillMode: 'forwards' } : {}}>
               Engineering Discipline
             </span>
-            <h2 className={`font-serif font-bold text-5xl leading-tight text-primary mb-8 text-balance md:text-7xl uppercase tracking-tighter ${headerVisible ? 'animate-blur-in opacity-0' : 'opacity-0'}`} style={headerVisible ? { animationDelay: '0.4s', animationFillMode: 'forwards' } : {}}>
+            <h2 className={`font-serif font-bold text-3xl sm:text-4xl md:text-5xl lg:text-7xl leading-tight text-primary mb-5 sm:mb-6 md:mb-8 text-balance uppercase tracking-tighter ${headerVisible ? 'animate-blur-in opacity-0' : 'opacity-0'}`} style={headerVisible ? { animationDelay: '0.4s', animationFillMode: 'forwards' } : {}}>
               Precision at *every* knot.
             </h2>
-            <p className={`text-xl text-muted-foreground leading-relaxed mb-12 max-w-md italic ${headerVisible ? 'animate-blur-in opacity-0' : 'opacity-0'}`} style={headerVisible ? { animationDelay: '0.6s', animationFillMode: 'forwards' } : {}}>
+            <p className={`text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed mb-8 sm:mb-10 md:mb-12 max-w-md italic ${headerVisible ? 'animate-blur-in opacity-0' : 'opacity-0'}`} style={headerVisible ? { animationDelay: '0.6s', animationFillMode: 'forwards' } : {}}>
               Our systems are forged on open-architecture principles, enabling high-contrast integration with legacy marine bridge electronics.
             </p>
 
-            {/* Feature Cards */}
-            <div className="grid sm:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
               {features.map((feature) => (
                 <div
                   key={feature.title}
-                  className="group p-8 marine-transition border border-border/50 bg-white hover:bg-background"
-                >
-                  <div className="inline-flex items-center justify-center w-12 h-12 mb-6 group-hover:bg-primary group-hover:text-white marine-transition bg-background text-primary border border-border shadow-sm">
-                    <feature.icon className="w-5 h-5" />
+                  className="group p-5 sm:p-6 md:p-8 marine-transition border border-border/50 bg-white hover:bg-background">
+                  <div className="inline-flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 mb-4 sm:mb-5 md:mb-6 group-hover:bg-primary group-hover:text-white marine-transition bg-background text-primary border border-border shadow-sm">
+                    <feature.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <h3 className="text-[10px] font-extrabold text-primary uppercase tracking-[0.3em] mb-2">{feature.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
+                  <h3 className="text-[9px] sm:text-[10px] font-extrabold text-primary uppercase tracking-[0.25em] sm:tracking-[0.3em] mb-2">{feature.title}</h3>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
                 </div>
               ))}
             </div>

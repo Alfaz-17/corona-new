@@ -57,6 +57,7 @@ export function Header() {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
+    { name: "Services", href: "/services" },
     { 
       name: "Products", 
       href: "/products",
@@ -129,9 +130,9 @@ export function Header() {
                   >
                     <div className="bg-white border border-border shadow-2xl p-6 backdrop-blur-xl bg-white/95">
                       <div className="space-y-6">
-                        {link.dropdown.slice(0, 5).map((item: any) => (
+                        {link.dropdown.slice(0, 5).map((item: any, idx: number) => (
                           <Link 
-                            key={item.href} 
+                            key={`${link.name}-${idx}-${item.name}`} 
                             href={item.href}
                             className="block group/item"
                           >
@@ -155,12 +156,17 @@ export function Header() {
           </div>
 
           {/* Logo - Centered */}
-          <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center h-24">
-            <Logo 
-              variant="white" 
-              size="md" 
-            />
-          </Link>
+          <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center h-32">
+            <Link href="/" className="flex items-center">
+              <Logo 
+                variant="white" 
+                size="md" 
+              />
+            </Link>
+            <a href="tel:+919376502550" className={`text-[8px] font-bold tracking-[0.2em] uppercase mt-2 hidden md:block ${isScrolled || !isHome ? "text-white/60" : "text-white/40"}`}>
+              +91 93765 02550
+            </a>
+          </div>
 
           {/* Desktop Navigation - Right Group */}
           <div className="flex items-center gap-10">
@@ -191,9 +197,9 @@ export function Header() {
                     >
                       <div className="bg-white border border-border shadow-2xl p-6 backdrop-blur-xl bg-white/95">
                         <div className="space-y-6">
-                          {link.dropdown.slice(0, 5).map((item: any) => (
+                          {link.dropdown.slice(0, 5).map((item: any, idx: number) => (
                             <Link 
-                              key={item.href} 
+                              key={`${link.name}-${idx}-${item.name}`} 
                               href={item.href}
                               className="block group/item"
                             >
@@ -252,7 +258,7 @@ export function Header() {
               >
                 <div className="shrink-0 p-8 border-b border-border flex items-center justify-between bg-card/10">
                   <h2 className="font-serif text-xl tracking-widest uppercase text-primary">
-                    Corona <span className="text-accent italic">Marine</span>
+                    Corona <span className="text-accent italic">Marine Parts</span>
                   </h2>
                   <button onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-muted transition-colors">
                     <X className="w-6 h-6 text-primary" />
@@ -274,9 +280,9 @@ export function Header() {
                         
                         {link.dropdown && link.dropdown.length > 0 && (
                           <div className="pl-4 border-l border-border/60 space-y-4">
-                            {link.dropdown.slice(0, 6).map((item: any) => (
+                            {link.dropdown.slice(0, 6).map((item: any, idx: number) => (
                               <Link
-                                key={item.href}
+                                key={`mobile-${link.name}-${idx}-${item.name}`}
                                 href={item.href}
                                 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary block"
                                 onClick={() => setIsMenuOpen(false)}
@@ -298,7 +304,7 @@ export function Header() {
                         <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                           <Phone className="w-4 h-4" />
                         </div>
-                        <span className="text-[10px] font-bold text-primary">+91 73865 45454</span>
+                        <span className="text-[10px] font-bold text-primary">+91 93765 02550</span>
                       </a>
                     </div>
                   </div>

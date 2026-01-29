@@ -21,8 +21,8 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'Corona Marine — Marine Automation & Spare Parts',
-  description: 'Your premier partner for marine automation, high-quality spare parts, and specialized engineering solutions from Alang.',
+  title: 'Corona Marine Parts | Marine Spare Parts & Marine Services Supplier',
+  description: 'Corona Marine Parts is a trusted supplier of marine spare parts, automation systems, and ship machinery components, delivering reliable marine solutions worldwide.',
   generator: 'v0.app',
   keywords: ['marine automation', 'ship spare parts', 'alang shipyard', 'marine engineering', 'vessel automation'],
   icons: {
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0A3D62',
+  themeColor: '#0E2A47',
 }
 
 export default function RootLayout({

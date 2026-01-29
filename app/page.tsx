@@ -7,11 +7,13 @@ import { BrandGrid } from "@/components/boty/brands-grid"
 import { Testimonials } from "@/components/boty/testimonials"
 import { CTABanner } from "@/components/boty/cta-banner"
 import { Newsletter } from "@/components/boty/newsletter"
+import { SEOIntro } from "@/components/boty/seo-intro"
 
 export default function HomePage() {
   return (
     <main>
       <Hero />
+      <SEOIntro />
       <ProductGrid />
       <BrandGrid />
       <FeatureSection />

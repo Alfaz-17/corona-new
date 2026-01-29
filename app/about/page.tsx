@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Shield, Award, Users, Globe, Clock } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AboutPage() {
   const values = [
@@ -31,28 +32,28 @@ export default function AboutPage() {
   return (
     <div className="font-sans">
       {/* Hero Section */}
-      <section className="relative h-[60vh] pt-32 flex items-center justify-center overflow-hidden bg-primary">
+      <section className="relative min-h-[60dvh] pt-24 sm:pt-28 md:pt-32 flex items-center justify-center overflow-hidden bg-primary">
          <div className="absolute inset-0 z-0">
           <img 
-            src="/pexels-pixabay-163726.jpg" 
+            src="/marine-automation.png" 
             alt="About Corona Marine" 
             className="w-full h-full object-cover opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-primary/80 to-primary/40" />
         </div>
 
-        <div className="relative z-10 text-center px-6">
+        <div className="relative z-10 text-center px-4 sm:px-6">
           <motion.div
             className="max-w-4xl"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="text-accent tracking-[0.3em] uppercase text-sm font-bold mb-4 block">Our Legacy</span>
-            <h1 className="text-5xl md:text-7xl font-bold text-white uppercase tracking-wider mb-6">
-              About Corona Marine
+            <span className="text-accent tracking-[0.2em] sm:tracking-[0.3em] uppercase text-xs sm:text-sm font-bold mb-3 sm:mb-4 block">Our Legacy</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-white uppercase tracking-wider mb-4 sm:mb-6">
+              About Corona Marine Parts
             </h1>
-            <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 max-w-2xl mx-auto">
               Your Premier Partner for Marine Automation & Spare Parts
             </p>
           </motion.div>
@@ -60,9 +61,9 @@ export default function AboutPage() {
       </section>
 
       {/* Company Profile */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center">
             {/* Left Content */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -70,20 +71,19 @@ export default function AboutPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-sm tracking-[0.3em] uppercase text-accent font-bold mb-4">Our Journey</h2>
-              <h3 className="text-4xl md:text-5xl font-bold text-primary mb-8 tracking-tight">
-                Experts in Marine Solutions Since 2010
+              <h2 className="text-xs sm:text-sm tracking-[0.2em] sm:tracking-[0.3em] uppercase text-accent font-bold mb-3 sm:mb-4 font-sans">Corporate Identity</h2>
+              <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary mb-5 sm:mb-6 md:mb-8 tracking-tighter uppercase">
+                About Corona Marine Parts
               </h3>
-              <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+              <div className="space-y-4 sm:space-y-5 md:space-y-6 text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed italic">
                 <p>
-                  United Marine Services has been supplying high-quality marine and industrial automation equipment for over a decade. 
-                  We take pride in catering to marine fleets, offshore vessels, oil rigs, major industries and reputed trading houses worldwide. 
-                  Our focus is on <strong className="text-primary text-base uppercase tracking-widest">reliability, transparency, and excellent customer support</strong>.
+                  Corona Marine Parts is a marine spare parts supplier dedicated to supporting the maritime industry with dependable equipment and solutions. We work closely with vessel operators, ship managers, and marine engineers to deliver the right parts at the right time.
                 </p>
                 <p>
-                  Established with a vision to streamline maritime technical supply chains, Corona Marine (a United Marine Services partner) 
-                  bridges the gap between complex engineering requirements and rapid global delivery. We specialize in identifying 
-                  hard-to-find components and providing certified reconditioned alternatives that meet the world's most rigorous safety standards.
+                  Our expertise covers marine machinery spares, automation systems, navigation equipment, engine room components, and deck machinery. By focusing on accuracy, transparency, and efficiency, Corona Marine Parts has built long-term relationships with marine professionals worldwide.
+                </p>
+                <p>
+                   We are committed to maintaining high standards in marine supply services while ensuring smooth communication and fast response for urgent requirements.
                 </p>
               </div>
               <div className="mt-10">
@@ -104,9 +104,11 @@ export default function AboutPage() {
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              <img
-                src="/pexels-wolfgang-weiser-467045605-20581299.jpg"
-                alt="Expertise"
+              <Image
+                src="/spare-parts.png"
+                alt="Marine Spare Parts Warehouse"
+                width={800}
+                height={600}
                 className="rounded-2xl shadow-2xl border border-border"
               />
               <div className="absolute -bottom-6 -left-6 bg-accent p-8 rounded-xl hidden md:block">
@@ -165,7 +167,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Why Corona Marine? */}
+      {/* Why Corona Marine Parts? */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-6 lg:px-8">
           <motion.div

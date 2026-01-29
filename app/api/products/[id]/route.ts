@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { id } = await params;
     await connectToDatabase();
-    const product = await Product.findById(id).populate('category');
+    const product = await Product.findById(id).populate('category').populate('brand');
     
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });

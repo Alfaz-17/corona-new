@@ -23,6 +23,7 @@ const footerLinks = {
     { name: "Request a Quote", href: "/contact" },
     { name: "Message Engineering", href: "/contact" },
     { name: "Technical Guides", href: "/blog" },
+    { name: "Our Services", href: "/services" },
     { name: "Business Hours", href: "/contact" }
   ]
 }
@@ -33,25 +34,25 @@ export function Footer() {
   if (pathname?.startsWith("/admin")) return null
 
   return (
-    <footer className="bg-card pt-20 pb-10 relative overflow-hidden">
+    <footer className="bg-card pt-12 sm:pt-16 md:pt-20 pb-6 sm:pb-8 md:pb-10 relative overflow-hidden">
       {/* Giant Background Text */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none select-none z-0">
-        <span className="font-serif text-[100px] sm:text-[150px] md:text-[250px] lg:text-[300px] font-bold text-primary/5 whitespace-nowrap leading-none uppercase tracking-tighter">
-          Corona Marine
+        <span className="font-serif text-[60px] sm:text-[100px] md:text-[180px] lg:text-[250px] xl:text-[300px] font-bold text-primary/5 whitespace-nowrap leading-none uppercase tracking-tighter">
+          Corona Marine Parts
         </span>
       </div>
       
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 md:gap-10 mb-10 sm:mb-12 md:mb-16">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Logo size="md" variant="dark" className="mb-6 h-10" />
-            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+            <Logo size="md" variant="dark" className="mb-4 sm:mb-6 h-8 sm:h-10" />
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4 sm:mb-6">
               Your trusted partner for marine equipment and supplies.
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-3 sm:gap-4">
               <a
-                href="https://wa.me/917386545454"
+                href="https://wa.me/919376502550"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground marine-transition marine-shadow"
@@ -64,7 +65,7 @@ export function Footer() {
                 </div>
               </a>
               <a
-                href="mailto:sales@coronamarine.in"
+                href="mailto:coronamarine5050@gmail.com"
                 className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground marine-transition marine-shadow"
                 aria-label="Email"
               >
@@ -75,7 +76,7 @@ export function Footer() {
                 </div>
               </a>
               <a
-                href="https://linkedin.com/company/coronamarine"
+                href="https://www.linkedin.com/company/corona-marine-parts/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground marine-transition marine-shadow"
@@ -86,6 +87,20 @@ export function Footer() {
                       <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
                    </svg>
                 </div>
+              </a>
+            </div>
+            <div className="mt-6 space-y-2">
+              <a href="tel:+919376502550" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors group">
+                <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-accent transition-colors">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.81 12.81 0 00.62 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.62A2 2 0 0122 16.92z"/></svg>
+                </div>
+                <span className="font-bold tracking-widest uppercase">+91 93765 02550</span>
+              </a>
+              <a href="mailto:coronamarine5050@gmail.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors group">
+                <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-accent transition-colors">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+                </div>
+                <span className="font-bold tracking-widest uppercase">coronamarine5050@gmail.com</span>
               </a>
             </div>
           </div>
@@ -146,13 +161,13 @@ export function Footer() {
         <div className="pt-10 border-t border-border/50">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Corona Marine. All rights reserved.
+              © {new Date().getFullYear()} Corona Marine Parts – Marine Spare Parts & Marine Services Supplier
             </p>
             <div className="flex gap-6">
-              <Link href="/" className="text-sm text-muted-foreground hover:text-foreground marine-transition">
+              <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground marine-transition">
                 Privacy Policy
               </Link>
-              <Link href="/" className="text-sm text-muted-foreground hover:text-foreground marine-transition">
+              <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground marine-transition">
                 Terms of Service
               </Link>
             </div>

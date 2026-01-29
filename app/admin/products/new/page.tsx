@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Upload, X, ChevronLeft } from 'lucide-react';
+import { Save, Upload, X, ChevronLeft, Plus } from 'lucide-react';
 import { uploadToCloudinary } from '@/lib/utils/cloudinary';
 import { addWatermark } from '@/lib/utils/watermark';
 import api from '@/lib/api';
@@ -14,7 +14,6 @@ export default function AdminProductFormPage() {
     description: '',
     price: '',
     category: '',
-    brand: '',
     featured: false
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -97,7 +96,7 @@ export default function AdminProductFormPage() {
 
       setMessage({ type: "success", text: "New asset registered in fleet inventory." });
       // Reset form
-      setFormData({ title: '', description: '', price: '', category: '', brand: '', featured: false });
+      setFormData({ title: '', description: '', price: '', category: '', featured: false });
       setImageFile(null);
       setImagePreview('');
       setImagesFile([]);
@@ -172,20 +171,10 @@ export default function AdminProductFormPage() {
                       <option key={cat._id} value={cat._id}>{cat.name}</option>
                     ))}
                   </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Manufacturer Brand</label>
-                  <input
-                    name="brand"
-                    placeholder="e.g. Caterpillar"
-                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
-                    value={formData.brand}
-                    onChange={handleChange}
-                  />
-                </div>
-             </div>
+                 </div>
+              </div>
 
-             <div className="flex items-center gap-4 pt-4">
+              <div className="flex items-center gap-4 pt-4">
                 <input
                   type="checkbox"
                   name="featured"

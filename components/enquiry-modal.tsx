@@ -70,7 +70,7 @@ export function EnquiryModal({ productName }: { productName?: string }) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required placeholder="john@example.com" />
+              <Input id="email" name="email" type="email" required placeholder="your@email.com" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">Phone</Label>

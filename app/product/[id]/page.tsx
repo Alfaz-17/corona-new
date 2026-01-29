@@ -26,9 +26,9 @@ export default function ProductDetailPage() {
         setProduct(data);
 
         // Fetch related products
-        if (data?.category?.name) {
+        if (data?.category?._id) {
           const relatedRes = await api.get(
-            `/products?category=${encodeURIComponent(data.category.name)}`
+            `/products?category=${data.category._id}`
           );
           const related = relatedRes.data
             .filter((p: any) => p._id !== data._id)
@@ -138,7 +138,7 @@ export default function ProductDetailPage() {
                <EnquiryModal productName={product.title} />
                <div className="grid grid-cols-2 gap-4">
                   <a href={`tel:+919376502550`} className="flex items-center justify-center gap-2 py-4 border border-primary text-primary font-bold uppercase text-[10px] tracking-widest hover:bg-primary hover:text-white transition-all">
-                     <Phone className="w-4 h-4" /> Call Specialist
+                    <Phone className="w-4 h-4" /> Call +91 93765 02550
                   </a>
                   <a href={`mailto:coronamarine5050@gmail.com?subject=Enquiry for ${product.title}`} className="flex items-center justify-center gap-2 py-4 border border-primary text-primary font-bold uppercase text-[10px] tracking-widest hover:bg-primary hover:text-white transition-all">
                      <Mail className="w-4 h-4" /> Email Inquiry

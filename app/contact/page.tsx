@@ -45,23 +45,19 @@ export default function ContactPage() {
     {
       icon: Phone,
       title: "Phone",
-      details: ["+91 73865 45454", "+91 91144 89114"],
-      action: "tel:+917386545454",
+      details: ["+91 93765 02550"],
+      action: "tel:+919376502550",
     },
     {
       icon: Mail,
       title: "Email",
-      details: ["sales@coronamarine.in"],
-      action: "mailto:sales@coronamarine.in",
+      details: ["coronamarine5050@gmail.com"],
+      action: "mailto:coronamarine5050@gmail.com",
     },
     {
       icon: MapPin,
       title: "Address",
-      details: [
-        "Plot 176, Vibrant Industrial Park,",
-        "Moti Talav Road, Bhavnagar – 364001,",
-        "Gujarat, INDIA."
-      ],
+      details: ["Bhavnagar, Gujarat, India"],
       action: null,
     },
     {
@@ -79,33 +75,47 @@ export default function ContactPage() {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative h-[40vh] pt-32 flex items-center justify-center bg-primary">
-         <div className="absolute inset-0 z-0">
+      <section className="relative min-h-[60dvh] pt-24 sm:pt-28 md:pt-32 flex items-center justify-center bg-primary overflow-hidden">
+        <div className="absolute inset-0">
            <img 
-            src="/pexels-azazzelp-7276216.jpg" 
+            src="/engine-room.png" 
             alt="Contact" 
             className="w-full h-full object-cover opacity-20"
           />
         </div>
-        <div className="relative z-10 text-center text-white px-6">
+        <div className="relative z-10 text-center text-white px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-5xl md:text-6xl font-extrabold uppercase tracking-wider mb-4">
-              Contact Us
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-extrabold uppercase tracking-tighter mb-3 sm:mb-4">
+              Contact Corona Marine Parts
             </h1>
-            <p className="text-xl text-accent font-medium uppercase tracking-widest">
-              Get in touch with our marine experts today
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-accent font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-6 sm:mb-8 max-w-3xl mx-auto">
+              Get in touch with Corona Marine Parts for marine spare part inquiries, technical support, or urgent sourcing requirements. Our team is ready to assist marine professionals with reliable solutions.
             </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+              <a
+                href="tel:+919376502550"
+                className="px-6 sm:px-8 py-3 sm:py-4 bg-accent text-white font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:bg-white hover:text-primary transition-all"
+              >
+                Call Now
+              </a>
+              <a
+                href="#contact-form"
+                className="px-6 sm:px-8 py-3 sm:py-4 border border-white/30 text-white font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:bg-white hover:text-primary transition-all"
+              >
+                Get Quote
+              </a>
+            </div>
           </motion.div>
         </div>
       </section>
 
       {/* Main Content */}
-      <section className="py-24 container mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12 md:gap-16">
           
           {/* Contact Details */}
           <div className="lg:col-span-1 space-y-8">
@@ -260,6 +270,40 @@ export default function ContactPage() {
             allowFullScreen
             loading="lazy"
           ></iframe>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-primary text-white relative overflow-hidden">
+        <div className="container mx-auto px-6 lg:px-8 text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 uppercase tracking-tight">
+              Ready to Get Started?
+            </h2>
+            <p className="text-xl mb-10 text-white/70 max-w-2xl mx-auto">
+              Contact our marine experts today for a free consultation
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <a 
+                href="tel:+919376502550" 
+                className="px-10 py-5 bg-accent text-white font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-primary transition-all flex items-center justify-center gap-3"
+              >
+                <Phone className="w-5 h-5" />
+                Call Now
+              </a>
+              <a 
+                href="#contact-form" 
+                className="px-10 py-5 border border-white/30 text-white font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-primary transition-all flex items-center justify-center gap-3"
+              >
+                <Send className="w-5 h-5" />
+                Get Quote
+              </a>
+            </div>
+          </motion.div>
+        </div>
       </section>
     </div>
   );
