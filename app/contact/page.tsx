@@ -75,7 +75,7 @@ export default function ContactPage() {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative min-h-[55dvh] pt-28 sm:pt-32 md:pt-36 flex items-center justify-center bg-primary overflow-hidden">
+      <section className="relative min-h-[60dvh] pt-28 sm:pt-32 md:pt-36 pb-16 sm:pb-20 flex items-center justify-center bg-primary overflow-hidden">
         <div className="absolute inset-0">
            <img 
             src="/contact-hero.png" 
@@ -90,10 +90,10 @@ export default function ContactPage() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-sans font-extrabold uppercase tracking-tighter mb-3 sm:mb-4">
-              Contact Corona Marine Parts
+              Contact Us
             </h1>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-accent font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-6 sm:mb-8 max-w-3xl mx-auto">
-              Get in touch with Corona Marine Parts for marine spare part inquiries, technical support, or urgent sourcing requirements. Our team is ready to assist marine professionals with reliable solutions.
+            <p className="text-sm sm:text-base md:text-lg text-accent font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-6 sm:mb-8 max-w-2xl mx-auto">
+              Marine Spare Parts & Technical Support
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
               <a
