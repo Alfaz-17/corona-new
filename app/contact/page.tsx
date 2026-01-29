@@ -78,7 +78,7 @@ export default function ContactPage() {
       <section className="relative min-h-[60dvh] pt-24 sm:pt-28 md:pt-32 flex items-center justify-center bg-primary overflow-hidden">
         <div className="absolute inset-0">
            <img 
-            src="/engine-room.png" 
+            src="/contact-hero.png" 
             alt="Contact" 
             className="w-full h-full object-cover opacity-20"
           />

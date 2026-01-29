@@ -221,17 +221,6 @@ export function Header() {
                 </div>
               ))}
             </div>
-            
-            <div className="flex items-center gap-4 border-l border-border/20 pl-8 ml-2">
-              <Link
-                href="/admin"
-                className={`p-2 marine-transition transition-colors ${
-                  (isScrolled || !isHome) ? "text-white/80 hover:text-white" : "text-white/80 hover:text-white"
-                }`}
-              >
-                <User className="w-5 h-5" />
-              </Link>
-            </div>
           </div>
         </div>
 

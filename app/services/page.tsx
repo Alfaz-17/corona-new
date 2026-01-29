@@ -36,7 +36,13 @@ export default function ServicesPage() {
     <div className="bg-white">
       {/* Hero Section */}
       <section className="relative min-h-[50dvh] pt-24 sm:pt-28 md:pt-32 flex items-center justify-center bg-primary overflow-hidden">
-         <div className="absolute inset-0 z-0 opacity-20 bg-[url('/grid.svg')] bg-center opacity-10" />
+         <div className="absolute inset-0 z-0">
+           <img 
+             src="/services-hero.png" 
+             alt="Marine Services" 
+             className="w-full h-full object-cover opacity-20"
+           />
+         </div>
          <div className="relative z-10 text-center px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
