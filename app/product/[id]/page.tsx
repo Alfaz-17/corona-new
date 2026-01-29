@@ -7,7 +7,7 @@ import { useParams } from "next/navigation"
 import { ChevronLeft, ChevronDown, Phone, Mail, CheckCircle2, ShieldCheck, Cpu, Globe, X } from "lucide-react"
 import api from "@/lib/api"
 import { MarineLoader } from "@/components/common/marine-loader"
-import { EnquiryModal } from "@/components/enquiry-modal"
+import { OrderForm } from "@/components/order-form"
 import { motion } from "framer-motion"
 
 export default function ProductDetailPage() {
@@ -146,7 +146,7 @@ export default function ProductDetailPage() {
 
             {/* CTAs */}
             <div className="space-y-4 mb-12">
-               <EnquiryModal productName={product.title} />
+               <OrderForm productId={product._id} productTitle={product.title} />
                <div className="grid grid-cols-2 gap-4">
                   <a href={`tel:+919376502550`} className="flex items-center justify-center gap-2 py-4 border border-primary text-primary font-bold uppercase text-[10px] tracking-widest hover:bg-primary hover:text-white transition-all">
                     <Phone className="w-4 h-4" /> Call +91 93765 02550

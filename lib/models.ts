@@ -47,3 +47,24 @@ const BlogSchema = new Schema({
 }, { timestamps: true });
 
 export const Blog = models?.Blog || model('Blog', BlogSchema);
+
+const OrderItemSchema = new Schema({
+  product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+  productTitle: { type: String, required: true },
+  quantity: { type: Number, required: true, default: 1 }
+});
+
+const OrderSchema = new Schema({
+  customerName: { type: String, required: true },
+  customerPhone: { type: String, required: true },
+  customerEmail: { type: String },
+  items: [OrderItemSchema],
+  status: { 
+    type: String, 
+    enum: ['pending', 'confirmed', 'completed', 'cancelled'],
+    default: 'pending'
+  },
+  notes: { type: String }
+}, { timestamps: true });
+
+export const Order = models?.Order || model('Order', OrderSchema);

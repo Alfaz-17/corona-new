@@ -14,7 +14,8 @@ import {
   LogOut,
   User,
   Home,
-  Anchor
+  Anchor,
+  ShoppingCart
 } from 'lucide-react';
 import { MarineLoader } from '@/components/common/marine-loader';
 import { Logo } from '@/components/common/logo';
@@ -39,6 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: Home },
+    { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
     { name: 'Products', href: '/admin/products', icon: Package },
     { name: 'Categories', href: '/admin/categories', icon: Grid3X3 },
     { name: 'Brands', href: '/admin/brands', icon: Award },

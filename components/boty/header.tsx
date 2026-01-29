@@ -129,22 +129,17 @@ export function Header() {
                     className="absolute top-full left-0 pt-6 w-80"
                   >
                     <div className="bg-white border border-border shadow-2xl p-6 backdrop-blur-xl bg-white/95">
-                      <div className="space-y-6">
-                        {link.dropdown.slice(0, 5).map((item: any, idx: number) => (
+                      <div className="space-y-3">
+                        {link.dropdown.slice(0, 8).map((item: any, idx: number) => (
                           <Link 
                             key={`${link.name}-${idx}-${item.name}`} 
                             href={item.href}
-                            className="block group/item"
+                            className="block text-sm font-bold text-primary hover:text-accent transition-colors py-1"
                           >
-                            <span className="text-[9px] font-black uppercase tracking-widest text-primary block mb-1 group-hover/item:text-accent transition-colors">
-                              {item.name}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground line-clamp-1 italic">
-                              {item.description}
-                            </span>
+                            {item.name}
                           </Link>
                         ))}
-                        <Link href={link.href} className="pt-4 border-t border-border flex items-center justify-between text-[9px] font-bold uppercase tracking-widest text-accent hover:gap-4 transition-all">
+                        <Link href={link.href} className="pt-3 mt-2 border-t border-border flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-accent hover:gap-4 transition-all">
                           View All {link.name} <ArrowRight className="w-4 h-4" />
                         </Link>
                       </div>
@@ -196,22 +191,17 @@ export function Header() {
                       className="absolute top-full right-0 pt-6 w-80"
                     >
                       <div className="bg-white border border-border shadow-2xl p-6 backdrop-blur-xl bg-white/95">
-                        <div className="space-y-6">
-                          {link.dropdown.slice(0, 5).map((item: any, idx: number) => (
+                        <div className="space-y-3">
+                          {link.dropdown.slice(0, 8).map((item: any, idx: number) => (
                             <Link 
                               key={`${link.name}-${idx}-${item.name}`} 
                               href={item.href}
-                              className="block group/item"
+                              className="block text-sm font-bold text-primary hover:text-accent transition-colors py-1"
                             >
-                              <span className="text-[9px] font-black uppercase tracking-widest text-primary block mb-1 group-hover/item:text-accent transition-colors">
-                                {item.name}
-                              </span>
-                              <span className="text-[10px] text-muted-foreground line-clamp-1 italic">
-                                {item.description}
-                              </span>
+                              {item.name}
                             </Link>
                           ))}
-                          <Link href={link.href} className="pt-4 border-t border-border flex items-center justify-between text-[9px] font-bold uppercase tracking-widest text-accent hover:gap-4 transition-all">
+                          <Link href={link.href} className="pt-3 mt-2 border-t border-border flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-accent hover:gap-4 transition-all">
                             Explore {link.name} <ArrowRight className="w-4 h-4" />
                           </Link>
                         </div>

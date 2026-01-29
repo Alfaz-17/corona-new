@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Package, Grid3X3, Award, FileText, ArrowUpRight } from 'lucide-react';
+import { Package, Grid3X3, Award, FileText, ArrowUpRight, ShoppingCart } from 'lucide-react';
 import api from '@/lib/api';
 import Link from 'next/link';
 
@@ -28,6 +28,7 @@ export default function AdminDashboard() {
     { title: 'Categories', value: stats.categories, icon: Grid3X3, href: '/admin/categories' },
     { title: 'Partner Brands', value: stats.brands, icon: Award, href: '/admin/brands' },
     { title: 'Technical Blogs', value: stats.blogs, icon: FileText, href: '/admin/blogs' },
+    { title: 'Customer Orders', value: stats.orders || 0, icon: ShoppingCart, href: '/admin/orders' },
   ];
 
   return (

@@ -1,7 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
-import { Product, Category, Blog, Brand } from '@/lib/models';
+import { Product, Category, Blog, Brand, Order } from '@/lib/models';
 import { getSession } from '@/lib/auth';
 
 export async function GET(req: Request) {
@@ -13,18 +13,20 @@ export async function GET(req: Request) {
 
     await connectToDatabase();
     
-    const [productCount, categoryCount, blogCount, brandCount] = await Promise.all([
+    const [productCount, categoryCount, blogCount, brandCount, orderCount] = await Promise.all([
       Product.countDocuments(),
       Category.countDocuments(),
       Blog.countDocuments(),
       Brand.countDocuments(),
+      Order.countDocuments(),
     ]);
 
     return NextResponse.json({
       products: productCount,
       categories: categoryCount,
       blogs: blogCount,
-      brands: brandCount
+      brands: brandCount,
+      orders: orderCount
     });
   } catch (error) {
     console.error('Stats error:', error);
