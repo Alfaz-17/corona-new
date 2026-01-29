@@ -7,6 +7,7 @@ import { SlidersHorizontal, X, Search } from "lucide-react"
 import api from "@/lib/api"
 import { MarineLoader } from "@/components/common/marine-loader"
 import { motion, AnimatePresence } from "framer-motion"
+import { ProductCard } from "@/components/product-card"
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<any[]>([])
@@ -145,34 +146,12 @@ export default function ProductsPage() {
             {filteredProducts.map((product, index) => (
               <motion.div
                 key={product._id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
               >
-                <Link href={`/product/${product._id}`} className="group block h-full bg-white border border-border hover:border-accent transition-all relative">
-                   <div className="aspect-[4/5] relative overflow-hidden bg-muted">
-                      <Image 
-                        src={product.image} 
-                        alt={product.title} 
-                        fill 
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0">
-                         <span className="px-5 py-2 bg-accent text-white text-xs font-bold uppercase tracking-widest shadow-xl">Details</span>
-                      </div>
-                   </div>
-                   <div className="p-4 border-t border-border">
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-accent font-bold mb-1 block">
-                        {product.category?.name || "General"}
-                      </span>
-                      <h3 className="text-sm font-bold text-primary line-clamp-2 uppercase tracking-tight group-hover:text-accent transition-colors">
-                        {product.title}
-                      </h3>
-                   </div>
-                </Link>
+                <ProductCard product={product} />
               </motion.div>
             ))}
           </AnimatePresence>
