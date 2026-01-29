@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     if (brand) query.brand = brand;
     if (featured === 'true') query.featured = true;
 
-    const products = await Product.find(query).populate('category').populate('brand').sort({ createdAt: -1 });
+    const products = await Product.find(query).populate('category').sort({ createdAt: -1 });
     return NextResponse.json(products);
   } catch (error) {
     console.error('Products GET error:', error);

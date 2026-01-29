@@ -50,7 +50,7 @@ export default function AboutPage() {
             transition={{ duration: 0.8 }}
           >
             <span className="text-accent tracking-[0.2em] sm:tracking-[0.3em] uppercase text-xs sm:text-sm font-bold mb-3 sm:mb-4 block">Our Legacy</span>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-white uppercase tracking-wider mb-4 sm:mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-sans font-bold text-white uppercase tracking-wider mb-4 sm:mb-6">
               About Corona Marine Parts
             </h1>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 max-w-2xl mx-auto">
@@ -72,7 +72,7 @@ export default function AboutPage() {
               transition={{ duration: 0.6 }}
             >
               <h2 className="text-xs sm:text-sm tracking-[0.2em] sm:tracking-[0.3em] uppercase text-accent font-bold mb-3 sm:mb-4 font-sans">Corporate Identity</h2>
-              <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary mb-5 sm:mb-6 md:mb-8 tracking-tighter uppercase">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold text-primary mb-5 sm:mb-6 md:mb-8 tracking-tighter uppercase">
                 About Corona Marine Parts
               </h3>
               <div className="space-y-4 sm:space-y-5 md:space-y-6 text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed italic">

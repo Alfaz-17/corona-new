@@ -28,7 +28,7 @@ export function SEOIntro() {
           >
             <div>
               <span className="text-accent tracking-[0.3em] sm:tracking-[0.4em] uppercase text-[9px] sm:text-[10px] font-bold mb-3 sm:mb-4 block">Official Briefing</span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-serif font-bold text-primary leading-tight tracking-tighter uppercase mb-4 sm:mb-6">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-sans font-bold text-primary leading-tight tracking-tighter uppercase mb-4 sm:mb-6">
                 Corona Marine Parts – <br className="hidden sm:block"/>
                 <span className="text-accent italic">Reliable</span> Marine Solutions
               </h2>
@@ -69,7 +69,7 @@ export function SEOIntro() {
             {/* Background Accent */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 -translate-y-1/2 translate-x-1/2 rounded-full blur-3xl" />
             
-            <h3 className="text-xl sm:text-2xl font-serif font-bold text-white mb-6 sm:mb-8 md:mb-10 tracking-tight uppercase">
+            <h3 className="text-xl sm:text-2xl font-sans font-bold text-white mb-6 sm:mb-8 md:mb-10 tracking-tight uppercase">
               Our Marine <span className="text-accent italic">Services</span> Include:
             </h3>
 

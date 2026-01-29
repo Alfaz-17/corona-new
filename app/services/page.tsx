@@ -43,7 +43,7 @@ export default function ServicesPage() {
               animate={{ opacity: 1, y: 0 }}
             >
               <span className="text-accent tracking-[0.3em] sm:tracking-[0.4em] uppercase text-[9px] sm:text-[10px] font-bold mb-3 sm:mb-4 block">Fleet Support Hub</span>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-white uppercase tracking-tighter mb-4 sm:mb-6">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-sans font-bold text-white uppercase tracking-tighter mb-4 sm:mb-6">
                 Marine Spare Parts & Services <br className="hidden sm:block"/>
                 <span className="text-accent italic">by</span> Corona Marine Parts
               </h1>
@@ -70,7 +70,7 @@ export default function ServicesPage() {
                   <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Sector {i + 1}</span>
                </div>
                
-               <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary mb-4 sm:mb-5 md:mb-6 uppercase tracking-tight group-hover:text-accent transition-colors">
+               <h2 className="text-xl sm:text-2xl md:text-3xl font-sans font-bold text-primary mb-4 sm:mb-5 md:mb-6 uppercase tracking-tight group-hover:text-accent transition-colors">
                  {service.title}
                </h2>
                
@@ -101,7 +101,7 @@ export default function ServicesPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-primary p-6 sm:p-8 md:p-12 lg:p-20 text-center relative overflow-hidden text-white border border-white/5">
              <div className="absolute inset-0 bg-accent/5 pointer-events-none" />
-             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-5 sm:mb-6 md:mb-8 uppercase tracking-tighter">
+             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold mb-5 sm:mb-6 md:mb-8 uppercase tracking-tighter">
                 Accurate Sourcing. <span className="text-accent italic">Timely</span> Delivery.
              </h2>
              <p className="text-sm sm:text-base md:text-lg text-white/60 mb-8 sm:mb-10 md:mb-12 max-w-2xl mx-auto italic leading-relaxed">

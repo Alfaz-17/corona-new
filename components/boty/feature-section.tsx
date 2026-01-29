@@ -225,7 +225,7 @@ export function FeatureSection() {
             <span className={`text-[9px] sm:text-[10px] tracking-[0.3em] sm:tracking-[0.4em] uppercase text-accent font-bold mb-4 sm:mb-5 md:mb-6 block ${headerVisible ? 'animate-blur-in opacity-0' : 'opacity-0'}`} style={headerVisible ? { animationDelay: '0.2s', animationFillMode: 'forwards' } : {}}>
               Engineering Discipline
             </span>
-            <h2 className={`font-serif font-bold text-3xl sm:text-4xl md:text-5xl lg:text-7xl leading-tight text-primary mb-5 sm:mb-6 md:mb-8 text-balance uppercase tracking-tighter ${headerVisible ? 'animate-blur-in opacity-0' : 'opacity-0'}`} style={headerVisible ? { animationDelay: '0.4s', animationFillMode: 'forwards' } : {}}>
+            <h2 className={`font-sans font-bold text-3xl sm:text-4xl md:text-5xl lg:text-7xl leading-tight text-primary mb-5 sm:mb-6 md:mb-8 text-balance uppercase tracking-tighter ${headerVisible ? 'animate-blur-in opacity-0' : 'opacity-0'}`} style={headerVisible ? { animationDelay: '0.4s', animationFillMode: 'forwards' } : {}}>
               Precision at *every* knot.
             </h2>
             <p className={`text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed mb-8 sm:mb-10 md:mb-12 max-w-md italic ${headerVisible ? 'animate-blur-in opacity-0' : 'opacity-0'}`} style={headerVisible ? { animationDelay: '0.6s', animationFillMode: 'forwards' } : {}}>

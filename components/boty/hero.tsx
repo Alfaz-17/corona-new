@@ -32,45 +32,46 @@ export function Hero() {
              className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-6 md:mb-8"
            >
               <div className="w-8 sm:w-12 h-px bg-accent" />
-              <span className="text-[8px] sm:text-[10px] font-bold text-accent uppercase tracking-[0.3em] sm:tracking-[0.4em]">Integrated Marine Logistics</span>
+              <span className="text-[8px] sm:text-[10px] font-bold text-accent uppercase tracking-[0.3em] sm:tracking-[0.4em]">Marine Spare Parts Supplier</span>
            </motion.div>
 
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-serif font-extrabold text-white leading-tight uppercase tracking-tighter mb-4 sm:mb-6 md:mb-8 lg:mb-10"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-sans font-extrabold text-white leading-tight uppercase tracking-tighter mb-4 sm:mb-6 md:mb-8"
             >
-               Corona Marine Parts – <span className="text-accent underline decoration-1 underline-offset-4 sm:underline-offset-8 italic">Marine</span> Spare Parts & Solutions
+               Quality <span className="text-accent">Marine Parts</span> <br className="hidden sm:block" />
+               Delivered Worldwide
             </motion.h1>
 
            <motion.p 
              initial={{ opacity: 0, y: 30 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.4 }}
-             className="text-sm sm:text-base md:text-lg lg:text-xl text-white/70 md:text-white/60 mb-6 sm:mb-8 md:mb-10 lg:mb-12 max-w-2xl font-medium leading-relaxed italic"
+             className="text-sm sm:text-base md:text-lg text-white/70 mb-6 sm:mb-8 md:mb-10 max-w-xl font-sans leading-relaxed"
            >
-              Premier global supplier of Marine Automation, Engine Control Systems, and Industrial Machinery spares. Certified reliability for the world's most demanding maritime fleets. <br className="hidden md:block" />
-              <span className="text-accent font-bold not-italic mt-4 block">Call Experts: +91 93765 02550</span>
+              Trusted supplier of marine automation, engine parts & ship machinery. 
+              <span className="text-accent font-bold block mt-2">Call: +91 93765 02550</span>
            </motion.p>
 
            <motion.div 
              initial={{ opacity: 0, y: 30 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.6 }}
-             className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 md:gap-8"
+             className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6"
            >
               <Link
                 href="/products"
-                className="px-6 sm:px-8 md:px-10 py-4 sm:py-5 bg-accent text-white font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:bg-white hover:text-primary transition-all shadow-2xl flex items-center justify-center gap-3 sm:gap-4"
+                className="px-6 sm:px-8 py-4 bg-accent text-white font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:bg-white hover:text-primary transition-all shadow-2xl flex items-center justify-center gap-3"
               >
-                View Inventory <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                View Products <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/contact"
-                className="px-6 sm:px-8 md:px-10 py-4 sm:py-5 border border-white/20 text-white font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:bg-white hover:text-primary transition-all flex items-center justify-center gap-3 sm:gap-4"
+                className="px-6 sm:px-8 py-4 border border-white/30 text-white font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:bg-white hover:text-primary transition-all flex items-center justify-center gap-3"
               >
-                Get Quote <Anchor className="w-4 h-4 sm:w-5 sm:h-5" />
+                Get Quote <Anchor className="w-4 h-4" />
               </Link>
            </motion.div>
         </div>

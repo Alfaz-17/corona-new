@@ -20,7 +20,6 @@ export default function AdminProductEditPage() {
     description: '',
     price: '',
     category: '',
-    brand: '',
     featured: false
   });
   
@@ -52,7 +51,6 @@ export default function AdminProductEditPage() {
           description: prod.description || '',
           price: prod.price || '',
           category: prod.category?._id || prod.category || '',
-          brand: prod.brand || '',
           featured: prod.featured || false
         });
         setExistingImage(prod.image || '');
@@ -129,12 +127,12 @@ export default function AdminProductEditPage() {
         images: secondaryImageUrls
       });
 
-      setMessage({ type: "success", text: "Asset specifications updated successfully." });
+      setMessage({ type: "success", text: "Product updated successfully." });
       setTimeout(() => router.push('/admin/products'), 2000);
       
     } catch (error: any) {
       console.error("Error updating product:", error);
-      setMessage({ type: "error", text: error.response?.data?.message || "Transmission failure during update." });
+      setMessage({ type: "error", text: error.response?.data?.message || "Failed to update product. Please try again." });
     } finally {
       setIsSaving(false);
       setIsUploading(false);
@@ -147,9 +145,9 @@ export default function AdminProductEditPage() {
     <div className="max-w-4xl mx-auto space-y-12 pb-20">
       <div className="flex items-center justify-between border-b border-border pb-8">
          <Link href="/admin/products" className="inline-flex items-center gap-2 text-[10px] font-bold text-muted-foreground hover:text-accent uppercase tracking-widest">
-            <ChevronLeft className="w-4 h-4" /> Back to Fleet
+            <ChevronLeft className="w-4 h-4" /> Back to Products
          </Link>
-         <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Edit Fleet Asset</h1>
+         <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Edit Product</h1>
       </div>
 
       {message.text && (
@@ -160,11 +158,11 @@ export default function AdminProductEditPage() {
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div className="space-y-8 bg-white p-10 border border-border">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Technical Specifications</h2>
+          <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Product Details</h2>
           
           <div className="space-y-4">
              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Asset Designation *</label>
+                <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Product Name *</label>
                 <input
                   name="title"
                   className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
@@ -175,7 +173,7 @@ export default function AdminProductEditPage() {
              </div>
 
              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Detailed Analysis *</label>
+                <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Description *</label>
                 <textarea
                   name="description"
                   className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs h-32"
@@ -187,7 +185,7 @@ export default function AdminProductEditPage() {
 
              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">System Sector *</label>
+                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Category *</label>
                   <select
                     name="category"
                     className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold tracking-widest uppercase"
@@ -195,20 +193,11 @@ export default function AdminProductEditPage() {
                     onChange={handleChange}
                     required
                   >
-                    <option value="">Select Sector</option>
+                    <option value="">Select Category</option>
                     {categories.map(cat => (
                       <option key={cat._id} value={cat._id}>{cat.name}</option>
                     ))}
                   </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Manufacturer Brand</label>
-                  <input
-                    name="brand"
-                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
-                    value={formData.brand}
-                    onChange={handleChange}
-                  />
                 </div>
              </div>
 
@@ -221,14 +210,14 @@ export default function AdminProductEditPage() {
                   checked={formData.featured}
                   onChange={handleChange}
                 />
-                <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Mark as Strategic Asset (Featured)</label>
+                <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Mark as Featured</label>
              </div>
           </div>
         </div>
 
         <div className="space-y-8">
            <div className="bg-white p-10 border border-border">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Primary Identification</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Main Image</h2>
               <div className="space-y-6">
                  {(imagePreview || existingImage) ? (
                     <div className="relative aspect-video border border-border overflow-hidden">
@@ -238,7 +227,7 @@ export default function AdminProductEditPage() {
                  ) : (
                     <label className="block w-full border-2 border-dashed border-border py-12 text-center hover:border-accent transition-colors cursor-pointer bg-muted/10">
                        <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-4" />
-                       <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Replace Imaging Unit</span>
+                       <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Upload Image</span>
                        <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                     </label>
                  )}
@@ -246,7 +235,7 @@ export default function AdminProductEditPage() {
            </div>
 
            <div className="bg-white p-10 border border-border">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Supporting Telemetry (Gallery)</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Additional Images (Gallery)</h2>
               <div className="grid grid-cols-3 gap-4 mb-6">
                  {existingImages.map((src, idx) => (
                     <div key={`exist-${idx}`} className="relative aspect-square border border-border">
@@ -282,7 +271,7 @@ export default function AdminProductEditPage() {
                 </>
               ) : (
                 <>
-                  <Save className="w-5 h-5" /> Commit Changes
+                  <Save className="w-5 h-5" /> Save Changes
                 </>
               )}
            </button>

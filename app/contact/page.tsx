@@ -89,7 +89,7 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-extrabold uppercase tracking-tighter mb-3 sm:mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-sans font-extrabold uppercase tracking-tighter mb-3 sm:mb-4">
               Contact Corona Marine Parts
             </h1>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-accent font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-6 sm:mb-8 max-w-3xl mx-auto">

@@ -54,7 +54,7 @@ export function CTABanner() {
             <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold text-white mb-4 sm:mb-5 md:mb-6 uppercase tracking-tighter leading-none">
               Certified <span className="text-accent italic font-medium">Precision</span>
             </h3>
-            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/50 mb-6 sm:mb-8 md:mb-10 font-serif italic">
+            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/50 mb-6 sm:mb-8 md:mb-10 font-sans italic">
               Unrivaled Quality Sourced from Alang
             </h3>
             

@@ -94,7 +94,7 @@ export default function AdminProductFormPage() {
         images: secondaryImageUrls
       });
 
-      setMessage({ type: "success", text: "New asset registered in fleet inventory." });
+      setMessage({ type: "success", text: "Product added successfully." });
       // Reset form
       setFormData({ title: '', description: '', price: '', category: '', featured: false });
       setImageFile(null);
@@ -104,7 +104,7 @@ export default function AdminProductFormPage() {
       
     } catch (error: any) {
       console.error("Error creating product:", error);
-      setMessage({ type: "error", text: error.response?.data?.message || "Transmission failure during asset registration." });
+      setMessage({ type: "error", text: error.response?.data?.message || "Failed to add product. Please try again." });
     } finally {
       setIsLoading(false);
       setIsUploading(false);
@@ -115,9 +115,9 @@ export default function AdminProductFormPage() {
     <div className="max-w-4xl mx-auto space-y-12 pb-20">
       <div className="flex items-center justify-between border-b border-border pb-8">
          <Link href="/admin/products" className="inline-flex items-center gap-2 text-[10px] font-bold text-muted-foreground hover:text-accent uppercase tracking-widest">
-            <ChevronLeft className="w-4 h-4" /> Back to Fleet
+            <ChevronLeft className="w-4 h-4" /> Back to Products
          </Link>
-         <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Register New Asset</h1>
+         <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Add New Product</h1>
       </div>
 
       {message.text && (
@@ -129,14 +129,14 @@ export default function AdminProductFormPage() {
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Left Column: Details */}
         <div className="space-y-8 bg-white p-10 border border-border">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Technical Specifications</h2>
+          <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Product Details</h2>
           
           <div className="space-y-4">
              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Asset Designation *</label>
+                <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Product Name *</label>
                 <input
                   name="title"
-                  placeholder="Engine Component, Navigation Radar, etc."
+                  placeholder="Enter product name"
                   className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
                   value={formData.title}
                   onChange={handleChange}
@@ -145,10 +145,10 @@ export default function AdminProductFormPage() {
              </div>
 
              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Detailed Analysis *</label>
+                <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Description *</label>
                 <textarea
                   name="description"
-                  placeholder="Operational parameters and condition report..."
+                  placeholder="Enter product description"
                   className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs h-32"
                   value={formData.description}
                   onChange={handleChange}
@@ -158,7 +158,7 @@ export default function AdminProductFormPage() {
 
              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">System Sector *</label>
+                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Category *</label>
                   <select
                     name="category"
                     className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold tracking-widest uppercase"
@@ -166,7 +166,7 @@ export default function AdminProductFormPage() {
                     onChange={handleChange}
                     required
                   >
-                    <option value="">Select Sector</option>
+                    <option value="">Select Category</option>
                     {categories.map(cat => (
                       <option key={cat._id} value={cat._id}>{cat.name}</option>
                     ))}
@@ -183,7 +183,7 @@ export default function AdminProductFormPage() {
                   checked={formData.featured}
                   onChange={handleChange}
                 />
-                <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Mark as Strategic Asset (Featured)</label>
+                <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Mark as Featured</label>
              </div>
           </div>
         </div>
@@ -191,7 +191,7 @@ export default function AdminProductFormPage() {
         {/* Right Column: Visuals */}
         <div className="space-y-8">
            <div className="bg-white p-10 border border-border">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Primary Identification</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Main Image</h2>
               <div className="space-y-6">
                  {imagePreview ? (
                     <div className="relative aspect-video border border-border overflow-hidden">
@@ -201,7 +201,7 @@ export default function AdminProductFormPage() {
                  ) : (
                     <label className="block w-full border-2 border-dashed border-border py-12 text-center hover:border-accent transition-colors cursor-pointer bg-muted/10">
                        <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-4" />
-                       <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Capture Imaging Unit</span>
+                       <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Upload Image</span>
                        <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                     </label>
                  )}
@@ -209,7 +209,7 @@ export default function AdminProductFormPage() {
            </div>
 
            <div className="bg-white p-10 border border-border">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Supporting Telemetry (Gallery)</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Additional Images (Gallery)</h2>
               <div className="grid grid-cols-3 gap-4 mb-6">
                  {imagePreviews.map((src, idx) => (
                     <div key={idx} className="relative aspect-square border border-border">
@@ -239,7 +239,7 @@ export default function AdminProductFormPage() {
                 </>
               ) : (
                 <>
-                  <Save className="w-5 h-5" /> Register Asset
+                  <Save className="w-5 h-5" /> Add Product
                 </>
               )}
            </button>
