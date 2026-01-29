@@ -19,9 +19,9 @@ export const addWatermark = (file: File, watermarkText = "Corona Marine Parts") 
 
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        const fontSize = canvas.width / 25;
-        const opacity = 0.15;
-        const spacing = canvas.width / 4;
+        const fontSize = canvas.width / 35; // Medium font size
+        const opacity = 0.10; // Subtle but visible
+        const spacing = canvas.width / 3; // Balanced spacing
         const angle = -35 * (Math.PI / 180);
 
         ctx.font = `${fontSize}px Arial`;

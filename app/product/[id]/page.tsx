@@ -55,8 +55,7 @@ export default function ProductDetailPage() {
 
   const accordionItems = [
     { id: "details", title: "Technical Specifications", content: "Built to withstand extreme maritime conditions, this component features high-grade corrosion resistance and is fully compliant with international shipping standards." },
-    { id: "shipping", title: "Logistics & Delivery", content: "Sourced directly from the Alang ship breaking yard, this part is refurbished, tested, and ready for global dispatch. We offer worldwide shipping via premium freight partners." },
-    { id: "support", title: "Support & Warranty", content: "All our reconditioned parts come with a specialized warranty. Technical support is available 24/7 for installation and troubleshooting." }
+    { id: "shipping", title: "Logistics & Delivery", content: "Sourced directly from the Alang ship breaking yard, this part is refurbished, tested, and ready for global dispatch. We offer worldwide shipping via premium freight partners." }
   ];
 
   return (
