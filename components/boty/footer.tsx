@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Instagram, Facebook, Twitter } from "lucide-react"
+import { Instagram, Facebook, Twitter, Mail } from "lucide-react"
 import { Logo } from "@/components/common/logo"
 
 const footerLinks = {
@@ -65,7 +65,7 @@ export function Footer() {
                 </div>
               </a>
               <a
-                href="mailto:coronamarine5050@gmail.com"
+                href="mailto:sales@coronamarineparts.com"
                 className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground marine-transition marine-shadow"
                 aria-label="Email"
               >
@@ -96,11 +96,11 @@ export function Footer() {
                 </div>
                 <span className="font-bold tracking-widest uppercase">+91 93765 02550</span>
               </a>
-              <a href="mailto:coronamarine5050@gmail.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors group">
-                <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-accent transition-colors">
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+              <a href="mailto:sales@coronamarineparts.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors group">
+                <div className="w-10 h-10 bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                  <Mail className="w-4 h-4" />
                 </div>
-                <span className="font-bold tracking-widest uppercase">coronamarine5050@gmail.com</span>
+                <span className="font-bold tracking-widest">sales@coronamarineparts.com</span>
               </a>
             </div>
           </div>

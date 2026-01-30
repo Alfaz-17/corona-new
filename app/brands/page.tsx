@@ -64,17 +64,16 @@ export default function BrandsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Link href={`/brand/${brand.name.toLowerCase().replace(/\s+/g, '-')}`} className="absolute inset-0 p-8 flex items-center justify-center">
+              <div className="absolute inset-0 p-8 flex items-center justify-center">
                 <img
                   src={brand.logo}
                   alt={brand.name}
                   className="max-h-full max-w-full object-contain transition-all duration-700"
                 />
                 <div className="absolute inset-0 bg-primary/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4">
-                   <h3 className="text-white font-bold text-center uppercase tracking-widest text-sm mb-2">{brand.name}</h3>
-                   <span className="text-accent text-[10px] font-bold border-t border-accent pt-2 px-4 uppercase">View Inventory</span>
+                   <h3 className="text-white font-bold text-center uppercase tracking-widest text-sm">{brand.name}</h3>
                 </div>
-              </Link>
+              </div>
             </motion.div>
           ))}
         </div>

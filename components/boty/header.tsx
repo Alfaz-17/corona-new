@@ -14,7 +14,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [categories, setCategories] = useState<any[]>([])
-  const [brands, setBrands] = useState<any[]>([])
+
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
 
   useEffect(() => {
@@ -25,12 +25,8 @@ export function Header() {
     
     const fetchData = async () => {
       try {
-        const [catRes, brandRes] = await Promise.all([
-          api.get("/categories"),
-          api.get("/brands")
-        ])
+        const catRes = await api.get("/categories")
         setCategories(catRes.data)
-        setBrands(brandRes.data)
       } catch (err) {
         console.error("Navigation data fetch failed:", err)
       }
@@ -69,12 +65,7 @@ export function Header() {
     },
     { 
       name: "Brands", 
-      href: "/brands",
-      dropdown: brands.map(brand => ({ 
-        name: brand.name, 
-        href: `/brand/${brand.name.toLowerCase().replace(/\s+/g, '-')}`, 
-        description: brand.description || "Strategic maritime partner."
-      }))
+      href: "/brands" 
     },
     { name: "Blog", href: "/blog" },
     { name: "Contact", href: "/contact" }

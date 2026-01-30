@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import { Order } from '@/lib/models';
 import { getSession } from '@/lib/auth';
+import { sendInquiryEmail } from '@/lib/email';
 
 // Create new order (public)
 export async function POST(req: Request) {
@@ -26,6 +27,24 @@ export async function POST(req: Request) {
       notes,
       status: 'pending'
     });
+
+    // Send notification email
+    try {
+      const productTitle = items[0]?.productTitle || 'Unknown Product';
+      const quantity = items[0]?.quantity || 1;
+      
+      await sendInquiryEmail({
+        customerName,
+        customerPhone,
+        customerEmail,
+        productTitle,
+        quantity,
+        notes
+      });
+    } catch (emailError) {
+      console.error('Failed to send notification email:', emailError);
+      // We don't fail the order if the email fails, but we log it
+    }
 
     return NextResponse.json(order, { status: 201 });
   } catch (error) {

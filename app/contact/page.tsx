@@ -52,8 +52,8 @@ export default function ContactPage() {
     {
       icon: Mail,
       title: "Email",
-      details: ["coronamarine5050@gmail.com"],
-      action: "mailto:coronamarine5050@gmail.com",
+      details: ["sales@coronamarineparts.com"],
+      action: "mailto:sales@coronamarineparts.com",
     },
     {
       icon: MapPin,

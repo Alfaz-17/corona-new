@@ -95,19 +95,33 @@ export default function ProductDetailPage() {
             </div>
             
             {/* Gallery Images - Scrollable */}
+            {/* Gallery Images - Instagram-style Horizontal Scroll */}
             {product.images && product.images.length > 0 && (
-              <div className="overflow-x-auto pb-2">
-              <div className="flex gap-3" style={{ minWidth: 'max-content' }}>
-                  {product.images.map((img: string, i: number) => (
-                    <div 
-                      key={i} 
-                      className="w-24 h-24 flex-shrink-0 relative overflow-hidden border border-border hover:border-accent transition-colors cursor-pointer"
-                      onClick={() => setLightboxImage(img)}
-                    >
-                      <Image src={img} alt={`${product.title} - Image ${i + 1}`} fill className="object-cover hover:scale-110 transition-transform" />
-                    </div>
-                  ))}
-                </div>
+              <div 
+                className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 gallery-scroll" 
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {/* CSS to hide scrollbar for Webkit */}
+                <style jsx global>{`
+                  .gallery-scroll::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                
+                {product.images.map((img: string, i: number) => (
+                  <div 
+                    key={i} 
+                    className="w-28 h-28 flex-shrink-0 relative overflow-hidden border border-border rounded-lg snap-start cursor-pointer hover:border-accent transition-all"
+                    onClick={() => setLightboxImage(img)}
+                  >
+                    <Image 
+                      src={img} 
+                      alt={`${product.title} - Preview ${i + 1}`} 
+                      fill 
+                      className="object-cover hover:scale-110 transition-transform duration-500" 
+                    />
+                  </div>
+                ))}
               </div>
             )}
           </motion.div>
@@ -151,7 +165,7 @@ export default function ProductDetailPage() {
                   <a href={`tel:+919376502550`} className="flex items-center justify-center gap-2 py-4 border border-primary text-primary font-bold uppercase text-[10px] tracking-widest hover:bg-primary hover:text-white transition-all">
                     <Phone className="w-4 h-4" /> Call +91 93765 02550
                   </a>
-                  <a href={`mailto:coronamarine5050@gmail.com?subject=Enquiry for ${product.title}`} className="flex items-center justify-center gap-2 py-4 border border-primary text-primary font-bold uppercase text-[10px] tracking-widest hover:bg-primary hover:text-white transition-all">
+                  <a href={`mailto:sales@coronamarineparts.com?subject=Enquiry for ${product.title}`} className="flex items-center justify-center gap-2 py-4 border border-primary text-primary font-bold uppercase text-[10px] tracking-widest hover:bg-primary hover:text-white transition-all">
                      <Mail className="w-4 h-4" /> Email Inquiry
                   </a>
                </div>
