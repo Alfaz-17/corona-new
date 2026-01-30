@@ -58,7 +58,7 @@ export default function ContactPage() {
     {
       icon: MapPin,
       title: "Address",
-      details: ["Bhavnagar, Gujarat, India"],
+      details: ["PLOT NO. F/14/4, GODOWN NO. A/11 BEST INDUSTRIAL PARK, MADHIYA ROAD, KUMBHARWADA, BHAVNAGAR, GUJARAT- 364006."],
       action: null,
     },
     {
