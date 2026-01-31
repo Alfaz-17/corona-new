@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 interface InquiryEmailData {
   customerName: string;
@@ -15,6 +15,10 @@ export async function sendInquiryEmail(data: InquiryEmailData) {
   const { customerName, customerPhone, customerEmail, productTitle, quantity, notes } = data;
 
   try {
+    if (!resend) {
+      console.error('Resend API key is missing. Email not sent.');
+      return { success: false, error: 'API key missing' };
+    }
     const { data: resendData, error } = await resend.emails.send({
       from: 'Corona Marine <onboarding@resend.dev>', // Update this after domain verification
       to: 'sales@coronamarineparts.com',
@@ -66,6 +70,10 @@ export async function sendContactEmail(data: ContactEmailData) {
   const { name, email, phone, company, message } = data;
 
   try {
+    if (!resend) {
+      console.error('Resend API key is missing. Email not sent.');
+      return { success: false, error: 'API key missing' };
+    }
     const { data: resendData, error } = await resend.emails.send({
       from: 'Corona Marine Contact <onboarding@resend.dev>', // Update this after domain verification
       to: 'sales@coronamarineparts.com',
