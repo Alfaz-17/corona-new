@@ -23,24 +23,10 @@ const playfairDisplay = Playfair_Display({
 export const metadata: Metadata = {
   title: 'Corona Marine Parts | Marine Spare Parts & Marine Services Supplier',
   description: 'Corona Marine Parts is a trusted supplier of marine spare parts, automation systems, and ship machinery components, delivering reliable marine solutions worldwide.',
-  generator: 'v0.app',
   keywords: ['marine automation', 'ship spare parts', 'alang shipyard', 'marine engineering', 'vessel automation'],
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/logo.png',
+    apple: '/logo.png',
   },
 }
 
