@@ -18,7 +18,6 @@ export default function AdminProductEditPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    price: '',
     category: '',
     featured: false
   });
@@ -49,7 +48,6 @@ export default function AdminProductEditPage() {
         setFormData({
           title: prod.title || '',
           description: prod.description || '',
-          price: prod.price || '',
           category: prod.category?._id || prod.category || '',
           featured: prod.featured || false
         });

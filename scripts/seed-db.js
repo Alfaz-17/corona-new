@@ -21,7 +21,6 @@ const products = [
   {
     title: "Bridge Command X1",
     description: "Centralized vessel control interface for modern fleets.",
-    price: 45000,
     categoryName: "Marine Automation",
     brandName: "Furuno",
     image: "https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg",
@@ -30,7 +29,6 @@ const products = [
   {
     title: "FAR-22x8 Radar",
     description: "Solid-state Marine Radar with advanced signal processing.",
-    price: 15400,
     categoryName: "Navigation",
     brandName: "Furuno",
     image: "https://images.pexels.com/photos/934445/pexels-photo-934445.jpeg",
@@ -39,7 +37,6 @@ const products = [
   {
     title: "AlphaBridge System",
     description: "Integrated bridge console with multi-function displays.",
-    price: 68000,
     categoryName: "Marine Automation",
     brandName: "JRC",
     image: "https://images.pexels.com/photos/20581299/pexels-photo-20581299.jpeg",
@@ -69,7 +66,7 @@ async function seed() {
     const Brand = mongoose.models.Brand || mongoose.model('Brand', new mongoose.Schema({ name: String, logo: String, description: String }, { timestamps: true }));
     const Blog = mongoose.models.Blog || mongoose.model('Blog', new mongoose.Schema({ title: String, excerpt: String, content: String, image: String, date: { type: Date, default: Date.now } }, { timestamps: true }));
     const Product = mongoose.models.Product || mongoose.model('Product', new mongoose.Schema({ 
-      title: String, description: String, price: Number, 
+      title: String, description: String, 
       category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
       brand: { type: mongoose.Schema.Types.ObjectId, ref: 'Brand' },
       image: String, featured: Boolean 

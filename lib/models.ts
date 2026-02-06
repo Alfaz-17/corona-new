@@ -20,7 +20,6 @@ export const Category = models?.Category || model('Category', CategorySchema);
 const ProductSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String },
-  price: { type: Number, default: 0 },
   category: { type: Schema.Types.ObjectId, ref: 'Category' },
   brand: { type: Schema.Types.ObjectId, ref: 'Brand' },
   image: { type: String },

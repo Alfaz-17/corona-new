@@ -15,7 +15,6 @@ export async function analyzeProductImage(imageBuffer: Buffer, mimeType: string,
     {
       "title": "A short, descriptive product name",
       "description": "A professional product description (approx. 2-3 lines)",
-      "price": 0, // Suggest a reasonable price if possible, otherwise 0
       "categoryName": "${categoriesPrompt}"
     }
     Only return the JSON object, nothing else.

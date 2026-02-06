@@ -17,7 +17,6 @@ export const products = [
   {
     title: "Bridge Command X1",
     description: "Centralized vessel control interface for modern fleets.",
-    price: 45000,
     categoryName: "Marine Automation",
     brandName: "Furuno",
     image: "https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg",
@@ -26,7 +25,6 @@ export const products = [
   {
     title: "FAR-22x8 Radar",
     description: "Solid-state Marine Radar with advanced signal processing.",
-    price: 15400,
     categoryName: "Navigation",
     brandName: "Furuno",
     image: "https://images.pexels.com/photos/934445/pexels-photo-934445.jpeg",
@@ -35,7 +33,6 @@ export const products = [
   {
     title: "AlphaBridge System",
     description: "Integrated bridge console with multi-function displays.",
-    price: 68000,
     categoryName: "Marine Automation",
     brandName: "JRC",
     image: "https://images.pexels.com/photos/20581299/pexels-photo-20581299.jpeg",
@@ -44,7 +41,6 @@ export const products = [
   {
     title: "Axiom XL 24",
     description: "Glass Bridge display for commercial maritime applications.",
-    price: 9800,
     categoryName: "Navigation",
     brandName: "Raymarine",
     image: "https://images.pexels.com/photos/7276216/pexels-photo-7276216.jpeg",
@@ -53,7 +49,6 @@ export const products = [
   {
     title: "VisionMaster FT",
     description: "High-performance Chart Radar and ARPA system.",
-    price: 24500,
     categoryName: "Navigation",
     brandName: "Sperry Marine",
     image: "https://images.pexels.com/photos/6835042/pexels-photo-6835042.jpeg",
@@ -62,7 +57,6 @@ export const products = [
   {
     title: "Autronica AutroSafe",
     description: "Interactive fire detection system for offshore vessels.",
-    price: 12600,
     categoryName: "Safety Systems",
     brandName: "Sperry Marine",
     image: "https://images.unsplash.com/photo-1621905251189-08b95d63329f?q=80&w=2069&auto=format&fit=crop",
@@ -71,7 +65,6 @@ export const products = [
   {
     title: "RT-flex Engine Controller",
     description: "Advanced propulsion management for low-speed engines.",
-    price: 32000,
     categoryName: "Propulsion",
     brandName: "Wartsila",
     image: "https://images.pexels.com/photos/190574/pexels-photo-190574.jpeg",

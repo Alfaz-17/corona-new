@@ -265,10 +265,7 @@ function ProductCard({
         {/* Info */}
         <div className="p-6">
           <h3 className="font-serif text-xl text-foreground mb-1">{product.title}</h3>
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-medium text-foreground">${product.price || "Contact for Quote"}</span>
-          </div>
+          <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
         </div>
       </div>
     </Link>

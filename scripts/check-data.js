@@ -11,7 +11,7 @@ async function checkData() {
 
     const Category = mongoose.models.Category || mongoose.model('Category', new mongoose.Schema({ name: String, description: String }, { timestamps: true }));
     const Product = mongoose.models.Product || mongoose.model('Product', new mongoose.Schema({ 
-      title: String, description: String, price: Number, 
+      title: String, description: String, 
       category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
       brand: { type: mongoose.Schema.Types.ObjectId, ref: 'Brand' },
       image: String, featured: Boolean 
@@ -36,7 +36,7 @@ async function checkData() {
     if (productCount > 0) {
       const sampleProds = await Product.find().limit(5).populate('category').populate('brand');
       console.log("\nSample Products:");
-      sampleProds.forEach(p => console.log(`- ${p.title} (Price: ${p.price}, Category: ${p.category?.name}, Brand: ${p.brand?.name})`));
+      sampleProds.forEach(p => console.log(`- ${p.title} (Category: ${p.category?.name}, Brand: ${p.brand?.name})`));
     }
 
     process.exit(0);

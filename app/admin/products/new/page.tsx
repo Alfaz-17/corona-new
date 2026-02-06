@@ -14,7 +14,6 @@ export default function AdminProductFormPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    price: '',
     category: '',
     featured: false
   });
@@ -83,7 +82,6 @@ export default function AdminProductFormPage() {
         ...prev,
         title: data.title || prev.title,
         description: data.description || prev.description,
-        price: data.price ? data.price.toString() : prev.price,
       }));
 
       if (data.categoryName && categories.length > 0) {
@@ -177,7 +175,7 @@ export default function AdminProductFormPage() {
 
       setMessage({ type: "success", text: "Product added successfully." });
       // Reset form
-      setFormData({ title: '', description: '', price: '', category: '', featured: false });
+      setFormData({ title: '', description: '', category: '', featured: false });
       setImageFile(null);
       setImagePreview('');
       setImagesFile([]);
@@ -350,33 +348,20 @@ export default function AdminProductFormPage() {
                   />
                </div>
 
-               <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Category *</label>
-                    <select
-                      name="category"
-                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold tracking-widest uppercase"
-                      value={formData.category}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="">Select Category</option>
-                      {categories.map(cat => (
-                        <option key={cat._id} value={cat._id}>{cat.name}</option>
-                      ))}
-                    </select>
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Price (suggested)</label>
-                      <input
-                        name="price"
-                        type="number"
-                        placeholder="0.00"
-                        className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
-                        value={formData.price}
-                        onChange={handleChange}
-                      />
-                   </div>
+               <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Category *</label>
+                  <select
+                    name="category"
+                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold tracking-widest uppercase"
+                    value={formData.category}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map(cat => (
+                      <option key={cat._id} value={cat._id}>{cat.name}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="flex items-center gap-4 pt-4">
