@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Upload, X, ChevronLeft, Plus } from 'lucide-react';
+import { Save, Upload, X, ChevronLeft, Sparkles, Plus } from 'lucide-react';
 import { uploadToCloudinary } from '@/lib/utils/cloudinary';
 import { addWatermark } from '@/lib/utils/watermark';
 import api from '@/lib/api';
@@ -54,6 +54,8 @@ export default function AdminProductFormPage() {
 
   const [isAiEnabled, setIsAiEnabled] = useState(true);
   const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
+
+  const [isWatermarkEnabled, setIsWatermarkEnabled] = useState(true);
 
   const analyzeImage = async (file: File) => {
     if (!isAiEnabled) return;
@@ -107,22 +109,17 @@ export default function AdminProductFormPage() {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setCropTarget({ type: 'main', url: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+      const objectUrl = URL.createObjectURL(file);
+      setCropTarget({ type: 'main', url: objectUrl });
+      // Note: We don't set imageFile/Preview immediately here; we wait for the crop.
     }
   };
 
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setCropTarget({ type: 'gallery', url: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+      const objectUrl = URL.createObjectURL(file);
+      setCropTarget({ type: 'gallery', url: objectUrl });
     });
   };
 
@@ -132,9 +129,7 @@ export default function AdminProductFormPage() {
     if (cropTarget.type === 'main') {
       setImageFile(croppedFile);
       setImagePreview(URL.createObjectURL(croppedFile));
-      if (isAiEnabled) {
-        await analyzeImage(croppedFile);
-      }
+      // AI Analysis is now manual only
     } else {
       setImagesFile(prev => [...prev, croppedFile]);
       setImagePreviews(prev => [...prev, URL.createObjectURL(croppedFile)]);
@@ -155,14 +150,20 @@ export default function AdminProductFormPage() {
       
       // Upload main image with watermark
       if (imageFile) {
-        const watermarked = await addWatermark(imageFile);
-        mainImageUrl = await uploadToCloudinary(watermarked);
+        let fileToUpload = imageFile;
+        if (isWatermarkEnabled) {
+             fileToUpload = await addWatermark(imageFile);
+        }
+        mainImageUrl = await uploadToCloudinary(fileToUpload);
       }
 
       // Upload secondary images with watermark
       for (const file of imagesFile) {
-        const watermarked = await addWatermark(file);
-        const url = await uploadToCloudinary(watermarked);
+        let fileToUpload = file;
+        if (isWatermarkEnabled) {
+            fileToUpload = await addWatermark(file);
+        }
+        const url = await uploadToCloudinary(fileToUpload);
         secondaryImageUrls.push(url);
       }
       
@@ -216,18 +217,33 @@ export default function AdminProductFormPage() {
            <div className="bg-white p-10 border border-border space-y-6">
               <div className="flex items-center justify-between border-b border-border pb-4 mb-2">
                 <h2 className="text-sm font-bold uppercase tracking-widest text-primary">Main Image</h2>
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">AI Analysis</span>
-                  <button
-                    type="button"
-                    onClick={() => setIsAiEnabled(!isAiEnabled)}
-                    className={`w-10 h-5 rounded-full p-1 transition-colors ${isAiEnabled ? 'bg-accent' : 'bg-gray-200'}`}
-                  >
-                    <motion.div
-                      animate={{ x: isAiEnabled ? 20 : 0 }}
-                      className="w-3 h-3 bg-white rounded-full shadow-sm"
-                    />
-                  </button>
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Watermark</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsWatermarkEnabled(!isWatermarkEnabled)}
+                      className={`w-10 h-5 rounded-full p-1 transition-colors ${isWatermarkEnabled ? 'bg-accent' : 'bg-gray-200'}`}
+                    >
+                      <motion.div
+                        animate={{ x: isWatermarkEnabled ? 20 : 0 }}
+                        className="w-3 h-3 bg-white rounded-full shadow-sm"
+                      />
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">AI Analysis</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsAiEnabled(!isAiEnabled)}
+                      className={`w-10 h-5 rounded-full p-1 transition-colors ${isAiEnabled ? 'bg-accent' : 'bg-gray-200'}`}
+                    >
+                      <motion.div
+                        animate={{ x: isAiEnabled ? 20 : 0 }}
+                        className="w-3 h-3 bg-white rounded-full shadow-sm"
+                      />
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -250,7 +266,7 @@ export default function AdminProductFormPage() {
                                onClick={() => imageFile && analyzeImage(imageFile)}
                                className="bg-primary/80 p-2 text-white backdrop-blur-sm disabled:opacity-50"
                              >
-                               <Plus className="w-4 h-4 rotate-45" />
+                               <Sparkles className="w-4 h-4" />
                              </button>
                            )}
                            <button

@@ -45,11 +45,20 @@ const CropModal: React.FC<CropModalProps> = ({
     setCroppedAreaPixels(croppedAreaPixels)
   }, [])
 
+  const [isCropping, setIsCropping] = useState(false)
+
   const handleCrop = async () => {
     if (croppedAreaPixels) {
-      const croppedImage = await getCroppedImg(image, croppedAreaPixels)
-      if (croppedImage) {
-        onCropComplete(croppedImage)
+      setIsCropping(true)
+      try {
+        const croppedImage = await getCroppedImg(image, croppedAreaPixels)
+        if (croppedImage) {
+          onCropComplete(croppedImage)
+        }
+      } catch (error) {
+        console.error('Failed to crop image:', error)
+      } finally {
+        setIsCropping(false)
       }
     }
   }
@@ -132,9 +141,23 @@ const CropModal: React.FC<CropModalProps> = ({
               </button>
               <button
                 onClick={handleCrop}
-                className="flex-1 py-4 bg-primary text-white text-[10px] font-bold uppercase tracking-widest hover:bg-accent transition-colors flex items-center justify-center gap-2"
+                disabled={isCropping}
+                className="flex-1 py-4 bg-primary text-white text-[10px] font-bold uppercase tracking-widest hover:bg-accent transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <Check className="w-4 h-4" /> Save Crop
+                {isCropping ? (
+                  <>
+                    <motion.div 
+                      animate={{ rotate: 360 }} 
+                      transition={{ repeat: Infinity, duration: 1, ease: "linear" }} 
+                      className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full" 
+                    />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4" /> Save Crop
+                  </>
+                )}
               </button>
             </div>
           </div>

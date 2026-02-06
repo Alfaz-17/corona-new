@@ -1,4 +1,4 @@
-export const addWatermark = (file: File, watermarkText = "Corona Marine Parts") => {
+export const addWatermark = (file: File, watermarkText = "Corona Marine") => {
   return new Promise<File>((resolve, reject) => {
     const reader = new FileReader();
 
@@ -19,23 +19,33 @@ export const addWatermark = (file: File, watermarkText = "Corona Marine Parts") 
 
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        const fontSize = canvas.width / 35; // Medium font size
-        const opacity = 0.10; // Subtle but visible
-        const spacing = canvas.width / 3; // Balanced spacing
-        const angle = -35 * (Math.PI / 180);
+        const fontSize = canvas.width / 25; // Slightly larger for better visibility
+        const opacity = 0.15; // Slightly more visible
+        const angle = -45 * (Math.PI / 180);
 
-        ctx.font = `${fontSize}px Arial`;
+        ctx.font = `bold ${fontSize}px Arial`;
         ctx.fillStyle = `rgba(255,255,255,${opacity})`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
+
+        // Measure text width to determine dynamic spacing
+        const metrics = ctx.measureText(watermarkText);
+        const textWidth = metrics.width;
+        const spacingX = textWidth * 2; // Double the text width for clear separation
+        const spacingY = textWidth * 1.5; // Vertical spacing
 
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(angle);
 
-        for (let x = -canvas.width; x < canvas.width; x += spacing) {
-          for (let y = -canvas.height; y < canvas.height; y += spacing) {
-            ctx.fillText(watermarkText, x, y);
+        // Calculate diagonal coverage
+        const diag = Math.sqrt(canvas.width ** 2 + canvas.height ** 2);
+
+        for (let x = -diag; x < diag; x += spacingX) {
+          for (let y = -diag; y < diag; y += spacingY) {
+             // Offset every other row for a brick pattern
+             const xOffset = (y / spacingY) % 2 === 0 ? 0 : spacingX / 2;
+             ctx.fillText(watermarkText, x + xOffset, y);
           }
         }
 

@@ -14,7 +14,7 @@ export async function analyzeProductImage(imageBuffer: Buffer, mimeType: string,
     Return the information in the following JSON format:
     {
       "title": "A short, descriptive product name",
-      "description": "A detailed and professional product description",
+      "description": "A professional product description (approx. 2-3 lines)",
       "price": 0, // Suggest a reasonable price if possible, otherwise 0
       "categoryName": "${categoriesPrompt}"
     }
