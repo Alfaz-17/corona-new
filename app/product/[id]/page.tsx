@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { ChevronLeft, ChevronDown, Phone, Mail, CheckCircle2, ShieldCheck, Cpu, Globe, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronDown, Phone, Mail, CheckCircle2, ShieldCheck, Cpu, Globe, X } from "lucide-react"
 import api from "@/lib/api"
 import { MarineLoader } from "@/components/common/marine-loader"
 import { OrderForm } from "@/components/order-form"
@@ -18,6 +18,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [openAccordion, setOpenAccordion] = useState<string | null>("details")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -59,6 +60,17 @@ export default function ProductDetailPage() {
     { id: "shipping", title: "Logistics & Delivery", content: "Sourced directly from the Alang ship breaking yard, this part is refurbished, tested, and ready for global dispatch. We offer worldwide shipping via premium freight partners." }
   ];
 
+  // Navigation functions
+  const totalImages = 1 + (product.images?.length || 0);
+  
+  const handlePrevImage = () => {
+    setSelectedImageIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
+  };
+  
+  const handleNextImage = () => {
+    setSelectedImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
+  };
+
   return (
     <main className="min-h-screen pb-20 pt-32">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-12">
@@ -72,58 +84,112 @@ export default function ProductDetailPage() {
         </Link>
 
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
-          {/* Main Image Container */}
+          {/* Main Image Container with Slider */}
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             className="space-y-6"
           >
+            {/* Main Display Image */}
             <div 
-              className="relative aspect-square bg-muted overflow-hidden border border-border shadow-2xl cursor-pointer"
-              onClick={() => setLightboxImage(product.image)}
+              className="relative aspect-square bg-muted overflow-hidden border border-border shadow-2xl cursor-pointer group"
+              onClick={() => {
+                const allImages = [product.image, ...(product.images || [])];
+                setLightboxImage(allImages[selectedImageIndex]);
+              }}
             >
               <Image
-                src={product.image}
+                src={selectedImageIndex === 0 ? product.image : product.images[selectedImageIndex - 1]}
                 alt={product.title}
                 fill
-                className="object-cover hover:scale-105 transition-transform"
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
                 priority
               />
               <div className="absolute top-4 right-4 bg-accent text-white px-4 py-1 text-xs font-bold uppercase tracking-widest">
                 {product.category?.name || "General"}
               </div>
+              
+              {/* Navigation Arrows */}
+              {totalImages > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePrevImage();
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-primary p-3 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNextImage();
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-primary p-3 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
+              
+              {/* Image Counter */}
+              <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 text-xs font-bold uppercase tracking-widest backdrop-blur-sm">
+                {selectedImageIndex + 1} / {totalImages}
+              </div>
             </div>
             
-            {/* Gallery Images - Scrollable */}
-            {/* Gallery Images - Instagram-style Horizontal Scroll */}
-            {product.images && product.images.length > 0 && (
+            {/* Thumbnail Gallery Slider */}
+            <div 
+              className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 gallery-scroll" 
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {/* CSS to hide scrollbar for Webkit */}
+              <style jsx global>{`
+                .gallery-scroll::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
+              
+              {/* Main Image Thumbnail */}
               <div 
-                className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 gallery-scroll" 
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className={`w-28 h-28 flex-shrink-0 relative overflow-hidden border-2 rounded-lg snap-start cursor-pointer transition-all ${ 
+                  selectedImageIndex === 0 
+                    ? 'border-accent ring-2 ring-accent ring-offset-2' 
+                    : 'border-border hover:border-accent'
+                }`}
+                onClick={() => setSelectedImageIndex(0)}
               >
-                {/* CSS to hide scrollbar for Webkit */}
-                <style jsx global>{`
-                  .gallery-scroll::-webkit-scrollbar {
-                    display: none;
-                  }
-                `}</style>
-                
-                {product.images.map((img: string, i: number) => (
-                  <div 
-                    key={i} 
-                    className="w-28 h-28 flex-shrink-0 relative overflow-hidden border border-border rounded-lg snap-start cursor-pointer hover:border-accent transition-all"
-                    onClick={() => setLightboxImage(img)}
-                  >
-                    <Image 
-                      src={img} 
-                      alt={`${product.title} - Preview ${i + 1}`} 
-                      fill 
-                      className="object-cover hover:scale-110 transition-transform duration-500" 
-                    />
-                  </div>
-                ))}
+                <Image 
+                  src={product.image} 
+                  alt={`${product.title} - Main`} 
+                  fill 
+                  className="object-cover hover:scale-110 transition-transform duration-300" 
+                />
               </div>
-            )}
+              
+              {/* Additional Images Thumbnails */}
+              {product.images?.map((img: string, i: number) => (
+                <div 
+                  key={i} 
+                  className={`w-28 h-28 flex-shrink-0 relative overflow-hidden border-2 rounded-lg snap-start cursor-pointer transition-all ${ 
+                    selectedImageIndex === i + 1 
+                      ? 'border-accent ring-2 ring-accent ring-offset-2' 
+                      : 'border-border hover:border-accent'
+                  }`}
+                  onClick={() => setSelectedImageIndex(i + 1)}
+                >
+                  <Image 
+                    src={img} 
+                    alt={`${product.title} - Preview ${i + 1}`} 
+                    fill 
+                    className="object-cover hover:scale-110 transition-transform duration-300" 
+                  />
+                </div>
+              ))}
+            </div>
           </motion.div>
 
           {/* Product Specs & CTA */}

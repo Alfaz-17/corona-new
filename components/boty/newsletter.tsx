@@ -39,7 +39,7 @@ export function Newsletter() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Chief Engineer Email"
+                placeholder="Send Email"
                 className="flex-1 bg-white border border-border focus:border-accent outline-none px-6 py-4 text-primary placeholder:text-muted-foreground text-xs font-bold uppercase tracking-widest marine-transition"
                 required
               />
