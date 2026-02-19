@@ -1,42 +1,11 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Calendar, User, Share2 } from 'lucide-react';
-import api from '@/lib/api';
-import { MarineLoader } from '@/components/common/marine-loader';
 
-export default function BlogDetailPage() {
-  const params = useParams();
-  const id = params.id as string;
-  const [blog, setBlog] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBlog = async () => {
-      try {
-        setLoading(true);
-        const { data } = await api.get(`/blogs/${id}`);
-        setBlog(data);
-      } catch (error) {
-        console.error("Error fetching blog:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (id) fetchBlog();
-  }, [id]);
-
-  if (loading) return <MarineLoader />;
-  if (!blog) return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-6">
-      <h2 className="text-3xl font-bold text-primary">Article Not Found</h2>
-      <Link href="/blog" className="px-8 py-3 bg-accent text-white font-bold uppercase tracking-widest">Return to Blog</Link>
-    </div>
-  );
-
+export default function BlogDetailContent({ blog }: { blog: any }) {
   return (
     <main className="min-h-screen pb-20">
       {/* Blog Hero */}
@@ -85,7 +54,6 @@ export default function BlogDetailPage() {
                      {blog.excerpt}
                   </div>
                   
-                  {/* Since we don't have full content field in source JSON, we simulate it or use excerpt as lead */}
                   <div dangerouslySetInnerHTML={{ __html: blog.content || `<p>${blog.excerpt}</p><p>Stay tuned for the full technical analysis and industry breakdown from our engineering division. We are continuously monitoring the latest trends in marine automation and vessel logistics.</p>` }} />
                </div>
                
@@ -103,7 +71,7 @@ export default function BlogDetailPage() {
                </div>
             </div>
 
-            {/* Sidebar (Optional) */}
+            {/* Sidebar */}
             <aside className="lg:col-span-4 space-y-12">
                <div className="p-10 bg-muted/30 border border-border">
                   <h3 className="text-lg font-bold text-primary uppercase tracking-widest mb-6 pb-2 border-b-2 border-accent inline-block">Newsletter</h3>

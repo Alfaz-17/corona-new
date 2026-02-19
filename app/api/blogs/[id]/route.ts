@@ -4,6 +4,8 @@ import connectToDatabase from '@/lib/db';
 import { Blog } from '@/lib/models';
 import { getSession } from '@/lib/auth';
 
+import { isValidObjectId } from 'mongoose';
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -11,7 +13,13 @@ export async function GET(
   try {
     const { id } = await params;
     await connectToDatabase();
-    const blog = await Blog.findById(id);
+    
+    let blog;
+    if (isValidObjectId(id)) {
+      blog = await Blog.findById(id);
+    } else {
+      blog = await Blog.findOne({ slug: id });
+    }
     
     if (!blog) {
       return NextResponse.json({ error: 'Blog post not found' }, { status: 404 });
@@ -36,7 +44,13 @@ export async function DELETE(
 
     const { id } = await params;
     await connectToDatabase();
-    const deletedBlog = await Blog.findByIdAndDelete(id);
+    
+    let deletedBlog;
+    if (isValidObjectId(id)) {
+      deletedBlog = await Blog.findByIdAndDelete(id);
+    } else {
+      deletedBlog = await Blog.findOneAndDelete({ slug: id });
+    }
 
     if (!deletedBlog) {
       return NextResponse.json({ error: 'Blog post not found' }, { status: 404 });

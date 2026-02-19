@@ -5,6 +5,7 @@ import Image from "next/image"
 interface ProductCardProps {
   product: {
     _id: string
+    slug?: string
     title: string
     image: string
     category?: {
@@ -18,7 +19,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [hasError, setHasError] = useState(false)
 
   return (
-    <Link href={`/product/${product._id}`} className="group block h-full bg-white border border-border hover:border-accent transition-all relative">
+    <Link href={`/product/${product.slug || product._id}`} className="group block h-full bg-white border border-border hover:border-accent transition-all relative">
         <div className="aspect-[4/5] relative overflow-hidden bg-muted">
             <Image 
             src={imgSrc} 

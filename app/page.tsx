@@ -8,6 +8,15 @@ import { Testimonials } from "@/components/boty/testimonials"
 import { CTABanner } from "@/components/boty/cta-banner"
 import { Newsletter } from "@/components/boty/newsletter"
 import { SEOIntro } from "@/components/boty/seo-intro"
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Corona Marine Parts | Marine Spare Parts & Marine Services Supplier',
+  description: 'Genuine marine spare parts and technical services. Reliable supplier of ship machinery, automation systems, and engine components based in Bhavnagar (Alang Shipyard).',
+  alternates: {
+    canonical: '/',
+  },
+}
 
 export default function HomePage() {
   return (

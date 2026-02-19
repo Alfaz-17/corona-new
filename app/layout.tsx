@@ -7,6 +7,7 @@ import { Header } from "@/components/boty/header"
 import { Footer } from "@/components/boty/footer"
 import { FloatingWhatsappButton } from "@/components/common/floating-whatsapp-button"
 import { AuthProvider } from "@/components/contexts/auth-context"
+import StructuredData from "@/components/seo/structured-data"
 
 const dmSans = DM_Sans({ 
   subsets: ["latin"],
@@ -21,9 +22,43 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'Corona Marine Parts | Marine Spare Parts & Marine Services Supplier',
+  metadataBase: new URL('https://coronamarineparts.com'),
+  title: {
+    default: 'Corona Marine Parts | Marine Spare Parts & Marine Services Supplier',
+    template: '%s | Corona Marine Parts'
+  },
   description: 'Corona Marine Parts is a trusted supplier of marine spare parts, automation systems, and ship machinery components, delivering reliable marine solutions worldwide.',
-  keywords: ['marine automation', 'ship spare parts', 'alang shipyard', 'marine engineering', 'vessel automation'],
+  keywords: ['marine automation', 'ship spare parts', 'alang shipyard', 'marine engineering', 'vessel automation', 'ship machinery spares', 'marine electricals'],
+  authors: [{ name: 'Corona Marine Parts' }],
+  creator: 'Corona Marine Parts',
+  publisher: 'Corona Marine Parts',
+  formatDetection: {
+    email: false,
+    address: true,
+    telephone: true,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://coronamarineparts.com',
+    siteName: 'Corona Marine Parts',
+    title: 'Corona Marine Parts | Global Marine Spare Parts Supplier',
+    description: 'Leading supplier of marine automation, engine spares, and ship machinery from Alang Shipyard.',
+    images: [
+      {
+        url: '/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Corona Marine Parts - Marine Solutions',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Corona Marine Parts | Marine Spare Parts',
+    description: 'Trusted supplier of marine automation and ship spare parts worldwide.',
+    images: ['/logo.png'],
+  },
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
@@ -42,6 +77,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${dmSans.variable} ${playfairDisplay.variable} font-sans antialiased bg-background text-foreground`}>
+          <StructuredData />
           <AuthProvider>
             <Header />
             <div className="flex flex-col min-h-screen">

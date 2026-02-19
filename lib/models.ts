@@ -19,6 +19,7 @@ export const Category = models?.Category || model('Category', CategorySchema);
 
 const ProductSchema = new Schema({
   title: { type: String, required: true },
+  slug: { type: String, unique: true, sparse: true },
   description: { type: String },
   category: { type: Schema.Types.ObjectId, ref: 'Category' },
   brand: { type: Schema.Types.ObjectId, ref: 'Brand' },
@@ -26,6 +27,19 @@ const ProductSchema = new Schema({
   images: [{ type: String }],
   featured: { type: Boolean, default: false }
 }, { timestamps: true });
+
+const preSaveProduct = function(this: any, next: any) {
+  if (this.isModified('title') && (!this.slug || this.isNew)) {
+    this.slug = this.title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w ]+/g, '')
+      .replace(/ +/g, '-');
+  }
+  next();
+};
+
+ProductSchema.pre('save', preSaveProduct);
 
 export const Product = models?.Product || model('Product', ProductSchema);
 
@@ -39,11 +53,25 @@ export const Brand = models?.Brand || model('Brand', BrandSchema);
 
 const BlogSchema = new Schema({
   title: { type: String, required: true },
+  slug: { type: String, unique: true, sparse: true },
   excerpt: { type: String },
   content: { type: String },
   image: { type: String },
   date: { type: Date, default: Date.now }
 }, { timestamps: true });
+
+const preSaveBlog = function(this: any, next: any) {
+  if (this.isModified('title') && (!this.slug || this.isNew)) {
+    this.slug = this.title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w ]+/g, '')
+      .replace(/ +/g, '-');
+  }
+  next();
+};
+
+BlogSchema.pre('save', preSaveBlog);
 
 export const Blog = models?.Blog || model('Blog', BlogSchema);
 
@@ -66,4 +94,14 @@ const OrderSchema = new Schema({
   notes: { type: String }
 }, { timestamps: true });
 
+
 export const Order = models?.Order || model('Order', OrderSchema);
+
+const SettingsSchema = new Schema({
+  autoBackgroundRemoval: { type: Boolean, default: false },
+  applyWatermark: { type: Boolean, default: true },
+  watermarkText: { type: String, default: 'Corona Marine' }
+}, { timestamps: true });
+
+export const Settings = models?.Settings || model('Settings', SettingsSchema);
+

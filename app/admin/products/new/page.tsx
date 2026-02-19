@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Save, Upload, X, ChevronLeft, Sparkles, Plus } from 'lucide-react';
 import { uploadToCloudinary } from '@/lib/utils/cloudinary';
 import { addWatermark } from '@/lib/utils/watermark';
+import { removeBackgroundClient } from '@/lib/background-removal-client';
 import api from '@/lib/api';
 import Link from 'next/link';
 import CropModal from '@/components/common/CropModal';
@@ -24,8 +25,14 @@ export default function AdminProductFormPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isProcessingBg, setIsProcessingBg] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [categories, setCategories] = useState<any[]>([]);
+  const [globalSettings, setGlobalSettings] = useState({
+    autoBackgroundRemoval: false,
+    applyWatermark: true,
+    watermarkText: 'Corona Marine'
+  });
 
   // Cropping state
   const [cropTarget, setCropTarget] = useState<{ type: 'main' | 'gallery', index?: number, url: string } | null>(null);
@@ -39,7 +46,22 @@ export default function AdminProductFormPage() {
         console.error('Error fetching categories:', error);
       }
     };
+
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings');
+        if (res.ok) {
+          const data = await res.json();
+          setGlobalSettings(data);
+          setIsWatermarkEnabled(data.applyWatermark);
+        }
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+      }
+    };
+
     fetchCategories();
+    fetchSettings();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -124,13 +146,29 @@ export default function AdminProductFormPage() {
   const onCropComplete = async (croppedFile: File) => {
     if (!cropTarget) return;
 
+    let finalFile = croppedFile;
+
+    if (globalSettings.autoBackgroundRemoval) {
+      setIsProcessingBg(true);
+      setMessage({ type: 'info', text: 'AI: Removing background...' });
+      try {
+        const bgRemovedBlob = await removeBackgroundClient(croppedFile);
+        finalFile = new File([bgRemovedBlob], croppedFile.name.replace(/\.[^/.]+$/, "") + ".png", { type: 'image/png' });
+        setMessage({ type: 'success', text: 'Background removed successfully' });
+      } catch (error) {
+        console.error('Background removal error:', error);
+        setMessage({ type: 'error', text: 'Background removal failed' });
+      } finally {
+        setIsProcessingBg(false);
+      }
+    }
+
     if (cropTarget.type === 'main') {
-      setImageFile(croppedFile);
-      setImagePreview(URL.createObjectURL(croppedFile));
-      // AI Analysis is now manual only
+      setImageFile(finalFile);
+      setImagePreview(URL.createObjectURL(finalFile));
     } else {
-      setImagesFile(prev => [...prev, croppedFile]);
-      setImagePreviews(prev => [...prev, URL.createObjectURL(croppedFile)]);
+      setImagesFile(prev => [...prev, finalFile]);
+      setImagePreviews(prev => [...prev, URL.createObjectURL(finalFile)]);
     }
     setCropTarget(null);
   };
@@ -150,7 +188,7 @@ export default function AdminProductFormPage() {
       if (imageFile) {
         let fileToUpload = imageFile;
         if (isWatermarkEnabled) {
-             fileToUpload = await addWatermark(imageFile);
+             fileToUpload = await addWatermark(imageFile, globalSettings.watermarkText);
         }
         mainImageUrl = await uploadToCloudinary(fileToUpload);
       }
@@ -159,7 +197,7 @@ export default function AdminProductFormPage() {
       for (const file of imagesFile) {
         let fileToUpload = file;
         if (isWatermarkEnabled) {
-            fileToUpload = await addWatermark(file);
+            fileToUpload = await addWatermark(file, globalSettings.watermarkText);
         }
         const url = await uploadToCloudinary(fileToUpload);
         secondaryImageUrls.push(url);
@@ -275,14 +313,16 @@ export default function AdminProductFormPage() {
                              <Crop className="w-4 h-4" />
                            </button>
                        </div>
-                       {isAiAnalyzing && (
+                       {(isAiAnalyzing || isProcessingBg) && (
                          <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center gap-3">
                             <motion.div 
                               animate={{ rotate: 360 }} 
                               transition={{ repeat: Infinity, duration: 1, ease: "linear" }} 
                               className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full" 
                             />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Analyzing...</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                              {isAiAnalyzing ? 'Analyzing...' : 'Removing Background...'}
+                            </span>
                          </div>
                        )}
                     </div>

@@ -3,16 +3,13 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { useParams } from "next/navigation"
-import { ChevronLeft, ChevronRight, ChevronDown, Phone, Mail, CheckCircle2, ShieldCheck, Cpu, Globe, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronDown, Phone, Mail, ShieldCheck, Cpu, Globe, X } from "lucide-react"
 import api from "@/lib/api"
 import { MarineLoader } from "@/components/common/marine-loader"
 import { OrderForm } from "@/components/order-form"
 import { motion } from "framer-motion"
 
-export default function ProductDetailPage() {
-  const params = useParams()
-  const id = params.id as string
+export default function ProductDetailContent({ slug }: { slug: string }) {
   const [product, setProduct] = useState<any>(null)
   const [relatedProducts, setRelatedProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -24,7 +21,7 @@ export default function ProductDetailPage() {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const { data } = await api.get(`/products/${id}`);
+        const { data } = await api.get(`/products/${slug}`);
         setProduct(data);
 
         // Fetch related products
@@ -44,8 +41,8 @@ export default function ProductDetailPage() {
       }
     };
 
-    if (id) fetchProduct();
-  }, [id]);
+    if (slug) fetchProduct();
+  }, [slug]);
 
   if (loading) return <MarineLoader />;
   if (!product) return (
@@ -146,7 +143,6 @@ export default function ProductDetailPage() {
               className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 gallery-scroll" 
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {/* CSS to hide scrollbar for Webkit */}
               <style jsx global>{`
                 .gallery-scroll::-webkit-scrollbar {
                   display: none;

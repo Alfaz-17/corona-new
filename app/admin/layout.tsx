@@ -15,7 +15,8 @@ import {
   User,
   Home,
   Anchor,
-  ShoppingCart
+  ShoppingCart,
+  Settings as SettingsIcon
 } from 'lucide-react';
 import { MarineLoader } from '@/components/common/marine-loader';
 import { Logo } from '@/components/common/logo';
@@ -45,6 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Categories', href: '/admin/categories', icon: Grid3X3 },
     { name: 'Brands', href: '/admin/brands', icon: Award },
     { name: 'Blogs', href: '/admin/blogs', icon: FileText },
+    { name: 'Settings', href: '/admin/settings', icon: SettingsIcon },
   ];
 
   const handleLogout = async () => {

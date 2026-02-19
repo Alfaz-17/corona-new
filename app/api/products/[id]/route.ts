@@ -4,6 +4,8 @@ import connectToDatabase from '@/lib/db';
 import { Product } from '@/lib/models';
 import { getSession } from '@/lib/auth';
 
+import { isValidObjectId } from 'mongoose';
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -11,7 +13,13 @@ export async function GET(
   try {
     const { id } = await params;
     await connectToDatabase();
-    const product = await Product.findById(id).populate('category');
+    
+    let product;
+    if (isValidObjectId(id)) {
+      product = await Product.findById(id).populate('category');
+    } else {
+      product = await Product.findOne({ slug: id }).populate('category');
+    }
     
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
@@ -36,7 +44,13 @@ export async function DELETE(
 
     const { id } = await params;
     await connectToDatabase();
-    const deletedProduct = await Product.findByIdAndDelete(id);
+    
+    let deletedProduct;
+    if (isValidObjectId(id)) {
+      deletedProduct = await Product.findByIdAndDelete(id);
+    } else {
+      deletedProduct = await Product.findOneAndDelete({ slug: id });
+    }
 
     if (!deletedProduct) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
@@ -62,7 +76,12 @@ export async function PUT(
     await connectToDatabase();
     const body = await req.json();
     
-    const updatedProduct = await Product.findByIdAndUpdate(id, body, { new: true });
+    let updatedProduct;
+    if (isValidObjectId(id)) {
+      updatedProduct = await Product.findByIdAndUpdate(id, body, { new: true });
+    } else {
+      updatedProduct = await Product.findOneAndUpdate({ slug: id }, body, { new: true });
+    }
 
     if (!updatedProduct) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
