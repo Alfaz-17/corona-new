@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Upload, X, ChevronLeft } from 'lucide-react';
+import { Save, Upload, X, ChevronLeft, Loader2, Sparkles, ShieldCheck } from 'lucide-react';
 import { uploadToCloudinary } from '@/lib/utils/cloudinary';
 import { addWatermark } from '@/lib/utils/watermark';
+import { removeBackgroundClient } from '@/lib/background-removal-client';
 import api from '@/lib/api';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -35,13 +36,26 @@ export default function AdminProductEditPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [categories, setCategories] = useState<any[]>([]);
+  
+  // Global Settings state
+  const [globalSettings, setGlobalSettings] = useState({
+    autoBackgroundRemoval: false,
+    applyWatermark: true,
+    watermarkText: 'Corona Marine'
+  });
+
+  // Background removal state
+  const [isRemovingBg, setIsRemovingBg] = useState(false);
+  const [bgProcessingIndex, setBgProcessingIndex] = useState<{type: 'main' | 'gallery-existing' | 'gallery-new', index?: number} | null>(null);
+  const [bgStatus, setBgStatus] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [prodRes, catRes] = await Promise.all([
+        const [prodRes, catRes, settingsRes] = await Promise.all([
           api.get(`/products/${id}`),
-          api.get('/categories')
+          api.get('/categories'),
+          fetch('/api/settings').then(r => r.ok ? r.json() : null)
         ]);
         
         const prod = prodRes.data;
@@ -54,6 +68,9 @@ export default function AdminProductEditPage() {
         setExistingImage(prod.image || '');
         setExistingImages(prod.images || []);
         setCategories(catRes.data);
+        if (settingsRes) {
+          setGlobalSettings(settingsRes);
+        }
       } catch (error) {
         console.error('Error fetching edit data:', error);
         setMessage({ type: 'error', text: 'Failed to load asset data.' });
@@ -73,24 +90,122 @@ export default function AdminProductEditPage() {
     }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
       setExistingImage(''); // New image replaces existing
+      
+      if (globalSettings.autoBackgroundRemoval) {
+        handleRemoveBackground('main', undefined, file);
+      }
     }
   };
 
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const newPreviews = files.map(file => URL.createObjectURL(file));
-    setImagesFile(prev => [...prev, ...files]);
-    setImagePreviews(prev => [...prev, ...newPreviews]);
+    files.forEach((file, idx) => {
+      const newIndex = imagesFile.length + idx;
+      
+      setImagesFile(prev => [...prev, file]);
+      setImagePreviews(prev => [...prev, URL.createObjectURL(file)]);
+      
+      if (globalSettings.autoBackgroundRemoval) {
+        handleRemoveBackground('gallery-new', newIndex, file);
+      }
+    });
   };
 
   const handleRemoveExistingSecondary = (index: number) => {
     setExistingImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveBackground = async (type: 'main' | 'gallery-existing' | 'gallery-new' = 'main', index?: number, fileOverride?: File | Blob) => {
+    let sourceImage: File | Blob | null = null;
+    
+    if (type === 'main') {
+      if (fileOverride) {
+        sourceImage = fileOverride;
+      } else if (imageFile) {
+        sourceImage = imageFile;
+      } else if (existingImage) {
+        try {
+          setBgStatus('Fetching...');
+          const response = await fetch(existingImage);
+          sourceImage = await response.blob();
+        } catch (error) {
+          console.error("Error fetching main image:", error);
+          setMessage({ type: 'error', text: 'Could not fetch image for processing.' });
+          return;
+        }
+      }
+    } else if (type === 'gallery-existing' && index !== undefined) {
+      try {
+        setBgStatus('Fetching...');
+        const response = await fetch(existingImages[index]);
+        sourceImage = await response.blob();
+      } catch (error) {
+        console.error("Error fetching existing gallery image:", error);
+        setMessage({ type: 'error', text: 'Could not fetch image.' });
+        return;
+      }
+    } else if (type === 'gallery-new' && index !== undefined) {
+      sourceImage = fileOverride || imagesFile[index];
+    }
+
+    if (!sourceImage) return;
+    
+    setIsRemovingBg(true);
+    setBgProcessingIndex({ type, index });
+    setBgStatus('Initializing AI...');
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setBgStatus('Removing background...');
+      
+      const processedBlob = await removeBackgroundClient(sourceImage);
+      const processedFile = new File([processedBlob], `processed-${type}.png`, { type: 'image/png' });
+      
+      if (type === 'main') {
+        setImageFile(processedFile);
+        setImagePreview(URL.createObjectURL(processedFile));
+        setExistingImage('');
+      } else if (type === 'gallery-existing' && index !== undefined) {
+        // Move from existing to new files
+        setExistingImages(prev => prev.filter((_, i) => i !== index));
+        setImagesFile(prev => [...prev, processedFile]);
+        setImagePreviews(prev => [...prev, URL.createObjectURL(processedFile)]);
+      } else if (type === 'gallery-new' && index !== undefined) {
+        setImagesFile(prev => {
+          const newFiles = [...prev];
+          newFiles[index] = processedFile;
+          return newFiles;
+        });
+        
+        setImagePreviews(prev => {
+          const newPreviews = [...prev];
+          newPreviews[index] = URL.createObjectURL(processedFile);
+          return newPreviews;
+        });
+      }
+      
+      setBgStatus('Complete!');
+      setTimeout(() => {
+        setBgStatus('');
+        setBgProcessingIndex(null);
+      }, 2000);
+    } catch (error: any) {
+      console.error("Background removal error:", error);
+      if (error.message === 'MOBILE_MEMORY_ERROR') {
+        setMessage({ type: 'error', text: 'Image too large for your device memory.' });
+      } else {
+        setMessage({ type: 'error', text: 'Background removal failed.' });
+      }
+      setBgProcessingIndex(null);
+    } finally {
+      setIsRemovingBg(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,16 +219,20 @@ export default function AdminProductEditPage() {
 
       setIsUploading(true);
       
-      // Upload new main image if selected
+      // Upload new main image if selected (with watermark if enabled globally)
       if (imageFile) {
-        const watermarked = await addWatermark(imageFile);
-        mainImageUrl = await uploadToCloudinary(watermarked);
+        const processedImage = globalSettings.applyWatermark 
+          ? await addWatermark(imageFile, globalSettings.watermarkText) 
+          : imageFile;
+        mainImageUrl = await uploadToCloudinary(processedImage);
       }
 
-      // Upload new secondary images
+      // Upload new secondary images (with watermark if enabled globally)
       for (const file of imagesFile) {
-        const watermarked = await addWatermark(file);
-        const url = await uploadToCloudinary(watermarked);
+        const processedImage = globalSettings.applyWatermark 
+          ? await addWatermark(file, globalSettings.watermarkText) 
+          : file;
+        const url = await uploadToCloudinary(processedImage);
         secondaryImageUrls.push(url);
       }
       
@@ -215,12 +334,47 @@ export default function AdminProductEditPage() {
 
         <div className="space-y-8">
            <div className="bg-white p-10 border border-border">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Main Image</h2>
+              <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-primary">Main Image</h2>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-muted/5 border border-border text-[9px] font-bold uppercase tracking-tight text-muted-foreground">
+                    <ShieldCheck className="w-3 h-3" />
+                    WM: {globalSettings.applyWatermark ? 'AUTO' : 'OFF'}
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-muted/5 border border-border text-[9px] font-bold uppercase tracking-tight text-muted-foreground">
+                    <Sparkles className="w-3 h-3" />
+                    BG: {globalSettings.autoBackgroundRemoval ? 'AUTO' : 'OFF'}
+                  </div>
+                  <Link href="/admin/settings" className="text-[9px] font-bold text-accent hover:underline uppercase tracking-tight">
+                    Manage
+                  </Link>
+                </div>
+              </div>
               <div className="space-y-6">
                  {(imagePreview || existingImage) ? (
-                    <div className="relative aspect-video border border-border overflow-hidden">
+                    <div className="relative aspect-video border border-border overflow-hidden group">
                        <img src={imagePreview || existingImage} alt="Preview" className="w-full h-full object-cover" />
-                       <button type="button" onClick={() => { setImageFile(null); setImagePreview(''); setExistingImage(''); }} className="absolute top-2 right-2 bg-red-600 p-2 text-white"><X className="w-4 h-4" /></button>
+                       
+                       <div className="absolute top-2 right-2 flex flex-col gap-2">
+                          <button 
+                            type="button" 
+                            onClick={() => { setImageFile(null); setImagePreview(''); setExistingImage(''); }} 
+                            className="bg-red-600/80 p-2 text-white backdrop-blur-sm"
+                            title="Remove Image"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                       </div>
+
+                       {isRemovingBg && bgProcessingIndex?.type === 'main' && (
+                         <div className="absolute inset-0 bg-primary/20 backdrop-blur-[2px] flex items-center justify-center flex-col gap-3">
+                           <div className="flex items-center gap-2 px-6 py-3 bg-white border border-border shadow-2xl">
+                             <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                             <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{bgStatus}</span>
+                           </div>
+                         </div>
+                       )}
                     </div>
                  ) : (
                     <label className="block w-full border-2 border-dashed border-border py-12 text-center hover:border-accent transition-colors cursor-pointer bg-muted/10">
@@ -235,19 +389,30 @@ export default function AdminProductEditPage() {
            <div className="bg-white p-10 border border-border">
               <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Additional Images (Gallery)</h2>
               <div className="grid grid-cols-3 gap-4 mb-6">
-                 {existingImages.map((src, idx) => (
-                    <div key={`exist-${idx}`} className="relative aspect-square border border-border">
+                  {existingImages.map((src, idx) => (
+                    <div key={`exist-${idx}`} className="relative aspect-square border border-border overflow-hidden">
                        <img src={src} alt="Existing" className="w-full h-full object-cover" />
                        <button type="button" onClick={() => handleRemoveExistingSecondary(idx)} className="absolute -top-2 -right-2 bg-red-600 p-1 text-white rounded-full"><X className="w-3 h-3" /></button>
+                       {isRemovingBg && bgProcessingIndex?.type === 'gallery-existing' && bgProcessingIndex?.index === idx && (
+                          <div className="absolute inset-0 bg-primary/10 backdrop-blur-[1px] flex items-center justify-center">
+                            <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                          </div>
+                       )}
                     </div>
                  ))}
                  {imagePreviews.map((src, idx) => (
-                    <div key={`new-${idx}`} className="relative aspect-square border border-accent border-dashed">
+                    <div key={`new-${idx}`} className="relative aspect-square border border-accent border-dashed overflow-hidden">
                        <img src={src} alt="New" className="w-full h-full object-cover" />
                        <button type="button" onClick={() => {
                           setImagesFile(prev => prev.filter((_, i) => i !== idx));
                           setImagePreviews(prev => prev.filter((_, i) => i !== idx));
                        }} className="absolute -top-2 -right-2 bg-red-600 p-1 text-white rounded-full"><X className="w-3 h-3" /></button>
+                       
+                       {isRemovingBg && bgProcessingIndex?.type === 'gallery-new' && bgProcessingIndex?.index === idx && (
+                          <div className="absolute inset-0 bg-primary/10 backdrop-blur-[1px] flex items-center justify-center">
+                            <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                          </div>
+                       )}
                     </div>
                  ))}
                  <label className="aspect-square border-2 border-dashed border-border flex items-center justify-center hover:border-accent transition-colors cursor-pointer bg-muted/10">
