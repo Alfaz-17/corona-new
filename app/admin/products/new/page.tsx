@@ -2,14 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Upload, X, ChevronLeft, Sparkles, Plus } from 'lucide-react';
+import { 
+  Save, 
+  Upload, 
+  X, 
+  ChevronLeft, 
+  Sparkles, 
+  Plus, 
+  Loader2, 
+  Crop,
+  Eraser
+} from 'lucide-react';
 import { uploadToCloudinary } from '@/lib/utils/cloudinary';
 import { addWatermark } from '@/lib/utils/watermark';
 import { removeBackgroundClient } from '@/lib/background-removal-client';
 import api from '@/lib/api';
 import Link from 'next/link';
 import CropModal from '@/components/common/CropModal';
-import { Crop } from 'lucide-react';
 
 export default function AdminProductFormPage() {
   const [formData, setFormData] = useState({
@@ -25,7 +34,6 @@ export default function AdminProductFormPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [isProcessingBg, setIsProcessingBg] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [categories, setCategories] = useState<any[]>([]);
   const [globalSettings, setGlobalSettings] = useState({
@@ -36,6 +44,15 @@ export default function AdminProductFormPage() {
 
   // Cropping state
   const [cropTarget, setCropTarget] = useState<{ type: 'main' | 'gallery', index?: number, url: string } | null>(null);
+
+  // Background removal state
+  const [isRemovingBg, setIsRemovingBg] = useState(false);
+  const [bgProcessingIndex, setBgProcessingIndex] = useState<{type: 'main' | 'gallery', index?: number} | null>(null);
+  const [bgStatus, setBgStatus] = useState('');
+
+  const [isAiEnabled, setIsAiEnabled] = useState(true);
+  const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
+  const [isWatermarkEnabled, setIsWatermarkEnabled] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -73,10 +90,6 @@ export default function AdminProductFormPage() {
     }));
   };
 
-  const [isAiEnabled, setIsAiEnabled] = useState(true);
-  const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
-
-  const [isWatermarkEnabled, setIsWatermarkEnabled] = useState(true);
 
   const analyzeImage = async (file: File) => {
     if (!isAiEnabled) return;
@@ -146,31 +159,68 @@ export default function AdminProductFormPage() {
   const onCropComplete = async (croppedFile: File) => {
     if (!cropTarget) return;
 
-    let finalFile = croppedFile;
+    const targetType = cropTarget.type;
+    const targetIndex = cropTarget.index;
 
-    if (globalSettings.autoBackgroundRemoval) {
-      setIsProcessingBg(true);
-      setMessage({ type: 'info', text: 'AI: Removing background...' });
-      try {
-        const bgRemovedBlob = await removeBackgroundClient(croppedFile);
-        finalFile = new File([bgRemovedBlob], croppedFile.name.replace(/\.[^/.]+$/, "") + ".png", { type: 'image/png' });
-        setMessage({ type: 'success', text: 'Background removed successfully' });
-      } catch (error) {
-        console.error('Background removal error:', error);
-        setMessage({ type: 'error', text: 'Background removal failed' });
-      } finally {
-        setIsProcessingBg(false);
-      }
-    }
-
-    if (cropTarget.type === 'main') {
-      setImageFile(finalFile);
-      setImagePreview(URL.createObjectURL(finalFile));
+    if (targetType === 'main') {
+      setImageFile(croppedFile);
+      setImagePreview(URL.createObjectURL(croppedFile));
     } else {
-      setImagesFile(prev => [...prev, finalFile]);
-      setImagePreviews(prev => [...prev, URL.createObjectURL(finalFile)]);
+      setImagesFile(prev => [...prev, croppedFile]);
+      setImagePreviews(prev => [...prev, URL.createObjectURL(croppedFile)]);
     }
     setCropTarget(null);
+  };
+
+  const handleRemoveBackground = async (type: 'main' | 'gallery' = 'main', index?: number, fileOverride?: File) => {
+    let sourceFile = fileOverride || (type === 'main' ? imageFile : (index !== undefined ? imagesFile[index] : null));
+    if (!sourceFile) return;
+    
+    setIsRemovingBg(true);
+    setBgProcessingIndex({ type, index });
+    setBgStatus('Initializing AI...');
+    
+    try {
+      // Small delay to let UI update
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setBgStatus('Removing background...');
+      
+      const processedBlob = await removeBackgroundClient(sourceFile);
+      const processedFile = new File([processedBlob], `processed-${type}${index !== undefined ? `-${index}` : ''}.png`, { type: 'image/png' });
+      
+      if (type === 'main') {
+        setImageFile(processedFile);
+        setImagePreview(URL.createObjectURL(processedFile));
+      } else if (index !== undefined) {
+        setImagesFile(prev => {
+          const newFiles = [...prev];
+          newFiles[index] = processedFile;
+          return newFiles;
+        });
+        
+        setImagePreviews(prev => {
+          const newPreviews = [...prev];
+          newPreviews[index] = URL.createObjectURL(processedFile);
+          return newPreviews;
+        });
+      }
+      
+      setBgStatus('Complete!');
+      setTimeout(() => {
+        setBgStatus('');
+        setBgProcessingIndex(null);
+      }, 2000);
+    } catch (error: any) {
+      console.error("Background removal error:", error);
+      if (error.message === 'MOBILE_MEMORY_ERROR') {
+        setMessage({ type: 'error', text: 'Image too large for your device memory.' });
+      } else {
+        setMessage({ type: 'error', text: 'Background removal failed.' });
+      }
+      setBgProcessingIndex(null);
+    } finally {
+      setIsRemovingBg(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -285,49 +335,63 @@ export default function AdminProductFormPage() {
 
               <div className="space-y-6">
                  {imagePreview ? (
-                    <div className="relative border border-border overflow-hidden bg-muted/5 flex items-center justify-center min-h-[300px]">
+                    <div className="relative border border-border overflow-hidden bg-muted/5 flex items-center justify-center min-h-[300px] group">
                        <img src={imagePreview} alt="Preview" className="max-w-full max-h-[600px] w-auto h-auto object-contain" />
-                       <div className="absolute top-2 right-2 flex flex-col gap-2">
+                       
+                       {/* Main Image Actions - Clean Grouped Placement */}
+                       <div className="absolute top-4 right-4 flex flex-col gap-3 z-10">
                           <button 
                             type="button"
                             onClick={() => { setImageFile(null); setImagePreview(''); }} 
-                            className="bg-red-600/80 p-2 text-white backdrop-blur-sm"
+                            className="bg-red-600 p-2 text-white rounded-full shadow-xl hover:bg-red-700 transition-all active:scale-95"
+                            title="Remove Image"
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-5 h-5" />
                           </button>
-                          {isAiEnabled && (
-                            <button
+                          
+                          <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-border shadow-2xl flex flex-col gap-2">
+                            {isAiEnabled && (
+                              <button
+                                 type="button"
+                                 disabled={isAiAnalyzing}
+                                 onClick={() => imageFile && analyzeImage(imageFile)}
+                                 className="bg-primary p-2 text-white rounded-xl disabled:opacity-50 hover:bg-black transition-colors active:scale-95"
+                                 title="AI Analysis"
+                               >
+                                 <Sparkles className="w-4 h-4" />
+                               </button>
+                             )}
+                             <button
                                type="button"
-                               disabled={isAiAnalyzing}
-                               onClick={() => imageFile && analyzeImage(imageFile)}
-                               className="bg-primary/80 p-2 text-white backdrop-blur-sm disabled:opacity-50"
+                               onClick={() => imagePreview && setCropTarget({ type: 'main', url: imagePreview })}
+                               className="bg-accent p-2 text-white rounded-xl hover:bg-accent/90 transition-colors active:scale-95"
+                               title="Crop Image"
                              >
-                               <Sparkles className="w-4 h-4" />
+                               <Crop className="w-4 h-4" />
                              </button>
-                           )}
-                           <button
-                             type="button"
-                             onClick={() => imagePreview && setCropTarget({ type: 'main', url: imagePreview })}
-                             className="bg-accent/80 p-2 text-white backdrop-blur-sm"
-                           >
-                             <Crop className="w-4 h-4" />
-                           </button>
+                             <button
+                               type="button"
+                               disabled={isRemovingBg}
+                               onClick={() => handleRemoveBackground('main')}
+                               className="bg-indigo-600 p-2 text-white rounded-xl disabled:opacity-50 hover:bg-indigo-700 transition-colors active:scale-95"
+                               title="Remove Background"
+                             >
+                               <Eraser className="w-4 h-4" />
+                             </button>
+                          </div>
                        </div>
-                       {(isAiAnalyzing || isProcessingBg) && (
-                         <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center gap-3">
-                            <motion.div 
-                              animate={{ rotate: 360 }} 
-                              transition={{ repeat: Infinity, duration: 1, ease: "linear" }} 
-                              className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full" 
-                            />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
-                              {isAiAnalyzing ? 'Analyzing...' : 'Removing Background...'}
-                            </span>
+
+                       {isRemovingBg && bgProcessingIndex?.type === 'main' && (
+                         <div className="absolute inset-0 bg-primary/20 backdrop-blur-[2px] flex items-center justify-center flex-col gap-3 z-20">
+                           <div className="flex items-center gap-2 px-6 py-3 bg-white border border-border shadow-2xl rounded-sm">
+                             <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                             <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{bgStatus}</span>
+                           </div>
                          </div>
                        )}
                     </div>
                  ) : (
-                    <label className="block w-full border-2 border-dashed border-border py-12 text-center cursor-pointer bg-muted/10">
+                    <label className="block w-full border-2 border-dashed border-border py-12 text-center cursor-pointer bg-muted/10 hover:border-accent transition-colors">
                        <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-4" />
                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Upload Main Product Image</span>
                        <p className="text-[8px] text-muted-foreground mt-2 uppercase tracking-tighter">AI will analyze this to fill details</p>
@@ -341,28 +405,52 @@ export default function AdminProductFormPage() {
               <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Gallery Images</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
                  {imagePreviews.map((src, idx) => (
-                    <div key={idx} className="relative aspect-square border border-border bg-muted/5 flex items-center justify-center overflow-hidden">
+                    <div key={idx} className="relative aspect-square border border-border bg-muted/5 flex items-center justify-center overflow-hidden group">
                        <img src={src} alt="Sub" className="max-w-full max-h-full w-auto h-auto object-contain" />
+                       
+                       {/* Gallery Item Actions - Always Visible & Properly Placed */}
                        <button 
                           type="button"
                           onClick={() => {
                              setImagesFile(prev => prev.filter((_, i) => i !== idx));
                              setImagePreviews(prev => prev.filter((_, i) => i !== idx));
                           }} 
-                          className="absolute -top-2 -right-2 bg-red-600 p-1 text-white rounded-full hover:bg-red-700 shadow-md"
+                          className="absolute top-2 right-2 bg-red-600 p-1.5 text-white rounded-full hover:bg-red-700 shadow-md transition-transform active:scale-95 z-10"
+                          title="Remove Image"
                         >
                           <X className="w-3 h-3" />
                         </button>
-                        <button 
-                          type="button"
-                          onClick={() => setCropTarget({ type: 'gallery', index: idx, url: src })} 
-                          className="absolute -bottom-2 -right-2 bg-accent p-1 text-white rounded-full shadow-lg"
-                        >
-                          <Crop className="w-3 h-3" />
-                        </button>
+
+                        <div className="absolute bottom-2 right-2 flex gap-1.5 z-10">
+                           <button 
+                             type="button"
+                             onClick={() => setCropTarget({ type: 'gallery', index: idx, url: src })} 
+                             className="bg-accent p-1.5 text-white rounded-full shadow-lg transition-transform active:scale-95 hover:bg-accent/90"
+                             title="Crop Image"
+                           >
+                             <Crop className="w-3 h-3" />
+                           </button>
+                           <button 
+                             type="button"
+                             disabled={isRemovingBg}
+                             onClick={() => handleRemoveBackground('gallery', idx)} 
+                             className="bg-indigo-600 p-1.5 text-white rounded-full shadow-lg disabled:opacity-50 transition-transform active:scale-95 hover:bg-indigo-700"
+                             title="Remove Background"
+                           >
+                             <Eraser className="w-3 h-3" />
+                           </button>
+                        </div>
+
+                        {isRemovingBg && bgProcessingIndex?.type === 'gallery' && bgProcessingIndex?.index === idx && (
+                           <div className="absolute inset-0 bg-primary/10 backdrop-blur-[1px] flex items-center justify-center z-20">
+                             <div className="p-1 bg-white border border-border shadow-lg rounded-sm">
+                               <Loader2 className="w-3 h-3 animate-spin text-accent" />
+                             </div>
+                           </div>
+                        )}
                     </div>
                  ))}
-                 <label className="aspect-square border-2 border-dashed border-border flex items-center justify-center cursor-pointer bg-muted/10">
+                 <label className="aspect-square border-2 border-dashed border-border flex items-center justify-center cursor-pointer bg-muted/10 hover:border-accent transition-colors">
                     <Plus className="w-6 h-6 text-muted-foreground" />
                     <input type="file" accept="image/*" multiple onChange={handleImagesChange} className="hidden" />
                  </label>

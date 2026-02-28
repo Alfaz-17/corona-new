@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Upload, X, ChevronLeft, Loader2, Sparkles, ShieldCheck } from 'lucide-react';
+import { Save, Upload, X, ChevronLeft, Loader2, Sparkles, ShieldCheck, Crop, Eraser } from 'lucide-react';
 import { uploadToCloudinary } from '@/lib/utils/cloudinary';
 import { addWatermark } from '@/lib/utils/watermark';
 import { removeBackgroundClient } from '@/lib/background-removal-client';
@@ -10,6 +10,7 @@ import api from '@/lib/api';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { MarineLoader } from '@/components/common/marine-loader';
+import CropModal from '@/components/common/CropModal';
 
 export default function AdminProductEditPage() {
   const params = useParams();
@@ -48,6 +49,9 @@ export default function AdminProductEditPage() {
   const [isRemovingBg, setIsRemovingBg] = useState(false);
   const [bgProcessingIndex, setBgProcessingIndex] = useState<{type: 'main' | 'gallery-existing' | 'gallery-new', index?: number} | null>(null);
   const [bgStatus, setBgStatus] = useState('');
+
+  // Cropping state
+  const [cropTarget, setCropTarget] = useState<{ type: 'main' | 'gallery-existing' | 'gallery-new', index?: number, url: string } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,28 +97,38 @@ export default function AdminProductEditPage() {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-      setExistingImage(''); // New image replaces existing
-      
-      if (globalSettings.autoBackgroundRemoval) {
-        handleRemoveBackground('main', undefined, file);
-      }
+      const objectUrl = URL.createObjectURL(file);
+      setCropTarget({ type: 'main', url: objectUrl });
     }
   };
 
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    files.forEach((file, idx) => {
-      const newIndex = imagesFile.length + idx;
-      
-      setImagesFile(prev => [...prev, file]);
-      setImagePreviews(prev => [...prev, URL.createObjectURL(file)]);
-      
-      if (globalSettings.autoBackgroundRemoval) {
-        handleRemoveBackground('gallery-new', newIndex, file);
-      }
+    files.forEach(file => {
+      const objectUrl = URL.createObjectURL(file);
+      setCropTarget({ type: 'gallery-new', url: objectUrl });
     });
+  };
+
+  const onCropComplete = async (croppedFile: File) => {
+    if (!cropTarget) return;
+
+    const targetType = cropTarget.type;
+    const targetIndex = cropTarget.index;
+
+    if (targetType === 'main') {
+      setImageFile(croppedFile);
+      setImagePreview(URL.createObjectURL(croppedFile));
+      setExistingImage('');
+    } else if (targetType === 'gallery-existing' && targetIndex !== undefined) {
+      setExistingImages(prev => prev.filter((_, i) => i !== targetIndex));
+      setImagesFile(prev => [...prev, croppedFile]);
+      setImagePreviews(prev => [...prev, URL.createObjectURL(croppedFile)]);
+    } else {
+      setImagesFile(prev => [...prev, croppedFile]);
+      setImagePreviews(prev => [...prev, URL.createObjectURL(croppedFile)]);
+    }
+    setCropTarget(null);
   };
 
   const handleRemoveExistingSecondary = (index: number) => {
@@ -343,8 +357,8 @@ export default function AdminProductEditPage() {
                     WM: {globalSettings.applyWatermark ? 'AUTO' : 'OFF'}
                   </div>
                   <div className="flex items-center gap-2 px-3 py-1 bg-muted/5 border border-border text-[9px] font-bold uppercase tracking-tight text-muted-foreground">
-                    <Sparkles className="w-3 h-3" />
-                    BG: {globalSettings.autoBackgroundRemoval ? 'AUTO' : 'OFF'}
+                    <Eraser className="w-3 h-3" />
+                    BG: MANUAL
                   </div>
                   <Link href="/admin/settings" className="text-[9px] font-bold text-accent hover:underline uppercase tracking-tight">
                     Manage
@@ -353,23 +367,47 @@ export default function AdminProductEditPage() {
               </div>
               <div className="space-y-6">
                  {(imagePreview || existingImage) ? (
-                    <div className="relative aspect-video border border-border overflow-hidden group">
+                    <div className="relative aspect-video border border-border overflow-hidden bg-muted/5 flex items-center justify-center group">
                        <img src={imagePreview || existingImage} alt="Preview" className="w-full h-full object-cover" />
                        
-                       <div className="absolute top-2 right-2 flex flex-col gap-2">
+                       {/* Main Image Actions - Clean Grouped Placement */}
+                       <div className="absolute top-4 right-4 flex flex-col gap-3 z-10">
                           <button 
                             type="button" 
                             onClick={() => { setImageFile(null); setImagePreview(''); setExistingImage(''); }} 
-                            className="bg-red-600/80 p-2 text-white backdrop-blur-sm"
+                            className="bg-red-600 p-2 text-white rounded-full shadow-xl hover:bg-red-700 transition-all active:scale-95"
                             title="Remove Image"
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-5 h-5" />
                           </button>
+                          
+                          <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-border shadow-2xl flex flex-col gap-2">
+                             <button
+                               type="button"
+                               onClick={() => {
+                                 const url = imagePreview || existingImage;
+                                 if (url) setCropTarget({ type: 'main', url });
+                               }}
+                               className="bg-accent p-2 text-white rounded-xl hover:bg-accent/90 transition-colors active:scale-95"
+                               title="Crop Image"
+                             >
+                               <Crop className="w-4 h-4" />
+                             </button>
+                             <button
+                               type="button"
+                               disabled={isRemovingBg}
+                               onClick={() => handleRemoveBackground('main')}
+                               className="bg-indigo-600 p-2 text-white rounded-xl disabled:opacity-50 hover:bg-indigo-700 transition-colors active:scale-95"
+                               title="Remove Background"
+                             >
+                               <Eraser className="w-4 h-4" />
+                             </button>
+                          </div>
                        </div>
 
                        {isRemovingBg && bgProcessingIndex?.type === 'main' && (
-                         <div className="absolute inset-0 bg-primary/20 backdrop-blur-[2px] flex items-center justify-center flex-col gap-3">
-                           <div className="flex items-center gap-2 px-6 py-3 bg-white border border-border shadow-2xl">
+                         <div className="absolute inset-0 bg-primary/20 backdrop-blur-[2px] flex items-center justify-center flex-col gap-3 z-20">
+                           <div className="flex items-center gap-2 px-6 py-3 bg-white border border-border shadow-2xl rounded-sm">
                              <Loader2 className="w-4 h-4 animate-spin text-accent" />
                              <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{bgStatus}</span>
                            </div>
@@ -388,37 +426,99 @@ export default function AdminProductEditPage() {
 
            <div className="bg-white p-10 border border-border">
               <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Additional Images (Gallery)</h2>
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                  {existingImages.map((src, idx) => (
-                    <div key={`exist-${idx}`} className="relative aspect-square border border-border overflow-hidden">
-                       <img src={src} alt="Existing" className="w-full h-full object-cover" />
-                       <button type="button" onClick={() => handleRemoveExistingSecondary(idx)} className="absolute -top-2 -right-2 bg-red-600 p-1 text-white rounded-full"><X className="w-3 h-3" /></button>
-                       {isRemovingBg && bgProcessingIndex?.type === 'gallery-existing' && bgProcessingIndex?.index === idx && (
-                          <div className="absolute inset-0 bg-primary/10 backdrop-blur-[1px] flex items-center justify-center">
-                            <Loader2 className="w-4 h-4 animate-spin text-accent" />
-                          </div>
-                       )}
-                    </div>
-                 ))}
-                 {imagePreviews.map((src, idx) => (
-                    <div key={`new-${idx}`} className="relative aspect-square border border-accent border-dashed overflow-hidden">
-                       <img src={src} alt="New" className="w-full h-full object-cover" />
-                       <button type="button" onClick={() => {
-                          setImagesFile(prev => prev.filter((_, i) => i !== idx));
-                          setImagePreviews(prev => prev.filter((_, i) => i !== idx));
-                       }} className="absolute -top-2 -right-2 bg-red-600 p-1 text-white rounded-full"><X className="w-3 h-3" /></button>
-                       
-                       {isRemovingBg && bgProcessingIndex?.type === 'gallery-new' && bgProcessingIndex?.index === idx && (
-                          <div className="absolute inset-0 bg-primary/10 backdrop-blur-[1px] flex items-center justify-center">
-                            <Loader2 className="w-4 h-4 animate-spin text-accent" />
-                          </div>
-                       )}
-                    </div>
-                 ))}
-                 <label className="aspect-square border-2 border-dashed border-border flex items-center justify-center hover:border-accent transition-colors cursor-pointer bg-muted/10">
-                    <Upload className="w-6 h-6 text-muted-foreground" />
-                    <input type="file" accept="image/*" multiple onChange={handleImagesChange} className="hidden" />
-                 </label>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+                   {existingImages.map((src, idx) => (
+                     <div key={`exist-${idx}`} className="relative aspect-square border border-border overflow-hidden group bg-muted/5 flex items-center justify-center ">
+                        <img src={src} alt="Existing" className="max-w-full max-h-full w-auto h-auto object-contain" />
+                        
+                        {/* Gallery Item Actions - Always Visible & Properly Placed */}
+                        <button 
+                          type="button" 
+                          onClick={() => handleRemoveExistingSecondary(idx)} 
+                          className="absolute top-2 right-2 bg-red-600 p-1.5 text-white rounded-full transition-all hover:bg-red-700 active:scale-95 shadow-md z-10"
+                          title="Remove Image"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+
+                        <div className="absolute bottom-2 right-2 flex gap-1.5 z-10">
+                           <button
+                             type="button"
+                             onClick={() => setCropTarget({ type: 'gallery-existing', index: idx, url: src })}
+                             className="bg-accent p-1.5 text-white rounded-full shadow-lg transition-transform active:scale-95 hover:bg-accent/90"
+                             title="Crop Image"
+                           >
+                             <Crop className="w-3 h-3" />
+                           </button>
+                           <button 
+                             type="button"
+                             disabled={isRemovingBg}
+                             onClick={() => handleRemoveBackground('gallery-existing', idx)} 
+                             className="bg-indigo-600 p-1.5 text-white rounded-full shadow-lg disabled:opacity-50 transition-transform active:scale-95 hover:bg-indigo-700"
+                             title="Remove Background"
+                           >
+                             <Eraser className="w-3 h-3" />
+                           </button>
+                        </div>
+
+                        {isRemovingBg && bgProcessingIndex?.type === 'gallery-existing' && bgProcessingIndex?.index === idx && (
+                           <div className="absolute inset-0 bg-primary/10 backdrop-blur-[1px] flex items-center justify-center z-20">
+                              <div className="p-1 bg-white border border-border shadow-lg rounded-sm">
+                                <Loader2 className="w-3 h-3 animate-spin text-accent" />
+                              </div>
+                           </div>
+                        )}
+                     </div>
+                  ))}
+                  {imagePreviews.map((src, idx) => (
+                     <div key={`new-${idx}`} className="relative aspect-square border border-accent border-dashed overflow-hidden group bg-muted/5 flex items-center justify-center">
+                        <img src={src} alt="New" className="max-w-full max-h-full w-auto h-auto object-contain" />
+                        
+                        <button 
+                           type="button" 
+                           onClick={() => {
+                              setImagesFile(prev => prev.filter((_, i) => i !== idx));
+                              setImagePreviews(prev => prev.filter((_, i) => i !== idx));
+                           }} 
+                           className="absolute top-2 right-2 bg-red-600 p-1.5 text-white rounded-full transition-all hover:bg-red-700 active:scale-95 shadow-md z-10"
+                           title="Remove Image"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                        
+                        <div className="absolute bottom-2 right-2 flex gap-1.5 z-10">
+                           <button
+                             type="button"
+                             onClick={() => setCropTarget({ type: 'gallery-new', index: idx, url: src })}
+                             className="bg-accent p-1.5 text-white rounded-full shadow-lg transition-transform active:scale-95 hover:bg-accent/90"
+                             title="Crop Image"
+                           >
+                             <Crop className="w-3 h-3" />
+                           </button>
+                           <button 
+                             type="button"
+                             disabled={isRemovingBg}
+                             onClick={() => handleRemoveBackground('gallery-new', idx)} 
+                             className="bg-indigo-600 p-1.5 text-white rounded-full shadow-lg disabled:opacity-50 transition-transform active:scale-95 hover:bg-indigo-700"
+                             title="Remove Background"
+                           >
+                             <Eraser className="w-3 h-3" />
+                           </button>
+                        </div>
+
+                        {isRemovingBg && bgProcessingIndex?.type === 'gallery-new' && bgProcessingIndex?.index === idx && (
+                           <div className="absolute inset-0 bg-primary/10 backdrop-blur-[1px] flex items-center justify-center z-20">
+                              <div className="p-1 bg-white border border-border shadow-lg rounded-sm">
+                                <Loader2 className="w-3 h-3 animate-spin text-accent" />
+                              </div>
+                           </div>
+                        )}
+                     </div>
+                  ))}
+                  <label className="aspect-square border-2 border-dashed border-border flex items-center justify-center hover:border-accent transition-colors cursor-pointer bg-muted/10">
+                     <Upload className="w-6 h-6 text-muted-foreground" />
+                     <input type="file" accept="image/*" multiple onChange={handleImagesChange} className="hidden" />
+                  </label>
               </div>
            </div>
 
@@ -440,6 +540,14 @@ export default function AdminProductEditPage() {
            </button>
         </div>
       </form>
+
+      {cropTarget && (
+        <CropModal
+          image={cropTarget.url}
+          onCropComplete={onCropComplete}
+          onCancel={() => setCropTarget(null)}
+        />
+      )}
     </div>
   );
 }
