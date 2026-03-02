@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import api from '@/lib/api'
 import BlogDetailContent from './blog-detail-content'
+import BlogStructuredData from '@/components/seo/blog-structured-data'
 import { MarineLoader } from '@/components/common/marine-loader'
 import Link from 'next/link'
 
@@ -39,6 +40,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+
+
+export async function generateStaticParams() {
+  try {
+    const { data: blogs } = await api.get('/blogs')
+    return blogs.map((blog: any) => ({
+      slug: blog.slug || blog._id,
+    }))
+  } catch (error) {
+    return []
+  }
+}
+
 export default async function BlogDetailPage({ params }: Props) {
   try {
     const { slug } = await params;
@@ -53,7 +67,12 @@ export default async function BlogDetailPage({ params }: Props) {
       );
     }
 
-    return <BlogDetailContent blog={blog} />;
+    return (
+      <>
+        <BlogStructuredData blog={blog} slug={slug} />
+        <BlogDetailContent blog={blog} />
+      </>
+    );
   } catch (err) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-6">

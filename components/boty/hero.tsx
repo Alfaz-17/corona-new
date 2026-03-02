@@ -17,6 +17,7 @@ export function Hero() {
           playsInline
           poster="/hero-bg.png"
           className="w-full h-full object-cover opacity-100 transition-opacity duration-1000"
+          aria-hidden="true"
         >
           <source src="/hero.mp4" type="video/mp4" />
         </video>

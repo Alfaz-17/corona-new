@@ -27,15 +27,24 @@ export const metadata: Metadata = {
     default: 'Corona Marine Parts | Marine Spare Parts & Marine Services Supplier',
     template: '%s | Corona Marine Parts'
   },
-  description: 'Corona Marine Parts is a trusted supplier of marine spare parts, automation systems, and ship machinery components, delivering reliable marine solutions worldwide.',
-  keywords: ['marine automation', 'ship spare parts', 'alang shipyard', 'marine engineering', 'vessel automation', 'ship machinery spares', 'marine electricals'],
+  description: 'Leading global supplier of premium marine spare parts, automation systems, and ship machinery components from Alang Shipyard. Reliable maritime solutions with worldwide shipping.',
+  keywords: ['marine automation', 'ship spare parts', 'alang shipyard', 'marine engineering', 'vessel automation', 'ship machinery spares', 'marine electricals', 'refurbished marine parts'],
   authors: [{ name: 'Corona Marine Parts' }],
   creator: 'Corona Marine Parts',
   publisher: 'Corona Marine Parts',
-  formatDetection: {
-    email: false,
-    address: true,
-    telephone: true,
+  alternates: {
+    canonical: '/',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   openGraph: {
     type: 'website',
@@ -46,7 +55,7 @@ export const metadata: Metadata = {
     description: 'Leading supplier of marine automation, engine spares, and ship machinery from Alang Shipyard.',
     images: [
       {
-        url: '/logo.png',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Corona Marine Parts - Marine Solutions',
@@ -57,11 +66,17 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Corona Marine Parts | Marine Spare Parts',
     description: 'Trusted supplier of marine automation and ship spare parts worldwide.',
-    images: ['/logo.png'],
+    images: ['/og-image.png'],
+    creator: '@coronamarine',
   },
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/logo.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/logo.png' },
+    ],
   },
 }
 
