@@ -11,8 +11,8 @@ import { SEOIntro } from "@/components/boty/seo-intro"
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Corona Marine Parts | Marine Spare Parts & Marine Services Supplier',
-  description: 'Genuine marine spare parts and technical services. Reliable supplier of ship machinery, automation systems, and engine components based in Bhavnagar (Alang Shipyard).',
+  title: 'Corona Marine Parts | Home - High-Quality Marine Spare Parts',
+  description: 'Welcome to Corona Marine Parts. We are leading suppliers of genuine marine spare parts, ship machinery, and automation systems based in Alang Shipyard.',
   alternates: {
     canonical: '/',
   },

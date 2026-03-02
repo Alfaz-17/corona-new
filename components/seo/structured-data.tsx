@@ -56,10 +56,53 @@ export default function StructuredData() {
     ]
   };
 
+  const websiteData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Corona Marine Parts",
+    "url": "https://coronamarineparts.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://coronamarineparts.com/products?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://coronamarineparts.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Products",
+        "item": "https://coronamarineparts.com/products"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "About",
+        "item": "https://coronamarineparts.com/about"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "Contact",
+        "item": "https://coronamarineparts.com/contact"
+      }
+    ]
+  };
+
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationData, localBusinessData]) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationData, localBusinessData, websiteData, breadcrumbData]) }}
     />
   );
 }
