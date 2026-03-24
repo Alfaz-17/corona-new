@@ -27,9 +27,9 @@ export default function AdminCategoryPage() {
       await api.post('/categories', { name: newCategory });
       mutate();
       setNewCategory('');
-      setMessage({ type: 'success', text: 'New fleet sector registered.' });
+      setMessage({ type: 'success', text: 'Category added successfully.' });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Registration failure.' });
+      setMessage({ type: 'error', text: 'Could not add category. Please try again.' });
     }
   };
 
@@ -39,30 +39,30 @@ export default function AdminCategoryPage() {
       await api.put(`/categories/${id}`, { name: editingName });
       mutate();
       setEditingId(null);
-      setMessage({ type: 'success', text: 'Sector designation updated.' });
+      setMessage({ type: 'success', text: 'Category updated.' });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Update failure.' });
+      setMessage({ type: 'error', text: 'Could not update. Please try again.' });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Decommission this sector? This may affect linked assets.')) return;
+    if (!window.confirm('Delete this category? Products in this category will be affected.')) return;
     try {
       await api.delete(`/categories/${id}`);
       mutate();
-      setMessage({ type: 'success', text: 'Sector decommissioned.' });
+      setMessage({ type: 'success', text: 'Category deleted.' });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Operation failed.' });
+      setMessage({ type: 'error', text: 'Could not delete. Please try again.' });
     }
   };
 
-  if (isLoading) return <div className="text-xs font-bold uppercase tracking-widest animate-pulse">Scanning Sectors...</div>;
+  if (isLoading) return <div className="text-xs font-bold uppercase tracking-widest animate-pulse">Loading Categories...</div>;
 
   return (
     <div className="max-w-4xl space-y-12">
       <div className="border-b border-border pb-8">
-        <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Sector Management</h1>
-        <p className="text-xs font-bold text-accent uppercase tracking-[0.3em] mt-2">Classify Fleet Inventory & Components</p>
+        <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Categories</h1>
+        <p className="text-xs font-bold text-accent uppercase tracking-[0.3em] mt-2">Organize Your Products by Category</p>
       </div>
 
       {message.text && (
@@ -72,18 +72,18 @@ export default function AdminCategoryPage() {
       )}
 
       <div className="bg-white p-10 border border-border">
-         <h2 className="text-sm font-bold uppercase tracking-widest text-primary mb-8">Register New Sector</h2>
+         <h2 className="text-sm font-bold uppercase tracking-widest text-primary mb-8">Add New Category</h2>
          <form onSubmit={handleAddCategory} className="flex gap-4">
             <input 
               type="text" 
-              placeholder="Sector Name (e.g. Navigation Systems)" 
+              placeholder="Category name (e.g. Marine Engines)" 
               className="flex-1 px-6 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
               required
             />
             <button type="submit" className="px-10 py-4 bg-primary text-white text-[10px] font-bold uppercase tracking-widest hover:bg-accent transition-colors shadow-xl">
-               Register
+               Add
             </button>
          </form>
       </div>
@@ -92,8 +92,8 @@ export default function AdminCategoryPage() {
          <table className="w-full text-left">
             <thead>
                <tr className="bg-primary text-white text-[10px] font-bold uppercase tracking-widest">
-                  <th className="py-5 px-8">Sector Designation</th>
-                  <th className="py-5 px-8 text-right">Operations</th>
+                  <th className="py-5 px-8">Category Name</th>
+                  <th className="py-5 px-8 text-right">Actions</th>
                </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -146,7 +146,7 @@ export default function AdminCategoryPage() {
                ))}
                {categories.length === 0 && (
                   <tr>
-                     <td colSpan={2} className="py-20 text-center text-xs font-bold text-muted-foreground uppercase opacity-50 italic">No sectors registered in the grid</td>
+                     <td colSpan={2} className="py-20 text-center text-xs font-bold text-muted-foreground uppercase opacity-50 italic">No categories added yet</td>
                   </tr>
                )}
             </tbody>

@@ -66,7 +66,7 @@ export default function AdminLoginPage() {
                 <Anchor className="w-10 h-10 text-accent" />
                 <h1 className="text-3xl font-bold text-primary tracking-tighter uppercase">Corona Marine</h1>
              </div>
-             <p className="text-[10px] font-bold text-accent tracking-[0.4em] uppercase">Control Center Access</p>
+             <p className="text-[10px] font-bold text-accent tracking-[0.4em] uppercase">Admin Login</p>
           </div>
 
           {error && (
@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Operator Email</label>
+               <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Email Address</label>
               <div className="relative">
                 <input
                   type="email"
@@ -93,7 +93,7 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Access Key</label>
+               <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -120,12 +120,12 @@ export default function AdminLoginPage() {
               disabled={isLoading}
               className="w-full py-4 bg-primary text-white font-bold text-xs uppercase tracking-[0.3em] hover:bg-accent transition-all shadow-xl disabled:opacity-50"
             >
-              {isLoading ? 'Decrypting...' : 'Initiate Session'}
+               {isLoading ? 'Logging in...' : 'Login'}
             </button>
           </form>
           
           <div className="mt-8 pt-8 border-t border-border text-center">
-             <Link href="/" className="text-[10px] font-extrabold uppercase tracking-widest text-primary hover:text-accent transition-colors">Abort Access & Return Home</Link>
+             <Link href="/" className="text-[10px] font-extrabold uppercase tracking-widest text-primary hover:text-accent transition-colors">Return to Home Page</Link>
           </div>
         </div>
       </motion.div>

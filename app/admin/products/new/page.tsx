@@ -109,7 +109,10 @@ export default function AdminProductFormPage() {
         body: formData,
       });
 
-      if (!response.ok) throw new Error('AI analysis failed');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'AI analysis failed');
+      }
 
       const data = await response.json();
 
@@ -411,7 +414,7 @@ export default function AdminProductFormPage() {
                     <label className="block w-full border-2 border-dashed border-border py-12 text-center cursor-pointer bg-muted/10 hover:border-accent transition-colors">
                        <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-4" />
                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Upload Main Product Image</span>
-                       <p className="text-[8px] text-muted-foreground mt-2 uppercase tracking-tighter">AI will analyze this to fill details</p>
+                       <p className="text-[8px] text-muted-foreground mt-2 uppercase tracking-tighter">AI will help fill in the product details</p>
                        <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                     </label>
                  )}
@@ -518,7 +521,7 @@ export default function AdminProductFormPage() {
                     checked={formData.featured}
                     onChange={handleChange}
                   />
-                  <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Mark as Featured Product</label>
+                  <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Show on Home Page</label>
                </div>
             </div>
           </div>
@@ -550,7 +553,7 @@ export default function AdminProductFormPage() {
               </>
             ) : (
               <>
-                <Save className="w-5 h-5" /> Add Product to Catalog
+                 <Save className="w-5 h-5" /> Add Product
               </>
             )}
           </button>

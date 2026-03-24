@@ -52,11 +52,11 @@ export default function AdminBlogFormPage() {
         date: new Date().toISOString()
       });
 
-      setMessage({ type: "success", text: "Technical bulletin broadcasted successfully." });
+      setMessage({ type: "success", text: "Blog post published successfully." });
       setTimeout(() => router.push('/admin/blogs'), 2000);
     } catch (error: any) {
       console.error("Error creating blog:", error);
-      setMessage({ type: "error", text: "Transmission failure." });
+      setMessage({ type: "error", text: "Could not publish. Please try again." });
     } finally {
       setIsLoading(false);
       setIsUploading(false);
@@ -67,9 +67,9 @@ export default function AdminBlogFormPage() {
     <div className="max-w-4xl mx-auto space-y-12 pb-20">
       <div className="flex items-center justify-between border-b border-border pb-8">
          <Link href="/admin/blogs" className="inline-flex items-center gap-2 text-[10px] font-bold text-muted-foreground hover:text-accent uppercase tracking-widest">
-            <ChevronLeft className="w-4 h-4" /> Back to Intelligence Grid
+            <ChevronLeft className="w-4 h-4" /> Back to Blog Posts
          </Link>
-         <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Draft Technical Intel</h1>
+         <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Write New Post</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-12">
@@ -80,7 +80,7 @@ export default function AdminBlogFormPage() {
                      <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Article Title *</label>
                      <input
                         name="title"
-                        placeholder="State the primary subject (e.g. Engine Maintenance Protocols)..."
+                        placeholder="Enter your blog post title..."
                         className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-sm font-bold"
                         value={formData.title}
                         onChange={handleChange}
@@ -88,10 +88,10 @@ export default function AdminBlogFormPage() {
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Executive Summary (Excerpt) *</label>
+                     <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Short Summary *</label>
                      <textarea
                         name="excerpt"
-                        placeholder="Provide a high-level briefing..."
+                        placeholder="Write a short summary of your post..."
                         className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs h-24 italic"
                         value={formData.excerpt}
                         onChange={handleChange}
@@ -99,10 +99,10 @@ export default function AdminBlogFormPage() {
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Full Technical Content *</label>
+                     <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Full Content *</label>
                      <textarea
                         name="content"
-                        placeholder="Detailed engineering analysis and instructions..."
+                        placeholder="Write your full blog post here..."
                         className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs h-64"
                         value={formData.content}
                         onChange={handleChange}
@@ -114,7 +114,7 @@ export default function AdminBlogFormPage() {
 
             <div className="space-y-8">
                <div className="bg-white p-10 border border-border">
-                  <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-border pb-4 mb-6 text-center">Visual Component</h3>
+                  <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-border pb-4 mb-6 text-center">Cover Image</h3>
                   {imagePreview ? (
                      <div className="relative aspect-video bg-muted border border-border overflow-hidden">
                         <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
@@ -125,7 +125,7 @@ export default function AdminBlogFormPage() {
                   ) : (
                      <label className="block w-full border-2 border-dashed border-border py-12 text-center hover:border-accent transition-colors cursor-pointer bg-muted/10">
                         <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-4" />
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Attach Graphics</span>
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Upload Image</span>
                         <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                      </label>
                   )}
@@ -136,7 +136,7 @@ export default function AdminBlogFormPage() {
                   disabled={isLoading || isUploading}
                   className="w-full py-5 bg-primary text-white font-bold uppercase tracking-[0.3em] text-xs hover:bg-accent transition-all shadow-2xl flex items-center justify-center gap-4"
                >
-                  <Save className="w-5 h-5" /> Broadcast Intel
+                  <Save className="w-5 h-5" /> Publish Post
                </button>
             </div>
          </div>

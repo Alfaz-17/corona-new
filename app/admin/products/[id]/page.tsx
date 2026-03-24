@@ -78,7 +78,7 @@ export default function AdminProductEditPage() {
         }
       } catch (error) {
         console.error('Error fetching edit data:', error);
-        setMessage({ type: 'error', text: 'Failed to load asset data.' });
+        setMessage({ type: 'error', text: 'Failed to load product data.' });
       } finally {
         setIsLoading(false);
       }
@@ -120,7 +120,10 @@ export default function AdminProductEditPage() {
         body: formData,
       });
 
-      if (!response.ok) throw new Error('AI analysis failed');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'AI analysis failed');
+      }
 
       const data = await response.json();
 
@@ -411,7 +414,7 @@ export default function AdminProductEditPage() {
                   checked={formData.featured}
                   onChange={handleChange}
                 />
-                <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Mark as Featured</label>
+                <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Show on Home Page</label>
              </div>
           </div>
         </div>

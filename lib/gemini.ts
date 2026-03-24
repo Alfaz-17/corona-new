@@ -10,8 +10,9 @@ export async function analyzeProductImage(imageBuffer: Buffer, mimeType: string,
     throw new Error("GEMINI_API_KEY is not defined in environment variables.");
   }
 
-  // Using gemini-2.0-flash for maximum stability and speed
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  // Using gemini-1.5-flash as it's often more available on free tiers, with 2.0 as primary
+  const modelName = "gemini-1.5-flash"; 
+  const model = genAI.getGenerativeModel({ model: modelName });
 
   const categoriesPrompt = categories.length > 0 
     ? `Pick the most appropriate category from this list: ${categories.join(", ")}. If none fit perfectly, pick the closest one.`
@@ -30,13 +31,13 @@ export async function analyzeProductImage(imageBuffer: Buffer, mimeType: string,
 
   try {
     const result = await model.generateContent([
-      prompt,
       {
         inlineData: {
           data: imageBuffer.toString("base64"),
           mimeType: mimeType
         },
       },
+      prompt,
     ]);
 
     const response = await result.response;
@@ -47,6 +48,17 @@ export async function analyzeProductImage(imageBuffer: Buffer, mimeType: string,
     return JSON.parse(jsonString);
   } catch (error: any) {
     console.error("Gemini API detailed error:", error);
-    throw new Error(`Gemini Analysis Error: ${error.message || "Failed to analyze image correctly."}`);
+    
+    // Better user-facing error message
+    let errorMessage = "AI Analysis failed.";
+    if (error.status === 429 || error.message?.includes("429")) {
+      errorMessage = "AI limit reached. Please wait a minute or fill details manually.";
+    } else if (error.status === 404 || error.message?.includes("404")) {
+      errorMessage = "AI model currently unavailable. Please try again later.";
+    } else if (error.message?.includes("API key")) {
+      errorMessage = "Invalid Gemini API key. Please check your .env file.";
+    }
+    
+    throw new Error(errorMessage);
   }
 }

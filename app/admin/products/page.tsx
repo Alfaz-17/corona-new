@@ -18,7 +18,7 @@ export default function AdminProductListPage() {
   
   const isLoading = !prodError && !products.length && products.length === 0; // Simple loading check
 
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = products.filter((product: any) => {
     const matchesSearch = product.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (product.brand?.name && product.brand.name.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -31,39 +31,39 @@ export default function AdminProductListPage() {
       const updatedProduct = { ...product, featured: !product.featured };
       await api.put(`/products/${product._id}`, updatedProduct);
       mutateProducts();
-      setMessage({ type: 'success', text: `Asset ${updatedProduct.featured ? 'promoted' : 'removed from focus'}.` });
+      setMessage({ type: 'success', text: `Product ${updatedProduct.featured ? 'marked as featured' : 'removed from featured'}.` });
     } catch (error) {
       console.error("Error toggling featured", error);
-      setMessage({ type: 'error', text: 'Status update failed.' });
+      setMessage({ type: 'error', text: 'Could not update. Please try again.' });
     }
   };
 
   const handleDelete = async (productId: string) => {
-    if (!window.confirm('Confirm decommissioning?')) return;
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
 
     try {
       await api.delete(`/products/${productId}`);
       mutateProducts();
-      setMessage({ type: 'success', text: 'Unit removed.' });
+      setMessage({ type: 'success', text: 'Product deleted.' });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Decommissioning failed.' });
+      setMessage({ type: 'error', text: 'Could not delete. Please try again.' });
     }
   };
 
-  if (isLoading) return <div className="text-xs font-bold uppercase tracking-widest animate-pulse">Scanning Inventory...</div>;
+  if (isLoading) return <div className="text-xs font-bold uppercase tracking-widest animate-pulse">Loading Products...</div>;
 
   return (
     <div className="space-y-12">
       <div className="flex items-center justify-between border-b border-border pb-8">
         <div>
-          <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Inventory Console</h1>
-          <p className="text-xs font-bold text-accent uppercase tracking-[0.3em] mt-2">Manage Marine Components & Spares</p>
+          <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">All Products</h1>
+          <p className="text-xs font-bold text-accent uppercase tracking-[0.3em] mt-2">Manage Your Products & Parts</p>
         </div>
         <Link 
           href="/admin/products/new" 
           className="px-8 py-4 bg-primary text-white text-[10px] font-bold uppercase tracking-widest hover:bg-accent transition-all shadow-xl flex items-center gap-3"
         >
-          <Plus className="w-4 h-4" /> Add New Asset
+          <Plus className="w-4 h-4" /> Add New Product
         </Link>
       </div>
 
@@ -75,11 +75,11 @@ export default function AdminProductListPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-8 border border-border">
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-primary uppercase tracking-widest block">Search Matrix</label>
+            <label className="text-[10px] font-bold text-primary uppercase tracking-widest block">Search</label>
             <div className="relative">
               <input
                 type="text"
-                placeholder="Title, Specs, or Brand ID..."
+                placeholder="Search by name or brand..."
                 className="w-full pl-10 pr-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -89,14 +89,14 @@ export default function AdminProductListPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-primary uppercase tracking-widest block">Sector Filter</label>
+            <label className="text-[10px] font-bold text-primary uppercase tracking-widest block">Category</label>
             <select
               className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs uppercase font-bold tracking-widest"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
-              <option value="">All Sectors</option>
-              {categories.map(cat => (
+              <option value="">All Categories</option>
+              {categories.map((cat: any) => (
                 <option key={cat._id} value={cat._id}>{cat.name}</option>
               ))}
             </select>
@@ -108,14 +108,14 @@ export default function AdminProductListPage() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-primary text-white text-[10px] font-bold uppercase tracking-widest">
-                <th className="py-5 px-6">Asset Component</th>
-                <th className="py-5 px-6">Sector</th>
-                <th className="py-5 px-6 text-center">Focus</th>
-                <th className="py-5 px-6">Operations</th>
+                <th className="py-5 px-6">Product</th>
+                <th className="py-5 px-6">Category</th>
+                <th className="py-5 px-6 text-center">Featured</th>
+                <th className="py-5 px-6">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filteredProducts.map((product) => (
+              {filteredProducts.map((product: any) => (
                 <tr key={product._id} className="hover:bg-muted/30 transition-colors">
                   <td className="py-6 px-6">
                     <div className="flex items-center gap-6">
@@ -137,7 +137,7 @@ export default function AdminProductListPage() {
                     <button
                       onClick={() => handleToggleFeatured(product)}
                       className={`p-2 transition-all duration-300 ${product.featured ? 'text-accent scale-125' : 'text-muted-foreground/30 hover:text-accent/50'}`}
-                      title={product.featured ? "Strategic Asset (Featured)" : "Mark as Strategic"}
+                      title={product.featured ? "Featured Product" : "Mark as Featured"}
                     >
                       <Star className={`w-5 h-5 ${product.featured ? 'fill-accent' : ''}`} />
                     </button>

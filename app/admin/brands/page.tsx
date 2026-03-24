@@ -62,44 +62,44 @@ export default function AdminBrandPage() {
         });
         mutate();
         setEditingId(null);
-        setMessage({ type: 'success', text: 'Brand identity updated.' });
+        setMessage({ type: 'success', text: 'Brand updated.' });
       } else {
         await api.post('/brands', { 
           name: newBrand.name, 
           logo: logoUrl 
         });
         mutate();
-        setMessage({ type: 'success', text: 'Partner brand synchronized.' });
+        setMessage({ type: 'success', text: 'Brand added successfully.' });
       }
       
       setNewBrand({ name: '', logo: '' });
       setLogoFile(null);
       setLogoPreview('');
     } catch (error) {
-      setMessage({ type: 'error', text: 'Operation failure.' });
+      setMessage({ type: 'error', text: 'Something went wrong. Please try again.' });
     } finally {
       setIsUploading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Sever partnership link with this brand?')) return;
+    if (!window.confirm('Are you sure you want to delete this brand?')) return;
     try {
       await api.delete(`/brands/${id}`);
       mutate();
       setMessage({ type: 'success', text: 'Brand removed.' });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Operation failed.' });
+      setMessage({ type: 'error', text: 'Could not delete. Please try again.' });
     }
   };
 
-  if (isLoading) return <div className="text-xs font-bold uppercase tracking-widest animate-pulse">Syncing Brand Registry...</div>;
+  if (isLoading) return <div className="text-xs font-bold uppercase tracking-widest animate-pulse">Loading Brands...</div>;
 
   return (
     <div className="max-w-4xl space-y-12">
       <div className="border-b border-border pb-8">
-        <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Strategic Partners</h1>
-        <p className="text-xs font-bold text-accent uppercase tracking-[0.3em] mt-2">Manage Manufacturer Relationships & Branding</p>
+        <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Brands</h1>
+        <p className="text-xs font-bold text-accent uppercase tracking-[0.3em] mt-2">Manage Your Brand Partners</p>
       </div>
 
       {message.text && (
@@ -110,7 +110,7 @@ export default function AdminBrandPage() {
 
       <div className="bg-white p-10 border border-border">
          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-primary">{editingId ? 'Modify Strategic Partner' : 'Onboard New Partner'}</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest text-primary">{editingId ? 'Edit Brand' : 'Add New Brand'}</h2>
             {editingId && (
                <button onClick={handleCancelEdit} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary">Cancel Edit</button>
             )}
@@ -129,7 +129,7 @@ export default function AdminBrandPage() {
                   />
                </div>
                <div className="w-48 space-y-2 text-center">
-                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest block mb-4">Logo ID</label>
+                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest block mb-4">Logo</label>
                   {logoPreview ? (
                      <div className="relative h-14 border border-border bg-muted flex items-center justify-center p-2">
                         <img src={logoPreview} alt="Logo" className="max-h-full max-w-full object-contain" />
@@ -144,7 +144,7 @@ export default function AdminBrandPage() {
                </div>
             </div>
             <button type="submit" disabled={isUploading} className="w-full py-4 bg-primary text-white text-[10px] font-bold uppercase tracking-widest hover:bg-accent transition-colors shadow-xl">
-               {isUploading ? 'Synchronizing Data...' : editingId ? 'Commit Update' : 'Register Partnership'}
+               {isUploading ? 'Saving...' : editingId ? 'Save Changes' : 'Add Brand'}
             </button>
          </form>
       </div>
@@ -167,7 +167,7 @@ export default function AdminBrandPage() {
             </div>
          ))}
          {brands.length === 0 && (
-            <div className="col-span-full py-20 bg-muted/20 border border-dashed border-border text-center text-xs font-bold text-muted-foreground uppercase opacity-50 italic">No partners currently registered in the grid</div>
+            <div className="col-span-full py-20 bg-muted/20 border border-dashed border-border text-center text-xs font-bold text-muted-foreground uppercase opacity-50 italic">No brands added yet</div>
          )}
       </div>
     </div>

@@ -73,9 +73,9 @@ export default function SettingsPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Global Settings</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground mt-2">
-          Configure automated tasks and global site preferences.
+          Manage your store settings and preferences.
         </p>
       </div>
 

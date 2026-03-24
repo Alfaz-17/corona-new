@@ -40,7 +40,7 @@ export default function AdminBlogEditPage() {
         setExistingImage(data.image || '');
       } catch (error) {
         console.error('Error fetching blog data:', error);
-        setMessage({ type: 'error', text: 'Failed to retrieve technical briefing.' });
+        setMessage({ type: 'error', text: 'Could not load blog post.' });
       } finally {
         setIsLoading(false);
       }
@@ -79,11 +79,11 @@ export default function AdminBlogEditPage() {
         image: imageUrl
       });
 
-      setMessage({ type: "success", text: "Technical intel synchronized and published." });
+      setMessage({ type: "success", text: "Blog post updated successfully." });
       setTimeout(() => router.push('/admin/blogs'), 2000);
     } catch (error: any) {
       console.error("Error updating blog:", error);
-      setMessage({ type: "error", text: "Transmission failure during article update." });
+      setMessage({ type: "error", text: "Could not update. Please try again." });
     } finally {
       setIsSaving(false);
       setIsUploading(false);
@@ -96,9 +96,9 @@ export default function AdminBlogEditPage() {
     <div className="max-w-4xl mx-auto space-y-12 pb-20">
       <div className="flex items-center justify-between border-b border-border pb-8">
          <Link href="/admin/blogs" className="inline-flex items-center gap-2 text-[10px] font-bold text-muted-foreground hover:text-accent uppercase tracking-widest">
-            <ChevronLeft className="w-4 h-4" /> Back to Intelligence Grid
+            <ChevronLeft className="w-4 h-4" /> Back to Blog Posts
          </Link>
-         <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Edit Technical Intel</h1>
+         <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Edit Blog Post</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-12">
@@ -116,7 +116,7 @@ export default function AdminBlogEditPage() {
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Executive Summary (Excerpt) *</label>
+                     <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Short Summary *</label>
                      <textarea
                         name="excerpt"
                         className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs h-24 italic"
@@ -126,7 +126,7 @@ export default function AdminBlogEditPage() {
                      />
                   </div>
                   <div className="space-y-2">
-                     <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Full Technical Content *</label>
+                     <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Full Content *</label>
                      <textarea
                         name="content"
                         className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs h-64"
@@ -140,7 +140,7 @@ export default function AdminBlogEditPage() {
 
             <div className="space-y-8">
                <div className="bg-white p-10 border border-border">
-                  <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-border pb-4 mb-6 text-center">Visual Component</h3>
+                  <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-border pb-4 mb-6 text-center">Cover Image</h3>
                   {(imagePreview || existingImage) ? (
                      <div className="relative aspect-video bg-muted border border-border overflow-hidden">
                         <img src={imagePreview || existingImage} alt="Preview" className="w-full h-full object-cover" />
@@ -151,7 +151,7 @@ export default function AdminBlogEditPage() {
                   ) : (
                      <label className="block w-full border-2 border-dashed border-border py-12 text-center hover:border-accent transition-colors cursor-pointer bg-muted/10">
                         <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-4" />
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Replace Graphics</span>
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Upload New Image</span>
                         <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                      </label>
                   )}
@@ -165,11 +165,11 @@ export default function AdminBlogEditPage() {
                   {isSaving || isUploading ? (
                     <>
                       <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
-                      Updating Intel...
+                      Saving...
                     </>
                   ) : (
                     <>
-                      <Save className="w-5 h-5" /> Commit Article
+                      <Save className="w-5 h-5" /> Save Changes
                     </>
                   )}
                </button>

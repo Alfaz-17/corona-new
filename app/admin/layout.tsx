@@ -116,7 +116,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <p className="text-xs font-bold text-white uppercase tracking-wider truncate max-w-[120px]">
                 {user?.name || user?.email || 'Admin'}
               </p>
-              <p className="text-[10px] text-accent font-bold uppercase tracking-widest">Fleet Admin</p>
+              <p className="text-[10px] text-accent font-bold uppercase tracking-widest">Administrator</p>
             </div>
           </div>
           <button
@@ -124,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             className="flex items-center justify-center w-full px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white bg-red-600/60 hover:bg-red-600 transition-all shadow-xl"
           >
             <LogOut className="w-4 h-4 mr-2" />
-            End Session
+            Logout
           </button>
         </div>
       </div>

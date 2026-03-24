@@ -21,13 +21,13 @@ export default function AdminDashboard() {
     fetchStats();
   }, []);
 
-  if (!stats) return <div className="text-xs font-bold uppercase tracking-widest animate-pulse p-4">Syncing system data...</div>;
+  if (!stats) return <div className="text-xs font-bold uppercase tracking-widest animate-pulse p-4">Loading data...</div>;
 
   const cards = [
-    { title: 'Total Inventory', value: stats.products, icon: Package, href: '/admin/products' },
+    { title: 'Total Products', value: stats.products, icon: Package, href: '/admin/products' },
     { title: 'Categories', value: stats.categories, icon: Grid3X3, href: '/admin/categories' },
-    { title: 'Partner Brands', value: stats.brands, icon: Award, href: '/admin/brands' },
-    { title: 'Technical Blogs', value: stats.blogs, icon: FileText, href: '/admin/blogs' },
+    { title: 'Brands', value: stats.brands, icon: Award, href: '/admin/brands' },
+    { title: 'Blog Posts', value: stats.blogs, icon: FileText, href: '/admin/blogs' },
     { title: 'Customer Orders', value: stats.orders || 0, icon: ShoppingCart, href: '/admin/orders' },
   ];
 
@@ -35,8 +35,8 @@ export default function AdminDashboard() {
     <div className="space-y-12">
       <div className="flex justify-between items-end border-b border-border pb-8">
         <div>
-          <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Command Center</h1>
-          <p className="text-xs font-bold text-accent uppercase tracking-[0.3em] mt-2">Real-time Fleet & Inventory Overview</p>
+          <h1 className="text-3xl font-bold text-primary uppercase tracking-tighter">Dashboard</h1>
+          <p className="text-xs font-bold text-accent uppercase tracking-[0.3em] mt-2">Overview of your products and store</p>
         </div>
         <div className="text-right">
            <span className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Last Updated</span>
@@ -65,15 +65,15 @@ export default function AdminDashboard() {
       
       <div className="grid lg:grid-cols-2 gap-8 mt-12">
         <div className="bg-primary p-10 text-white relative h-64 flex flex-col justify-center">
-            <h2 className="text-2xl font-bold uppercase tracking-tight mb-4">Inventory Operations</h2>
-            <p className="text-white/60 text-sm italic mb-8">Maintain the high standard of Corona Marine by reviewing and updating the spare parts catalog.</p>
+            <h2 className="text-2xl font-bold uppercase tracking-tight mb-4">Manage Products</h2>
+            <p className="text-white/60 text-sm italic mb-8">Maintain the high standard of Corona Marine by reviewing and updating your product catalog.</p>
             <Link href="/admin/products" className="inline-flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-accent hover:gap-6 transition-all">
-              Manage Components <ArrowUpRight className="w-4 h-4" />
+              Manage Products <ArrowUpRight className="w-4 h-4" />
             </Link>
         </div>
         <div className="bg-white p-10 border border-border h-64 flex flex-col justify-center">
-            <h2 className="text-2xl font-bold text-primary uppercase tracking-tight mb-4">Content Strategy</h2>
-            <p className="text-muted-foreground text-sm mb-8">Publish technical insights or new brand partnerships to keep your clients informed.</p>
+            <h2 className="text-2xl font-bold text-primary uppercase tracking-tight mb-4">Blog & Brands</h2>
+            <p className="text-muted-foreground text-sm mb-8">Publish blog posts or manage brand partners to keep your customers informed.</p>
             <div className="flex gap-6">
                 <Link href="/admin/blogs" className="text-[10px] font-bold uppercase tracking-widest text-accent hover:text-primary">Update Blog</Link>
                 <Link href="/admin/brands" className="text-[10px] font-bold uppercase tracking-widest text-accent hover:text-primary">Manage Brands</Link>

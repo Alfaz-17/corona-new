@@ -47,7 +47,7 @@ export function Newsletter() {
                 type="submit"
                 className="group inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 text-[10px] font-bold tracking-[0.3em] uppercase marine-transition hover:bg-accent marine-shadow-xl"
               >
-                Subscribe
+                SEND
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 marine-transition" />
               </button>
             </form>
