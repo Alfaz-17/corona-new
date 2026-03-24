@@ -3,8 +3,15 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function analyzeProductImage(imageBuffer: Buffer, mimeType: string, categories: string[] = []) {
-  // Using gemini-1.5-flash for maximum stability and speed
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const apiKey = process.env.GEMINI_API_KEY;
+  console.log("Gemini API Key check:", apiKey ? `Present (length: ${apiKey.length})` : "Missing");
+  
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not defined in environment variables.");
+  }
+
+  // Using gemini-2.0-flash for maximum stability and speed
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
   const categoriesPrompt = categories.length > 0 
     ? `Pick the most appropriate category from this list: ${categories.join(", ")}. If none fit perfectly, pick the closest one.`

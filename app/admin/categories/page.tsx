@@ -4,35 +4,28 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Edit2, LayoutGrid } from 'lucide-react';
 import api from '@/lib/api';
 
+import useSWR from 'swr';
+
+const fetcher = (url: string) => api.get(url).then(res => res.data);
+
 export default function AdminCategoryPage() {
-  const [categories, setCategories] = useState<any[]>([]);
+  const { data: categories = [], error, mutate } = useSWR('/categories', fetcher);
+  
   const [newCategory, setNewCategory] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const isLoading = !error && !categories.length && categories.length === 0; // Simple loading check
   const [message, setMessage] = useState({ type: '', text: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await api.get('/categories');
-        setCategories(res.data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchCategories();
-  }, []);
+  // Removed useEffect as useSWR handles fetching
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategory.trim()) return;
 
     try {
-      const res = await api.post('/categories', { name: newCategory });
-      setCategories([...categories, res.data]);
+      await api.post('/categories', { name: newCategory });
+      mutate();
       setNewCategory('');
       setMessage({ type: 'success', text: 'New fleet sector registered.' });
     } catch (error) {
@@ -43,8 +36,8 @@ export default function AdminCategoryPage() {
   const handleUpdateCategory = async (id: string) => {
     if (!editingName.trim()) return;
     try {
-      const res = await api.put(`/categories/${id}`, { name: editingName });
-      setCategories(categories.map(c => c._id === id ? res.data : c));
+      await api.put(`/categories/${id}`, { name: editingName });
+      mutate();
       setEditingId(null);
       setMessage({ type: 'success', text: 'Sector designation updated.' });
     } catch (error) {
@@ -56,7 +49,7 @@ export default function AdminCategoryPage() {
     if (!window.confirm('Decommission this sector? This may affect linked assets.')) return;
     try {
       await api.delete(`/categories/${id}`);
-      setCategories(categories.filter(c => c._id !== id));
+      mutate();
       setMessage({ type: 'success', text: 'Sector decommissioned.' });
     } catch (error) {
       setMessage({ type: 'error', text: 'Operation failed.' });

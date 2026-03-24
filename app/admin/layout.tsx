@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { MarineLoader } from '@/components/common/marine-loader';
 import { Logo } from '@/components/common/logo';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -147,7 +148,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         <main className="p-8">
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </main>
       </div>
     </div>

@@ -254,24 +254,41 @@ export default function AdminProductFormPage() {
       }
       
       setIsUploading(false);
-
-      await api.post("/products", {
+      
+      const payload = {
         ...formData,
+        category: formData.category || undefined,
         image: mainImageUrl,
         images: secondaryImageUrls
-      });
+      };
+
+      console.log('Sending product payload:', JSON.stringify(payload, null, 2));
+      const response = await api.post("/products", payload);
+      console.log('Product creation response:', response.data);
 
       setMessage({ type: "success", text: "Product added successfully." });
       // Reset form
-      setFormData({ title: '', description: '', category: '', featured: false });
+      setFormData({
+        title: '',
+        description: '',
+        category: '',
+        featured: false
+      });
       setImageFile(null);
       setImagePreview('');
       setImagesFile([]);
       setImagePreviews([]);
       
+      setTimeout(() => window.location.href = '/admin/products', 2000);
     } catch (error: any) {
-      console.error("Error creating product:", error);
-      setMessage({ type: "error", text: error.response?.data?.message || "Failed to add product. Please try again." });
+      console.error("Error creating product details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      const errorDetail = error.response?.data?.error || error.message;
+      const errorStack = error.response?.data?.detail ? JSON.stringify(error.response.data.detail) : '';
+      setMessage({ type: "error", text: `Creation failed: ${errorDetail}. ${errorStack}` });
     } finally {
       setIsLoading(false);
       setIsUploading(false);

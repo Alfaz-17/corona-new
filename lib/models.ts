@@ -28,7 +28,7 @@ const ProductSchema = new Schema({
   featured: { type: Boolean, default: false }
 }, { timestamps: true });
 
-const preSaveProduct = function(this: any, next: any) {
+const preSaveProduct = function(this: any) {
   if (this.isModified('title') && (!this.slug || this.isNew)) {
     this.slug = this.title
       .toLowerCase()
@@ -36,7 +36,6 @@ const preSaveProduct = function(this: any, next: any) {
       .replace(/[^\w ]+/g, '')
       .replace(/ +/g, '-');
   }
-  next();
 };
 
 ProductSchema.pre('save', preSaveProduct);
@@ -60,7 +59,7 @@ const BlogSchema = new Schema({
   date: { type: Date, default: Date.now }
 }, { timestamps: true });
 
-const preSaveBlog = function(this: any, next: any) {
+const preSaveBlog = function(this: any) {
   if (this.isModified('title') && (!this.slug || this.isNew)) {
     this.slug = this.title
       .toLowerCase()
@@ -68,7 +67,6 @@ const preSaveBlog = function(this: any, next: any) {
       .replace(/[^\w ]+/g, '')
       .replace(/ +/g, '-');
   }
-  next();
 };
 
 BlogSchema.pre('save', preSaveBlog);

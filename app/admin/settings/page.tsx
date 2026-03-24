@@ -10,8 +10,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
+import useSWR from 'swr';
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
 export default function SettingsPage() {
-  const [loading, setLoading] = useState(true);
+  const { data, error, mutate } = useSWR('/api/settings', fetcher);
+  
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({
     autoBackgroundRemoval: false,
@@ -20,27 +25,18 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    fetchSettings();
-  }, []);
-
-  const fetchSettings = async () => {
-    try {
-      const res = await fetch('/api/settings');
-      if (res.ok) {
-        const data = await res.json();
-        setSettings({
-          autoBackgroundRemoval: data.autoBackgroundRemoval,
-          applyWatermark: data.applyWatermark,
-          watermarkText: data.watermarkText
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching settings:', error);
-      toast.error('Failed to load settings');
-    } finally {
-      setLoading(false);
+    if (data) {
+      setSettings({
+        autoBackgroundRemoval: data.autoBackgroundRemoval,
+        applyWatermark: data.applyWatermark,
+        watermarkText: data.watermarkText
+      });
     }
-  };
+  }, [data]);
+
+  const isLoading = !error && !data;
+
+  // fetchSettings is now handled by useSWR
 
   const handleSave = async () => {
     setSaving(true);
@@ -52,6 +48,7 @@ export default function SettingsPage() {
       });
 
       if (res.ok) {
+        mutate();
         toast.success('Settings updated successfully');
       } else {
         const data = await res.json();
@@ -65,7 +62,7 @@ export default function SettingsPage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />

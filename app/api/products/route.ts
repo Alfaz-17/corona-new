@@ -43,12 +43,21 @@ export async function POST(req: Request) {
     await connectToDatabase();
     const body = await req.json();
     
-    // Basic validation could happen here, but Mongoose also validates.
     const product = await Product.create(body);
+    console.log('Product created successfully:', product._id);
     
     return NextResponse.json(product);
-  } catch (error) {
-    console.error('Products POST error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Products POST error details:', {
+      message: error.message,
+      code: error.code,
+      name: error.name,
+      errors: error.errors,
+      stack: error.stack
+    });
+    return NextResponse.json({ 
+      error: error.message || 'Internal Server Error',
+      detail: error.errors || error.stack || 'No detail available'
+    }, { status: 500 });
   }
 }

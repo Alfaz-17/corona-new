@@ -1,33 +1,25 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, Trash2, Award, Upload, X } from 'lucide-react';
 import api from '@/lib/api';
 import { uploadToCloudinary } from '@/lib/utils/cloudinary';
+import useSWR from 'swr';
+
+const fetcher = (url: string) => api.get(url).then(res => res.data);
 
 export default function AdminBrandPage() {
-  const [brands, setBrands] = useState<any[]>([]);
+  const { data: brands = [], error, mutate } = useSWR('/brands', fetcher);
+  
   const [newBrand, setNewBrand] = useState({ name: '', logo: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const isLoading = !error && !brands.length && brands.length === 0; // Simple loading check
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
-  useEffect(() => {
-    const fetchBrands = async () => {
-      try {
-        const res = await api.get('/brands');
-        setBrands(res.data);
-      } catch (error) {
-        console.error('Error fetching brands:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchBrands();
-  }, []);
+  // Removed useEffect as useSWR handles fetching
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -64,19 +56,19 @@ export default function AdminBrandPage() {
       }
       
       if (editingId) {
-        const res = await api.put(`/brands/${editingId}`, { 
+        await api.put(`/brands/${editingId}`, { 
           name: newBrand.name, 
           logo: logoUrl 
         });
-        setBrands(brands.map(b => b._id === editingId ? res.data : b));
+        mutate();
         setEditingId(null);
         setMessage({ type: 'success', text: 'Brand identity updated.' });
       } else {
-        const res = await api.post('/brands', { 
+        await api.post('/brands', { 
           name: newBrand.name, 
           logo: logoUrl 
         });
-        setBrands([...brands, res.data]);
+        mutate();
         setMessage({ type: 'success', text: 'Partner brand synchronized.' });
       }
       
@@ -94,7 +86,7 @@ export default function AdminBrandPage() {
     if (!window.confirm('Sever partnership link with this brand?')) return;
     try {
       await api.delete(`/brands/${id}`);
-      setBrands(brands.filter(b => b._id !== id));
+      mutate();
       setMessage({ type: 'success', text: 'Brand removed.' });
     } catch (error) {
       setMessage({ type: 'error', text: 'Operation failed.' });

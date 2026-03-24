@@ -1,36 +1,22 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Search, Eye, Star } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Star } from 'lucide-react';
 import api from '@/lib/api';
+import useSWR from 'swr';
+
+const fetcher = (url: string) => api.get(url).then(res => res.data);
 
 export default function AdminProductListPage() {
-  const [products, setProducts] = useState<any[]>([]);
+  const { data: products = [], error: prodError, mutate: mutateProducts } = useSWR("/products", fetcher);
+  const { data: categories = [], error: catError } = useSWR("/categories", fetcher);
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [categories, setCategories] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState({ type: '', text: '' });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [prodRes, catRes] = await Promise.all([
-          api.get("/products"),
-          api.get("/categories")
-        ]);
-        setProducts(prodRes.data);
-        setCategories(catRes.data);
-      } catch (error) {
-        console.error("Error fetching data", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  
+  const isLoading = !prodError && !products.length && products.length === 0; // Simple loading check
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -44,8 +30,8 @@ export default function AdminProductListPage() {
     try {
       const updatedProduct = { ...product, featured: !product.featured };
       await api.put(`/products/${product._id}`, updatedProduct);
-      setProducts(products.map(p => p._id === product._id ? updatedProduct : p));
-      setMessage({ type: 'success', text: `Asset ${updatedProduct.featured ? 'promoted to strategic status' : 'removed from strategic focus'}.` });
+      mutateProducts();
+      setMessage({ type: 'success', text: `Asset ${updatedProduct.featured ? 'promoted' : 'removed from focus'}.` });
     } catch (error) {
       console.error("Error toggling featured", error);
       setMessage({ type: 'error', text: 'Status update failed.' });
@@ -53,14 +39,14 @@ export default function AdminProductListPage() {
   };
 
   const handleDelete = async (productId: string) => {
-    if (!window.confirm('Confirm decommissioning of this inventory unit?')) return;
+    if (!window.confirm('Confirm decommissioning?')) return;
 
     try {
       await api.delete(`/products/${productId}`);
-      setProducts(products.filter(p => p._id !== productId));
-      setMessage({ type: 'success', text: 'Unit removed from fleet inventory.' });
+      mutateProducts();
+      setMessage({ type: 'success', text: 'Unit removed.' });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Decommissioning failed. Check system logs.' });
+      setMessage({ type: 'error', text: 'Decommissioning failed.' });
     }
   };
 

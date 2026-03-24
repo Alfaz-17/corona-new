@@ -37,6 +37,7 @@ export default function AdminProductEditPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [categories, setCategories] = useState<any[]>([]);
+  const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
   
   // Global Settings state
   const [globalSettings, setGlobalSettings] = useState({
@@ -99,6 +100,53 @@ export default function AdminProductEditPage() {
     if (file) {
       const objectUrl = URL.createObjectURL(file);
       setCropTarget({ type: 'main', url: objectUrl });
+      
+      // Auto-analyze if global settings allow it or just offer the option
+      // For edit page, we manually trigger to avoid overwriting existing data unexpectedly
+    }
+  };
+
+  const analyzeImage = async (file: File) => {
+    setIsAiAnalyzing(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const categoryNames = categories.map(c => c.name);
+      formData.append('categories', JSON.stringify(categoryNames));
+
+      const response = await fetch('/api/ai/analyze', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('AI analysis failed');
+
+      const data = await response.json();
+
+      setFormData(prev => ({
+        ...prev,
+        title: data.title || prev.title,
+        description: data.description || prev.description,
+      }));
+
+      if (data.categoryName && categories.length > 0) {
+        const matchedCategory = categories.find(cat => 
+          cat.name.toLowerCase() === data.categoryName.toLowerCase() ||
+          cat.name.toLowerCase().includes(data.categoryName.toLowerCase()) ||
+          data.categoryName.toLowerCase().includes(cat.name.toLowerCase())
+        );
+        if (matchedCategory) {
+          setFormData(prev => ({ ...prev, category: matchedCategory._id }));
+        }
+      }
+
+      setMessage({ type: 'success', text: 'AI analysis complete! Fields auto-populated.' });
+    } catch (error) {
+      console.error('AI Analysis Error:', error);
+      setMessage({ type: 'error', text: 'AI analysis failed. Please fill details manually.' });
+    } finally {
+      setIsAiAnalyzing(false);
     }
   };
 
@@ -252,11 +300,16 @@ export default function AdminProductEditPage() {
       
       setIsUploading(false);
 
-      await api.put(`/products/${id}`, {
+      setIsUploading(false);
+
+      const payload = {
         ...formData,
+        category: formData.category || undefined,
         image: mainImageUrl,
         images: secondaryImageUrls
-      });
+      };
+
+      await api.put(`/products/${id}`, payload);
 
       setMessage({ type: "success", text: "Product updated successfully." });
       setTimeout(() => router.push('/admin/products'), 2000);
@@ -289,7 +342,24 @@ export default function AdminProductEditPage() {
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div className="space-y-8 bg-white p-10 border border-border">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Product Details</h2>
+          <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-primary">Product Details</h2>
+            {imageFile && (
+              <button
+                type="button"
+                onClick={() => analyzeImage(imageFile)}
+                disabled={isAiAnalyzing}
+                className="flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-all rounded-sm disabled:opacity-50"
+              >
+                {isAiAnalyzing ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <Sparkles className="w-3 h-3" />
+                )}
+                <span className="text-[10px] font-bold uppercase tracking-widest">AI Analyze</span>
+              </button>
+            )}
+          </div>
           
           <div className="space-y-4">
              <div className="space-y-2">
