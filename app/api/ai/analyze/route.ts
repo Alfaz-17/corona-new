@@ -17,7 +17,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(analysis);
   } catch (error: any) {
-    console.error("AI Analysis Error:", error);
-    return NextResponse.json({ error: error.message || "Failed to analyze image" }, { status: 500 });
+    console.error("AI Analysis Error Detail:", error);
+    return NextResponse.json({ 
+      error: error.message || "Failed to analyze image",
+      detail: error.stack || "No stack trace",
+      env: process.env.GEMINI_API_KEY ? "PRESENT" : "MISSING"
+    }, { status: 500 });
   }
 }
