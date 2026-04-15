@@ -13,7 +13,8 @@ export async function GET() {
       settings = await Settings.create({
         autoBackgroundRemoval: false,
         applyWatermark: true,
-        watermarkText: 'Corona Marine'
+        watermarkText: 'Corona Marine',
+        geminiModel: 'gemini-2.5-flash'
       });
     }
     
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { autoBackgroundRemoval, applyWatermark, watermarkText } = body;
+    const { autoBackgroundRemoval, applyWatermark, watermarkText, geminiModel } = body;
 
     await connectDB();
     let settings = await Settings.findOne();
@@ -41,12 +42,14 @@ export async function POST(request: Request) {
       settings.autoBackgroundRemoval = autoBackgroundRemoval !== undefined ? autoBackgroundRemoval : settings.autoBackgroundRemoval;
       settings.applyWatermark = applyWatermark !== undefined ? applyWatermark : settings.applyWatermark;
       settings.watermarkText = watermarkText || settings.watermarkText;
+      if (geminiModel) settings.geminiModel = geminiModel;
       await settings.save();
     } else {
       settings = await Settings.create({
         autoBackgroundRemoval,
         applyWatermark,
-        watermarkText
+        watermarkText,
+        geminiModel: geminiModel || 'gemini-2.5-flash'
       });
     }
 

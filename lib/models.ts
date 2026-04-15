@@ -98,7 +98,8 @@ export const Order = models?.Order || model('Order', OrderSchema);
 const SettingsSchema = new Schema({
   autoBackgroundRemoval: { type: Boolean, default: false },
   applyWatermark: { type: Boolean, default: true },
-  watermarkText: { type: String, default: 'Corona Marine' }
+  watermarkText: { type: String, default: 'Corona Marine' },
+  geminiModel: { type: String, default: 'gemini-2.5-flash' }
 }, { timestamps: true });
 
 export const Settings = models?.Settings || model('Settings', SettingsSchema);
