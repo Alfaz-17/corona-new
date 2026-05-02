@@ -15,23 +15,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     
     if (!product) {
       return {
-        title: 'System Not Found',
+        title: 'Product Not Found',
       }
     }
 
+    const title = `${product.title} - Marine Spare Parts & Automation`
+    const description = product.description 
+      ? (product.description.length > 160 ? product.description.substring(0, 157) + "..." : product.description)
+      : `Purchase genuine ${product.title} from Alang Shipyard. Certified refurbished marine machinery and automation spare parts with worldwide shipping.`
+
     return {
-      title: `${product.title} | Marine Spare Parts`,
-      description: product.description || `Buy genuine refurbished ${product.title} for maritime use. Sourced from Alang Shipyard. Certified quality and worldwide shipping.`,
+      title,
+      description,
+      alternates: {
+        canonical: `https://coronamarineparts.com/product/${slug}`,
+      },
       openGraph: {
         title: product.title,
-        description: product.description,
+        description: description,
         images: [product.image],
         url: `https://coronamarineparts.com/product/${slug}`,
+        type: 'article',
       },
       twitter: {
         card: 'summary_large_image',
         title: product.title,
-        description: product.description,
+        description: description,
         images: [product.image],
       }
     }
