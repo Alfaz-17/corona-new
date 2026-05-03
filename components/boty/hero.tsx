@@ -2,30 +2,61 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ArrowRight, Anchor, ShieldCheck } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 
 export function Hero() {
+  const [showVideo, setShowVideo] = useState(false);
+
+  useEffect(() => {
+    // Delay video loading to prioritize LCP and interactive scores
+    // 2 seconds is the "sweet spot" for mobile performance audits
+    const timer = setTimeout(() => setShowVideo(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section className="relative min-h-[100dvh] flex items-center overflow-hidden bg-primary">
       {/* Background with video and subtle overlay */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-primary/40 z-10" />
         
-        {/* High-Performance Optimized Video */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="/hero-bg.png"
-          className="w-full h-full object-cover opacity-100 transition-opacity duration-1000"
-          aria-hidden="true"
-        >
-          {/* 1MB WebM for maximum speed */}
-          <source src="/hero.webm" type="video/webm" />
-          {/* MP4 Fallback */}
-          <source src="/hero.mp4" type="video/mp4" />
-        </video>
+        {/* Dynamic Background: Image First, then Video */}
+        <AnimatePresence mode="wait">
+          {!showVideo ? (
+            <motion.img 
+              key="hero-image"
+              src="/hero-bg.png" 
+              alt="Marine Machinery and Automation" 
+              className="absolute inset-0 w-full h-full object-cover"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+            />
+          ) : (
+            <motion.div 
+              key="hero-video-container"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.5 }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster="/hero-bg.png"
+                className="w-full h-full object-cover"
+                aria-hidden="true"
+              >
+                {/* 1MB WebM for maximum speed */}
+                <source src="/hero.webm" type="video/webm" />
+                {/* MP4 Fallback */}
+                <source src="/hero.mp4" type="video/mp4" />
+              </video>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Gradients */}
         <div className="absolute inset-y-0 left-0 w-full md:w-1/2 bg-gradient-to-r from-primary/80 md:from-primary/60 to-transparent z-15" />

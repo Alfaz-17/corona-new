@@ -17,6 +17,7 @@ export const FloatingWhatsappButton = () => {
         href="https://wa.me/919376502550?text=Hi%20I%20want%20to%20know%20more%20about%20your%20products"
         target="_blank"
         rel="noopener noreferrer"
+        aria-label="Contact us on WhatsApp"
         className="w-16 h-16 bg-green-500 hover:bg-green-600 text-white shadow-lg flex items-center justify-center rounded-full transition-colors"
       >
         <svg

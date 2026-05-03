@@ -22,14 +22,13 @@ export function Logo({ className = "", variant = 'dark', size = 'md' }: LogoProp
   return (
     <div className={`flex items-center ${className}`}>
       <div className={`relative ${sizes[size]}`}>
-        <img 
+        <Image 
           src="/logo.png" 
           alt="Corona Marine Logo" 
+          width={180}
+          height={60}
+          priority
           className="h-full w-auto object-contain"
-          onError={(e) => {
-            // Fallback if logo.png fails to load
-            e.currentTarget.style.display = 'none';
-          }}
         />
       </div>
     </div>
