@@ -102,14 +102,14 @@ export function ProductGrid() {
                     {product.images?.[0] && (
                       <Image
                         src={product.images[0]}
-                        alt={product.title}
+                        alt={`${product.title} - High-Resolution Technical Image | Corona Marine Parts`}
                         fill
                         className="object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                       />
                     )}
                     <Image
                       src={product.image || "/placeholder.svg"}
-                      alt={product.title}
+                      alt={`${product.title} - Genuine Marine Spare Part sourced from Alang Shipyard | Corona Marine`}
                       fill
                       className={`object-cover transition-all duration-700 scale-100 group-hover:scale-110 ${product.images?.[0] ? 'group-hover:opacity-0' : ''}`}
                     />
