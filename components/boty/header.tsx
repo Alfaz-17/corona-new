@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, Search, User, ChevronDown, ArrowRight, Instagram, Linkedin, Phone } from "lucide-react"
+import { Menu, X, Search, ChevronDown, ArrowRight, Instagram, Linkedin, Phone } from "lucide-react"
 import api from "@/lib/api"
 import { motion, AnimatePresence } from "framer-motion"
 import { Logo } from "@/components/common/logo"
@@ -14,7 +14,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [categories, setCategories] = useState<any[]>([])
-
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export function Header() {
 
   // Scroll locking for mobile menu
   useEffect(() => {
-    if (isMenuOpen) {
+    if (isMenuOpen || isSearchOpen) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = 'unset'
@@ -46,9 +46,18 @@ export function Header() {
     return () => {
       document.body.style.overflow = 'unset'
     }
-  }, [isMenuOpen])
+  }, [isMenuOpen, isSearchOpen])
 
-  if (pathname?.startsWith("/admin")) return null
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const query = formData.get('q');
+    if (query) {
+      window.location.href = `/products?q=${encodeURIComponent(query.toString())}`;
+    }
+  };
+
+  if (pathname?.startsWith("/admin")) return null;
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -81,17 +90,25 @@ export function Header() {
         }`}
       >
         <div className="flex items-center justify-between h-[50px] relative">
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            className={`lg:hidden p-2 marine-transition transition-colors ${
-              (isScrolled || !isHome) ? "text-white hover:text-accent" : "text-white hover:text-accent"
-            }`}
-            onClick={() => setIsMenuOpen(true)}
-            aria-label="Toggle menu"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
+          {/* Mobile menu button & Search */}
+          <div className="flex items-center gap-4 lg:hidden">
+            <button
+              type="button"
+              className="p-2 text-white hover:text-accent marine-transition"
+              onClick={() => setIsMenuOpen(true)}
+              aria-label="Toggle menu"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <button
+              type="button"
+              className="p-2 text-white hover:text-accent marine-transition"
+              onClick={() => setIsSearchOpen(true)}
+              aria-label="Search products"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+          </div>
 
           {/* Desktop Navigation - Left Group */}
           <div className="hidden lg:flex items-center gap-10">
@@ -104,15 +121,12 @@ export function Header() {
               >
                 <Link
                   href={link.href}
-                  className={`text-[10px] font-bold uppercase tracking-[0.3em] marine-transition flex items-center gap-2 ${
-                    (isScrolled || !isHome) ? "text-white/80 hover:text-white" : "text-white/80 hover:text-white"
-                  }`}
+                  className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/80 hover:text-white marine-transition flex items-center gap-2"
                 >
                   {link.name}
                   {link.dropdown && <ChevronDown className="w-3 h-3 opacity-50" />}
                 </Link>
 
-                {/* Desktop Dropdown */}
                 {link.dropdown && activeDropdown === link.name && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -130,9 +144,6 @@ export function Header() {
                             {item.name}
                           </Link>
                         ))}
-                        <Link href={link.href} className="pt-3 mt-2 border-t border-border flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-accent hover:gap-4 transition-all">
-                          View All {link.name} <ArrowRight className="w-4 h-4" />
-                        </Link>
                       </div>
                     </div>
                   </motion.div>
@@ -144,12 +155,8 @@ export function Header() {
           {/* Logo - Centered */}
           <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center h-32">
             <Link href="/" className="flex items-center">
-              <Logo 
-                variant="white" 
-                size="md" 
-              />
+              <Logo variant="white" size="md" />
             </Link>
-           
           </div>
 
           {/* Desktop Navigation - Right Group */}
@@ -164,15 +171,12 @@ export function Header() {
                 >
                   <Link
                     href={link.href}
-                    className={`text-[10px] font-bold uppercase tracking-[0.3em] marine-transition flex items-center gap-2 ${
-                      (isScrolled || !isHome) ? "text-white/80 hover:text-white" : "text-white/80 hover:text-white"
-                    }`}
+                    className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/80 hover:text-white marine-transition flex items-center gap-2"
                   >
                     {link.name}
                     {link.dropdown && <ChevronDown className="w-3 h-3 opacity-50" />}
                   </Link>
 
-                  {/* Desktop Dropdown */}
                   {link.dropdown && activeDropdown === link.name && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
@@ -190,24 +194,56 @@ export function Header() {
                               {item.name}
                             </Link>
                           ))}
-                          <Link href={link.href} className="pt-3 mt-2 border-t border-border flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-accent hover:gap-4 transition-all">
-                            Explore {link.name} <ArrowRight className="w-4 h-4" />
-                          </Link>
                         </div>
                       </div>
                     </motion.div>
                   )}
                 </div>
               ))}
+              <button 
+                onClick={() => setIsSearchOpen(true)}
+                className="text-white/80 hover:text-accent marine-transition"
+                aria-label="Open search"
+              >
+                <Search className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Search Overlay */}
+        <AnimatePresence>
+          {isSearchOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute inset-0 bg-primary z-[100] px-6 lg:px-12 flex items-center"
+            >
+              <form onSubmit={handleSearch} className="w-full max-w-4xl mx-auto flex items-center gap-6">
+                <Search className="w-6 h-6 text-accent" />
+                <input 
+                  autoFocus
+                  name="q"
+                  placeholder="SEARCH FOR MARINE SPARE PARTS (e.g. Siemens PLC, Yanmar Engine...)" 
+                  className="flex-1 bg-transparent border-none text-white text-sm lg:text-base font-bold uppercase tracking-widest placeholder:text-white/30 focus:outline-none"
+                />
+                <button 
+                  type="button"
+                  onClick={() => setIsSearchOpen(false)}
+                  className="p-2 text-white/50 hover:text-white"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* High-Fidelity Mobile Sidebar */}
         <AnimatePresence>
           {isMenuOpen && (
             <>
-              {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -216,7 +252,6 @@ export function Header() {
                 className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[60] lg:hidden"
               />
               
-              {/* Sidebar Panel */}
               <motion.div
                 initial={{ x: "-100%" }}
                 animate={{ x: 0 }}
@@ -234,7 +269,6 @@ export function Header() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-8 py-10 space-y-10 custom-scrollbar">
-                  {/* Primary Links */}
                   <div className="space-y-8">
                     {navLinks.map((link) => (
                       <div key={link.name} className="space-y-4">
@@ -264,11 +298,10 @@ export function Header() {
                     ))}
                   </div>
 
-                  {/* Operational Contacts */}
                   <div className="pt-10 border-t border-border mt-auto">
                     <h3 className="text-[9px] font-bold uppercase tracking-[0.4em] text-accent mb-6 font-mono">Operations</h3>
                     <div className="space-y-6">
-                      <a href="tel:+917386545454" className="flex items-center gap-4 group">
+                      <a href="tel:+919376502550" className="flex items-center gap-4 group">
                         <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                           <Phone className="w-4 h-4" />
                         </div>
@@ -288,7 +321,7 @@ export function Header() {
             </>
           )}
         </AnimatePresence>
-        {/* Decorative Bottom Lining - Gold Palette */}
+
         <div 
           className={`absolute bottom-0 left-0 right-0 h-[2px] marine-transition ${
             (isScrolled || !isHome) ? "bg-gradient-to-r from-transparent via-accent to-transparent opacity-100" : "bg-white/10 opacity-0"
