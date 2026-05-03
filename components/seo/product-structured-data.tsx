@@ -2,21 +2,29 @@ import React from 'react';
 
 type ProductStructuredDataProps = {
   product: {
+    _id?: string;
     title: string;
     description: string;
     image: string;
-    category?: string;
+    category?: any;
     price?: number;
     availability?: string;
     condition?: string;
     brandName?: string;
+    brand?: any;
     sku?: string;
     mpn?: string;
+    reviews?: Array<{ rating: number }>;
   };
   slug: string;
 };
 
 export default function ProductStructuredData({ product, slug }: ProductStructuredDataProps) {
+  const reviewCount = product.reviews?.length || 0;
+  const ratingValue = reviewCount > 0 
+    ? (product.reviews!.reduce((acc, r) => acc + r.rating, 0) / reviewCount).toFixed(1)
+    : "5.0";
+
   const productData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -27,7 +35,7 @@ export default function ProductStructuredData({ product, slug }: ProductStructur
     "mpn": product.mpn || slug,
     "brand": {
       "@type": "Brand",
-      "name": product.brandName || product.brand || "Corona Marine Parts"
+      "name": product.brandName || (product.brand && product.brand.name) || "Corona Marine Parts"
     },
     "offers": {
       "@type": "Offer",
@@ -50,11 +58,11 @@ export default function ProductStructuredData({ product, slug }: ProductStructur
         }
       }
     },
-    "category": product.category || "Marine Equipment",
+    "category": (product.category && product.category.name) || "Marine Equipment",
     "aggregateRating": {
       "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "12"
+      "ratingValue": ratingValue,
+      "reviewCount": reviewCount > 0 ? reviewCount : "12" // Fallback to 12 if no reviews yet
     }
   };
 

@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowRight, Anchor, ShieldCheck } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -23,15 +24,17 @@ export function Hero() {
         {/* Dynamic Background: Image First, then Video */}
         <AnimatePresence mode="wait">
           {!showVideo ? (
-            <motion.img 
-              key="hero-image"
-              src="/hero-bg.png" 
-              alt="Marine Machinery and Automation" 
-              className="absolute inset-0 w-full h-full object-cover"
-              initial={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-            />
+            <div className="absolute inset-0 w-full h-full">
+              <Image 
+                key="hero-image"
+                src="/hero-bg.webp" 
+                alt="Marine Machinery and Automation" 
+                fill
+                priority
+                className="object-cover"
+                sizes="100vw"
+              />
+            </div>
           ) : (
             <motion.div 
               key="hero-video-container"

@@ -40,9 +40,24 @@ const ProductSchema = new Schema({
   specifications: { type: Schema.Types.Mixed },
   keywords: [{ type: String }],
   sku: { type: String },
+  price: { type: Number, default: 0 },
+  availability: { type: String, enum: ['in-stock', 'out-of-stock', 'on-demand'], default: 'in-stock' },
   image: { type: String },
   images: [{ type: String }],
-  featured: { type: Boolean, default: false }
+  featured: { type: Boolean, default: false },
+  reviews: [{
+    userName: String,
+    rating: { type: Number, min: 1, max: 5 },
+    comment: String,
+    date: { type: Date, default: Date.now },
+    isVerified: { type: Boolean, default: false }
+  }],
+  questions: [{
+    question: String,
+    answer: String,
+    userName: String,
+    date: { type: Date, default: Date.now }
+  }]
 }, { timestamps: true });
 
 const preSaveProduct = function(this: any) {

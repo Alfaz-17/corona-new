@@ -298,27 +298,82 @@ export default function ProductDetailContent({ slug }: { slug: string }) {
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest mb-2">Technical Reliability & Reviews</h2>
                 <div className="flex items-center gap-4">
                    <div className="flex text-accent">
-                      {[...Array(5)].map((_, i) => <span key={i} className="text-xl">★</span>)}
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className="text-xl">
+                          {i < Math.round(product.reviews?.reduce((acc: number, r: any) => acc + r.rating, 0) / (product.reviews?.length || 1) || 5) ? '★' : '☆'}
+                        </span>
+                      ))}
                    </div>
-                   <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">4.9 / 5.0 (12 Verified Installations)</span>
+                   <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                     {product.reviews?.length || 0} Verified Installations
+                   </span>
                 </div>
               </div>
-              <p className="max-w-md text-xs text-muted-foreground uppercase tracking-widest italic leading-relaxed">
-                "Every component is rigorously tested for maritime compliance before leaving our Alang facility."
-              </p>
+              <button 
+                onClick={() => setOpenAccordion(openAccordion === 'review-form' ? null : 'review-form')}
+                className="px-6 py-2 bg-primary text-white text-[10px] font-bold uppercase tracking-widest hover:bg-accent transition-colors"
+              >
+                Write a Review
+              </button>
            </div>
+
+           {/* Review Form */}
+           {openAccordion === 'review-form' && (
+             <motion.div 
+               initial={{ opacity: 0, y: -20 }}
+               animate={{ opacity: 1, y: 0 }}
+               className="mb-12 p-8 bg-muted/20 border border-border max-w-2xl"
+             >
+               <form onSubmit={async (e) => {
+                 e.preventDefault();
+                 const formData = new FormData(e.currentTarget);
+                 const data = {
+                   userName: formData.get('userName'),
+                   rating: Number(formData.get('rating')),
+                   comment: formData.get('comment'),
+                 };
+                 try {
+                   await api.post(`/products/${product._id}/review`, data);
+                   alert('Review submitted! It will appear after verification.');
+                   setOpenAccordion(null);
+                 } catch (err) {
+                   alert('Failed to submit review.');
+                 }
+               }} className="space-y-4">
+                 <div className="grid grid-cols-2 gap-4">
+                   <input name="userName" placeholder="Your Name" required className="w-full p-3 bg-white border border-border text-xs uppercase font-bold tracking-widest" />
+                   <select name="rating" required className="w-full p-3 bg-white border border-border text-xs uppercase font-bold tracking-widest">
+                     <option value="5">5 Stars</option>
+                     <option value="4">4 Stars</option>
+                     <option value="3">3 Stars</option>
+                     <option value="2">2 Stars</option>
+                     <option value="1">1 Star</option>
+                   </select>
+                 </div>
+                 <textarea name="comment" placeholder="Technical Feedback..." required className="w-full p-3 bg-white border border-border text-xs min-h-[100px]" />
+                 <button type="submit" className="w-full py-3 bg-accent text-white font-bold uppercase tracking-[0.2em] text-[10px]">Submit Technical Review</button>
+               </form>
+             </motion.div>
+           )}
            
            <div className="grid md:grid-cols-2 gap-8">
-              <div className="p-8 bg-muted/20 border border-border">
-                <div className="flex text-accent mb-4">★★★★★</div>
-                <p className="text-sm italic text-primary mb-4 leading-relaxed">"Perfect replacement for our vessel's automation system. The part was exactly as described and worked immediately upon installation. High-quality refurbishment."</p>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">- Chief Engineer, Global Maritime Fleet</p>
-              </div>
-              <div className="p-8 bg-muted/20 border border-border">
-                <div className="flex text-accent mb-4">★★★★★</div>
-                <p className="text-sm italic text-primary mb-4 leading-relaxed">"Reliable source for obsolete marine spares. We've been looking for this specific module for months. Corona Marine delivered fast and in great condition."</p>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">- Port Engineer, Singapore</p>
-              </div>
+              {product.reviews && product.reviews.length > 0 ? (
+                product.reviews.map((rev: any, i: number) => (
+                  <div key={i} className="p-8 bg-muted/20 border border-border">
+                    <div className="flex text-accent mb-4">
+                      {[...Array(5)].map((_, star) => (
+                        <span key={star}>{star < rev.rating ? '★' : '☆'}</span>
+                      ))}
+                    </div>
+                    <p className="text-sm italic text-primary mb-4 leading-relaxed">"{rev.comment}"</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">- {rev.userName}, {new Date(rev.date).toLocaleDateString()}</p>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-2 text-center py-12 border-2 border-dashed border-border">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">No installation reviews yet. Be the first to verify this component.</p>
+                </div>
+              )}
            </div>
         </div>
 
