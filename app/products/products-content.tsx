@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, Suspense } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import Image from "next/image"
 import { Search, SlidersHorizontal, X } from "lucide-react"
@@ -8,6 +8,7 @@ import api from "@/lib/api"
 import { MarineLoader } from "@/components/common/marine-loader"
 import { motion, AnimatePresence } from "framer-motion"
 import { ProductCard } from "@/components/product-card"
+
 export default function ProductsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -19,15 +20,21 @@ export default function ProductsContent() {
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || "all")
   const [loading, setLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 12
 
   // Sync state with URL search params
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category') || "all"
     if (categoryFromUrl !== selectedCategory) {
       setSelectedCategory(categoryFromUrl)
+      setCurrentPage(1) // Reset to page 1 on category change
     }
-  }, [searchParams])
+  }, [searchParams, selectedCategory])
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when search changes
+  }, [searchTerm]);
 
   const handleCategoryChange = (slugOrId: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -52,7 +59,6 @@ export default function ProductsContent() {
         console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
-        setIsVisible(true);
       }
     };
     fetchData();
@@ -67,7 +73,6 @@ export default function ProductsContent() {
       const matchesCategory =
         selectedCategory === "all" ||
         (() => {
-          // Find if selectedCategory is a slug or an ID
           const categoryObj = categories.find(c => c.slug === selectedCategory || c._id === selectedCategory);
           const targetId = categoryObj ? categoryObj._id : selectedCategory;
           
@@ -81,7 +86,15 @@ export default function ProductsContent() {
 
       return matchesSearch && matchesCategory;
     });
-  }, [products, searchTerm, selectedCategory]);
+  }, [products, searchTerm, selectedCategory, categories]);
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const currentItems = useMemo(() => {
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    return filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+  }, [filteredProducts, currentPage]);
 
   if (loading) return <MarineLoader />;
 
@@ -130,10 +143,7 @@ export default function ProductsContent() {
           <h2 className="text-2xl md:text-3xl font-bold text-primary uppercase tracking-widest mb-6">Premium Ship Spare Parts & Automation Systems</h2>
           <p className="text-muted-foreground leading-relaxed text-lg">
             Sourced directly from the Alang ship breaking yard, the world's largest ship recycling facility, 
-            <strong> Corona Marine Parts</strong> provides certified, high-quality maritime machinery components. 
-            Our inventory includes everything from critical engine room spares and hydraulic systems to 
-            sophisticated marine automation and electrical components. Every part undergoes rigorous 
-            testing and refurbishment to ensure it meets international maritime safety standards.
+            <strong> Corona Marine Parts</strong> provides certified, high-quality maritime machinery components.
           </p>
         </div>
 
@@ -182,14 +192,14 @@ export default function ProductsContent() {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 min-h-[400px]">
           <AnimatePresence mode="popLayout">
-            {filteredProducts.map((product, index) => (
+            {currentItems.map((product, index) => (
               <motion.div
                 key={product._id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
               >
                 <ProductCard product={product} />
@@ -197,6 +207,41 @@ export default function ProductsContent() {
             ))}
           </AnimatePresence>
         </div>
+
+        {/* Pagination UI */}
+        {totalPages > 1 && (
+          <div className="mt-20 flex items-center justify-center gap-2">
+            <button
+              onClick={() => { setCurrentPage(prev => Math.max(1, prev - 1)); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+              disabled={currentPage === 1}
+              className="px-6 py-3 border border-border text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-current transition-all"
+            >
+              Prev
+            </button>
+            
+            <div className="flex items-center gap-1">
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => { setCurrentPage(i + 1); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                  className={`w-10 h-10 flex items-center justify-center text-[10px] font-bold transition-all ${
+                    currentPage === i + 1 ? "bg-accent text-white" : "border border-border hover:bg-muted"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => { setCurrentPage(prev => Math.min(totalPages, prev + 1)); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+              disabled={currentPage === totalPages}
+              className="px-6 py-3 border border-border text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-current transition-all"
+            >
+              Next
+            </button>
+          </div>
+        )}
 
         {filteredProducts.length === 0 && (
            <div className="text-center py-40 border border-dashed border-border mt-10">
@@ -256,12 +301,6 @@ export default function ProductsContent() {
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               When sourcing marine spare parts, reliability is paramount. Refurbished parts from Alang offer a 
               sustainable and cost-effective alternative to new components without compromising on quality. 
-              Our technical experts recommend verifying the compatibility of automation systems and engine 
-              spares with your vessel's existing infrastructure.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              We specialize in brands like ABB, Siemens, Kongsberg, and Wärtsilä, ensuring that your 
-              vessel remains operational with minimal downtime.
             </p>
           </div>
           <div className="bg-muted/30 p-8 border border-border">
@@ -270,18 +309,6 @@ export default function ProductsContent() {
               <li className="flex gap-4 text-sm text-muted-foreground">
                 <span className="text-accent font-bold">01.</span>
                 <span>Original OEM components from decommissioned vessels.</span>
-              </li>
-              <li className="flex gap-4 text-sm text-muted-foreground">
-                <span className="text-accent font-bold">02.</span>
-                <span>Environmentally friendly recycling and reuse practices.</span>
-              </li>
-              <li className="flex gap-4 text-sm text-muted-foreground">
-                <span className="text-accent font-bold">03.</span>
-                <span>Significant cost savings compared to factory-new parts.</span>
-              </li>
-              <li className="flex gap-4 text-sm text-muted-foreground">
-                <span className="text-accent font-bold">04.</span>
-                <span>Ready-to-ship inventory for emergency maritime repairs.</span>
               </li>
             </ul>
           </div>
