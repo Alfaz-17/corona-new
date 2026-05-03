@@ -29,7 +29,9 @@ export default function ProductStructuredData({ product, slug }: ProductStructur
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.title,
-    "image": [product.image],
+    "image": [
+      product.image.startsWith('http') ? product.image : `https://coronamarineparts.com${product.image}`
+    ],
     "description": product.description,
     "sku": product.sku || `CMP-${slug.toUpperCase()}`,
     "mpn": product.mpn || slug,

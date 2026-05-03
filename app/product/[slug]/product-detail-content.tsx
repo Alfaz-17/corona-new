@@ -107,11 +107,15 @@ export default function ProductDetailContent({ slug }: { slug: string }) {
             >
               <Image
                 src={selectedImageIndex === 0 ? product.image : product.images[selectedImageIndex - 1]}
-                alt={`${product.title} - Marine ${product.category?.name || 'Spare Part'} - Corona Marine`}
+                alt={`${product.title} - Genuine Marine Spare Part | Sourced from Alang Shipyard | Corona Marine Parts`}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                 priority
               />
+              {/* Hidden descriptive caption for Image SEO */}
+              <figcaption className="sr-only">
+                High-quality technical photo of {product.title}. This marine component is sourced from Alang Shipyard and verified by Corona Marine technical experts for global maritime fleet deployment.
+              </figcaption>
               <div className="absolute top-4 right-4 bg-accent text-white px-4 py-1 text-xs font-bold uppercase tracking-widest">
                 {product.category?.name || "General"}
               </div>
