@@ -5,57 +5,28 @@ import { ArrowRight, Anchor, ShieldCheck } from "lucide-react"
 import { motion } from "framer-motion"
 
 export function Hero() {
-  const [loadVideo, setLoadVideo] = useState(false);
-
-  useEffect(() => {
-    // Wait 1.5 seconds after page mount to load the video
-    // This ensures LCP and FCP are already calculated by Google
-    const timer = setTimeout(() => setLoadVideo(true), 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <section className="relative min-h-[100dvh] flex items-center overflow-hidden bg-primary">
       {/* Background with video and subtle overlay */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-primary/40 z-10" />
         
-        {/* Optimized Video Loading Logic */}
-        {loadVideo ? (
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="/hero-bg.png"
-            className="w-full h-full object-cover opacity-100 transition-opacity duration-1000"
-            aria-hidden="true"
-          >
-            {/* Preferred format (WebM) for modern browsers */}
-            <source src="/hero.webm" type="video/webm" />
-            {/* Fallback format (MP4) */}
-            <source src="/hero.mp4" type="video/mp4" />
-          </video>
-        ) : (
-          <div className="absolute inset-0">
-            <img 
-              src="/hero-bg.png" 
-              alt="Marine Hero" 
-              className="w-full h-full object-cover"
-              loading="eager"
-            />
-          </div>
-        )}
+        {/* High-Performance Optimized Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="/hero-bg.png"
+          className="w-full h-full object-cover opacity-100 transition-opacity duration-1000"
+          aria-hidden="true"
+        >
+          {/* 1MB WebM for maximum speed */}
+          <source src="/hero.webm" type="video/webm" />
+          {/* MP4 Fallback */}
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
 
-        {/* Mobile Static Image Fallback - Shown only if video fails or is disabled */}
-        <div className="md:hidden absolute inset-0">
-          <img 
-            src="/hero-bg.png" 
-            alt="Marine Hero" 
-            className="w-full h-full object-cover"
-            loading="eager"
-          />
-        </div>
         {/* Gradients */}
         <div className="absolute inset-y-0 left-0 w-full md:w-1/2 bg-gradient-to-r from-primary/80 md:from-primary/60 to-transparent z-15" />
       </div>
