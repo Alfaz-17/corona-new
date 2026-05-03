@@ -45,6 +45,15 @@ export default function ProductDetailContent({ slug }: { slug: string }) {
     if (slug) fetchProduct();
   }, [slug]);
 
+  // SEO URL Redirect/Cleanup
+  useEffect(() => {
+    if (product && product.slug && slug === product._id) {
+      // If we are on an ID-based URL but have a slug, update the browser URL without reloading
+      const newPath = `/product/${product.slug}`;
+      window.history.replaceState({ ...window.history.state, as: newPath, url: newPath }, '', newPath);
+    }
+  }, [product, slug]);
+
   if (loading) return <MarineLoader />;
   if (!product) return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-6">

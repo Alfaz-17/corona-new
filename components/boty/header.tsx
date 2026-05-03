@@ -68,7 +68,7 @@ export function Header() {
       href: "/products",
       dropdown: categories.map(cat => ({ 
         name: cat.name, 
-        href: `/products?category=${cat._id}`,
+        href: `/products?category=${cat.slug || cat._id}`,
         description: cat.description || "Essential marine inventory."
       }))
     },

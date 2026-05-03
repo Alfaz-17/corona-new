@@ -12,8 +12,23 @@ export async function GET(req: Request) {
     const brand = searchParams.get('brand');
     const featured = searchParams.get('featured');
 
+    const { isValidObjectId } = await import('mongoose');
+    const { Category } = await import('@/lib/models');
+
     const query: any = {};
-    if (category) query.category = category;
+    if (category) {
+      if (isValidObjectId(category)) {
+        query.category = category;
+      } else {
+        const foundCat = await Category.findOne({ slug: category });
+        if (foundCat) {
+          query.category = foundCat._id;
+        } else {
+          // If category slug not found, return empty array
+          return NextResponse.json([]);
+        }
+      }
+    }
     if (brand) query.brand = brand;
     if (featured === 'true') query.featured = true;
 
