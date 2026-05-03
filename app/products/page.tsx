@@ -1,5 +1,7 @@
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 import ProductsContent from './products-content'
+import { MarineLoader } from '@/components/common/marine-loader'
 
 export const metadata: Metadata = {
   title: 'Marine Products Inventory | Corona Marine Parts',
@@ -15,7 +17,11 @@ export const metadata: Metadata = {
 }
 
 export default function ProductsPage() {
-  return <ProductsContent />
+  return (
+    <Suspense fallback={<MarineLoader />}>
+      <ProductsContent />
+    </Suspense>
+  )
 }
 
 

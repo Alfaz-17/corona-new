@@ -11,18 +11,35 @@ export const User = models?.User || model('User', UserSchema);
 
 const CategorySchema = new Schema({
   name: { type: String, required: true },
+  slug: { type: String, unique: true, sparse: true },
   description: { type: String },
   image: { type: String }
 }, { timestamps: true });
+
+CategorySchema.pre('save', function(this: any) {
+  if (this.isModified('name') && (!this.slug || this.isNew)) {
+    this.slug = this.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w ]+/g, '')
+      .replace(/ +/g, '-');
+  }
+});
 
 export const Category = models?.Category || model('Category', CategorySchema);
 
 const ProductSchema = new Schema({
   title: { type: String, required: true },
   slug: { type: String, unique: true, sparse: true },
+  metaTitle: { type: String },
+  metaDescription: { type: String },
   description: { type: String },
   category: { type: Schema.Types.ObjectId, ref: 'Category' },
   brand: { type: Schema.Types.ObjectId, ref: 'Brand' },
+  brandName: { type: String }, // Fallback for AI generated brand
+  specifications: { type: Schema.Types.Mixed },
+  keywords: [{ type: String }],
+  sku: { type: String },
   image: { type: String },
   images: [{ type: String }],
   featured: { type: Boolean, default: false }

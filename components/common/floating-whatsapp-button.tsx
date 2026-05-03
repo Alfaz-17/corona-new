@@ -9,6 +9,7 @@ export const FloatingWhatsappButton = () => {
       className="fixed bottom-7 right-7 z-50"
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
+      transition={{ delay: 3 }} // Wait 3 seconds to let mobile page load first
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
     >

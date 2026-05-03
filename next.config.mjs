@@ -3,6 +3,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  compress: true,
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

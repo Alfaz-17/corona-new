@@ -19,10 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       }
     }
 
-    const title = `${product.title} - Marine Spare Parts & Automation`
-    const description = product.description 
+    const title = product.metaTitle || `${product.title} - Marine Spare Parts & Automation`
+    const description = product.metaDescription || (product.description 
       ? (product.description.length > 160 ? product.description.substring(0, 157) + "..." : product.description)
-      : `Purchase genuine ${product.title} from Alang Shipyard. Certified refurbished marine machinery and automation spare parts with worldwide shipping.`
+      : `Purchase genuine ${product.title} from Alang Shipyard. Certified refurbished marine machinery and automation spare parts with worldwide shipping.`)
 
     return {
       title,

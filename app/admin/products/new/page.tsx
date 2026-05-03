@@ -23,8 +23,15 @@ import CropModal from '@/components/common/CropModal';
 export default function AdminProductFormPage() {
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
+    metaTitle: '',
+    metaDescription: '',
     description: '',
     category: '',
+    brandName: '',
+    sku: '',
+    keywords: [] as string[],
+    specifications: {} as any,
     featured: false
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -120,6 +127,13 @@ export default function AdminProductFormPage() {
         ...prev,
         title: data.title || prev.title,
         description: data.description || prev.description,
+        slug: data.slug || prev.slug,
+        metaTitle: data.title || prev.metaTitle,
+        metaDescription: data.metaDescription || prev.metaDescription,
+        brandName: data.brand || prev.brandName,
+        sku: data.sku || prev.sku,
+        keywords: data.keywords || prev.keywords,
+        specifications: data.specifications || prev.specifications,
       }));
 
       if (data.categoryName && categories.length > 0) {
@@ -273,8 +287,15 @@ export default function AdminProductFormPage() {
       // Reset form
       setFormData({
         title: '',
+        slug: '',
+        metaTitle: '',
+        metaDescription: '',
         description: '',
         category: '',
+        brandName: '',
+        sku: '',
+        keywords: [],
+        specifications: {},
         featured: false
       });
       setImageFile(null);
@@ -496,6 +517,29 @@ export default function AdminProductFormPage() {
                   />
                </div>
 
+               <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Brand</label>
+                    <input
+                      name="brandName"
+                      placeholder="e.g. Siemens"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                      value={formData.brandName}
+                      onChange={handleChange}
+                    />
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">SKU</label>
+                    <input
+                      name="sku"
+                      placeholder="e.g. SMP-001"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                      value={formData.sku}
+                      onChange={handleChange}
+                    />
+                 </div>
+               </div>
+
                <div className="space-y-2">
                   <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Category *</label>
                   <select
@@ -522,6 +566,45 @@ export default function AdminProductFormPage() {
                     onChange={handleChange}
                   />
                   <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Show on Home Page</label>
+               </div>
+            </div>
+          </div>
+
+          <div className="space-y-8 bg-white p-10 border border-border">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">SEO & Meta</h2>
+            
+            <div className="space-y-6">
+               <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">URL Slug</label>
+                  <input
+                    name="slug"
+                    placeholder="product-url-slug"
+                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                    value={formData.slug}
+                    onChange={handleChange}
+                  />
+               </div>
+
+               <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Meta Title</label>
+                  <input
+                    name="metaTitle"
+                    placeholder="Google Search Title"
+                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                    value={formData.metaTitle}
+                    onChange={handleChange}
+                  />
+               </div>
+
+               <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Meta Description</label>
+                  <textarea
+                    name="metaDescription"
+                    placeholder="Short summary for search results (max 160 chars)"
+                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs min-h-[100px]"
+                    value={formData.metaDescription}
+                    onChange={handleChange}
+                  />
                </div>
             </div>
           </div>
