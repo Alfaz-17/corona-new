@@ -6,7 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   
   // Static routes
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: baseUrl, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
+    { url: baseUrl, lastModified: new Date(), changeFrequency: 'weekly', priority: 1.0 },
     { url: `${baseUrl}/products`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/product/${p.slug || p._id}`,
       lastModified: new Date(p.updatedAt || new Date()),
       changeFrequency: 'weekly',
-      priority: 0.8,
+      priority: 0.85, // High priority for products
     }))
 
     // Dynamic Blog routes
@@ -31,8 +31,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/blog/${b.slug || b._id}`,
       lastModified: new Date(b.date || new Date()),
       changeFrequency: 'monthly',
-      priority: 0.6,
+      priority: 0.65,
     }))
+
+    // Dynamic Category routes (if applicable)
+    // You could fetch categories here too if you have category landing pages
 
     return [...staticRoutes, ...productRoutes, ...blogRoutes]
   } catch (error) {

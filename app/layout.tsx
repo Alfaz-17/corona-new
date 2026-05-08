@@ -80,6 +80,9 @@ export const metadata: Metadata = {
       { url: '/logo.png' },
     ],
   },
+  verification: {
+    google: 'xRtr26Gua2UzdG2C5sUomRplFcKxgCZC1qMW-yKnWmE',
+  },
 }
 
 export const viewport: Viewport = {

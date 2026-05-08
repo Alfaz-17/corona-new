@@ -1,9 +1,8 @@
-
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import { Product } from '@/lib/models';
 import { getSession } from '@/lib/auth';
-
+import { revalidatePath } from 'next/cache';
 import { isValidObjectId } from 'mongoose';
 
 export async function GET(
@@ -56,12 +55,17 @@ export async function DELETE(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
+    // Revalidate paths for SEO
+    revalidatePath('/products');
+    revalidatePath(`/product/${deletedProduct.slug || id}`);
+
     return NextResponse.json({ message: 'Product deleted successfully' });
   } catch (error) {
     console.error('Product DELETE error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -86,6 +90,10 @@ export async function PUT(
     if (!updatedProduct) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
+
+    // Revalidate paths for SEO
+    revalidatePath('/products');
+    revalidatePath(`/product/${updatedProduct.slug || id}`);
 
     return NextResponse.json(updatedProduct);
   } catch (error) {

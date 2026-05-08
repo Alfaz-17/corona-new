@@ -111,6 +111,7 @@ export function ProductGrid() {
                       src={product.image || "/placeholder.svg"}
                       alt={`${product.title} - Genuine Marine Spare Part sourced from Alang Shipyard | Corona Marine`}
                       fill
+                      priority={index < 2}
                       className={`object-cover transition-all duration-700 scale-100 group-hover:scale-110 ${product.images?.[0] ? 'group-hover:opacity-0' : ''}`}
                     />
                     <div className="absolute top-6 left-6">
