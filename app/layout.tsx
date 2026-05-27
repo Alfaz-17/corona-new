@@ -29,8 +29,14 @@ export const metadata: Metadata = {
     default: 'Corona Marine Parts | Marine Spare Parts & Marine Services Supplier',
     template: '%s | Corona Marine Parts'
   },
-  description: 'Leading global supplier of premium marine spare parts, automation systems, and ship machinery components from Alang Shipyard. Reliable maritime solutions with worldwide shipping.',
-  keywords: ['marine automation', 'ship spare parts', 'alang shipyard', 'marine engineering', 'vessel automation', 'ship machinery spares', 'marine electricals', 'refurbished marine parts'],
+  description: 'Leading global supplier of marine spare parts, ship automation systems, engine room machinery, and marine electronics from Alang Shipyard. Buy certified marine equipment with worldwide shipping at best prices.',
+  keywords: [
+    'marine spare parts', 'ship spare parts', 'marine automation', 'ship engine parts',
+    'marine electronics', 'Alang shipyard parts', 'marine equipment supplier',
+    'ship machinery spares', 'marine electricals', 'refurbished marine parts',
+    'buy marine parts online', 'marine parts India', 'ship breaking yard parts',
+    'marine generator parts', 'marine pump supplier', 'Corona Marine Parts',
+  ],
   authors: [{ name: 'Corona Marine Parts' }],
   creator: 'Corona Marine Parts',
   publisher: 'Corona Marine Parts',
@@ -57,10 +63,10 @@ export const metadata: Metadata = {
     description: 'Leading supplier of marine automation, engine spares, and ship machinery from Alang Shipyard.',
     images: [
       {
-        url: '/og-image.png',
+        url: '/hero-bg.webp',
         width: 1200,
         height: 630,
-        alt: 'Corona Marine Parts - Marine Solutions',
+        alt: 'Corona Marine Parts - Marine Spare Parts & Ship Equipment Supplier from Alang Shipyard, India',
       },
     ],
   },

@@ -2,36 +2,60 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Instagram, Facebook, Twitter, Mail } from "lucide-react"
+import { Mail } from "lucide-react"
 import { Logo } from "@/components/common/logo"
-
-const footerLinks = {
-  shop: [
-    { name: "Marine Automation", href: "/products?category=automation" },
-    { name: "Industrial Electronics", href: "/products?category=electronics" },
-    { name: "Fire & Safety", href: "/products?category=safety" },
-    { name: "Engine Alarms", href: "/products?category=alarms" },
-    { name: "Global Inventory", href: "/products" }
-  ],
-  about: [
-    { name: "Company Overview", href: "/about" },
-    { name: "Why Corona Marine", href: "/about" },
-    { name: "Global Reach", href: "/about" },
-    { name: "Quality Assurance", href: "/about" }
-  ],
-  support: [
-    { name: "Request a Quote", href: "/contact" },
-    { name: "Message Engineering", href: "/contact" },
-    { name: "Technical Guides", href: "/blog" },
-    { name: "Our Services", href: "/services" },
-    { name: "Business Hours", href: "/contact" }
-  ]
-}
+import { useEffect, useState } from "react"
+import api from "@/lib/api"
 
 export function Footer() {
   const pathname = usePathname()
+  const [categories, setCategories] = useState<any[]>([])
+  
+  // Fetch real categories for SEO-rich footer links
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await api.get('/categories')
+        setCategories(res.data.slice(0, 6)) // Top 6 categories
+      } catch (e) {
+        // Fallback to static links if API fails
+      }
+    }
+    fetchCategories()
+  }, [])
   
   if (pathname?.startsWith("/admin")) return null
+
+  // Dynamic category links with real slugs — these pass massive SEO value since they're on every page
+  const shopLinks = categories.length > 0
+    ? [
+        ...categories.map(cat => ({
+          name: cat.name,
+          href: `/products/${cat.slug || cat._id}`,
+        })),
+        { name: "All Products", href: "/products" },
+      ]
+    : [
+        { name: "Marine Automation", href: "/products" },
+        { name: "Industrial Electronics", href: "/products" },
+        { name: "Fire & Safety", href: "/products" },
+        { name: "Engine Alarms", href: "/products" },
+        { name: "All Products", href: "/products" },
+      ]
+
+  const aboutLinks = [
+    { name: "Company Overview", href: "/about" },
+    { name: "Our Brands", href: "/brands" },
+    { name: "Our Services", href: "/services" },
+    { name: "Quality Assurance", href: "/about" },
+  ]
+
+  const supportLinks = [
+    { name: "Request a Quote", href: "/contact" },
+    { name: "Contact Engineering", href: "/contact" },
+    { name: "Technical Guides", href: "/blog" },
+    { name: "Sitemap", href: "/sitemap.xml" },
+  ]
 
   return (
     <footer className="bg-card pt-12 sm:pt-16 md:pt-20 pb-6 sm:pb-8 md:pb-10 relative overflow-hidden">
@@ -48,7 +72,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Logo size="md" variant="dark" className="mb-4 sm:mb-6 h-8 sm:h-10" />
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4 sm:mb-6">
-              Your trusted partner for marine equipment and supplies.
+              Leading supplier of marine spare parts, automation systems, and ship machinery from Alang Shipyard, India. Worldwide shipping available.
             </p>
             <div className="flex gap-3 sm:gap-4">
               <a
@@ -56,7 +80,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground marine-transition marine-shadow"
-                aria-label="WhatsApp"
+                aria-label="WhatsApp - Corona Marine Parts"
               >
                 <div className="text-xl">
                   <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -67,7 +91,7 @@ export function Footer() {
               <a
                 href="mailto:sales@coronamarineparts.com"
                 className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground marine-transition marine-shadow"
-                aria-label="Email"
+                aria-label="Email Corona Marine Parts"
               >
                 <div className="text-xl">
                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -80,7 +104,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground marine-transition marine-shadow"
-                aria-label="LinkedIn"
+                aria-label="LinkedIn - Corona Marine Parts"
               >
                 <div className="text-xl">
                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -105,11 +129,11 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Shop Links */}
+          {/* Shop Links - Now uses real category slugs! */}
           <div>
-            <h3 className="font-medium text-foreground mb-4">Shop</h3>
+            <h3 className="font-medium text-foreground mb-4">Marine Parts</h3>
             <ul className="space-y-3">
-              {footerLinks.shop.map((link) => (
+              {shopLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
@@ -126,7 +150,7 @@ export function Footer() {
           <div>
             <h3 className="font-medium text-foreground mb-4">About</h3>
             <ul className="space-y-3">
-              {footerLinks.about.map((link) => (
+              {aboutLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
@@ -143,7 +167,7 @@ export function Footer() {
           <div>
             <h3 className="font-medium text-foreground mb-4">Support</h3>
             <ul className="space-y-3">
-              {footerLinks.support.map((link) => (
+              {supportLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
@@ -161,7 +185,7 @@ export function Footer() {
         <div className="pt-10 border-t border-border/50">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Corona Marine Parts – Marine Spare Parts & Marine Services Supplier
+              © {new Date().getFullYear()} Corona Marine Parts – Leading Marine Spare Parts & Ship Equipment Supplier from Alang Shipyard, India
             </p>
             <div className="flex gap-6">
               <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground marine-transition">

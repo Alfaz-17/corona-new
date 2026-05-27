@@ -107,15 +107,13 @@ export default function ProductDetailContent({ slug }: { slug: string }) {
             >
               <Image
                 src={selectedImageIndex === 0 ? product.image : product.images[selectedImageIndex - 1]}
-                alt={`${product.title} - Genuine Marine Spare Part | Sourced from Alang Shipyard | Corona Marine Parts`}
+                alt={`${product.title}${product.brandName ? ` by ${product.brandName}` : ''} - ${product.category?.name || 'Marine Equipment'} | Buy Marine Spare Parts from Alang Shipyard | Corona Marine Parts`}
+                title={`${product.title} - ${product.category?.name || 'Marine Equipment'} - Genuine Marine Spare Part`}
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                 priority
               />
-              {/* Hidden descriptive caption for Image SEO */}
-              <figcaption className="sr-only">
-                High-quality technical photo of {product.title}. This marine component is sourced from Alang Shipyard and verified by Corona Marine technical experts for global maritime fleet deployment.
-              </figcaption>
               <div className="absolute top-4 right-4 bg-accent text-white px-4 py-1 text-xs font-bold uppercase tracking-widest">
                 {product.category?.name || "General"}
               </div>
@@ -174,8 +172,10 @@ export default function ProductDetailContent({ slug }: { slug: string }) {
               >
                 <Image 
                   src={product.image} 
-                  alt={`${product.title} - Main`} 
-                  fill 
+                  alt={`${product.title} - Main View | ${product.category?.name || 'Marine Equipment'} | Corona Marine Parts`}
+                  title={`${product.title} - Primary Image`}
+                  fill
+                  sizes="112px"
                   className="object-cover hover:scale-110 transition-transform duration-300" 
                 />
               </div>
@@ -193,8 +193,10 @@ export default function ProductDetailContent({ slug }: { slug: string }) {
                 >
                   <Image 
                     src={img} 
-                    alt={`${product.title} - Preview ${i + 1}`} 
-                    fill 
+                    alt={`${product.title} - View ${i + 2} | ${product.category?.name || 'Marine Equipment'} | Marine Spare Parts`}
+                    title={`${product.title} - Additional View ${i + 2}`}
+                    fill
+                    sizes="112px"
                     className="object-cover hover:scale-110 transition-transform duration-300" 
                   />
                 </div>
@@ -396,9 +398,9 @@ export default function ProductDetailContent({ slug }: { slug: string }) {
             <h2 className="text-2xl font-bold text-primary mb-12 uppercase tracking-widest border-b border-border pb-6">Compatible Components</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {relatedProducts.map((rel) => (
-                <Link key={rel._id} href={`/product/${rel._id}`} className="group relative overflow-hidden bg-white border border-border">
+                <Link key={rel._id} href={`/product/${rel.slug || rel._id}`} className="group relative overflow-hidden bg-white border border-border">
                    <div className="aspect-[4/3] relative">
-                      <Image src={rel.image} alt={rel.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <Image src={rel.image} alt={`${rel.title} - ${product.category?.name || 'Marine Equipment'} | Marine Spare Parts | Corona Marine`} title={rel.title} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                    </div>
                    <div className="p-4 border-t border-border">
                       <h3 className="text-xs font-bold text-primary uppercase truncate group-hover:text-accent transition-colors">{rel.title}</h3>
@@ -428,7 +430,7 @@ export default function ProductDetailContent({ slug }: { slug: string }) {
           <div className="relative max-w-5xl max-h-[90vh] w-full h-full" onClick={(e) => e.stopPropagation()}>
             <Image
               src={lightboxImage}
-              alt="Full size view"
+              alt={`${product.title} - Full Size View | ${product.category?.name || 'Marine Equipment'} | Marine Spare Parts from Alang Shipyard`}
               fill
               className="object-contain"
             />
