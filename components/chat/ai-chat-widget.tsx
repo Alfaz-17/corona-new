@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from "react"
-import { MessageCircle, X, Send, Bot, User as UserIcon } from "lucide-react"
+import { Headset, X, Send, Bot, User as UserIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -111,7 +111,7 @@ export function AiChatWidget() {
         )}
         aria-label="Open AI Chat"
       >
-        <MessageCircle size={28} />
+        <Headset size={28} />
       </button>
 
       {/* Chat Window */}
@@ -126,8 +126,7 @@ export function AiChatWidget() {
           <div className="flex items-center gap-2">
             <Bot size={24} />
             <div>
-              <h3 className="font-bold font-playfair text-lg leading-tight">AI Assistant</h3>
-              <p className="text-xs text-primary-foreground/80">Powered by Gemini</p>
+              <h3 className="font-bold font-playfair text-lg leading-tight">AI Support</h3>
             </div>
           </div>
           <button 

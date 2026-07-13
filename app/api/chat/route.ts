@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     await connectDB();
     
     // Rate Limiting (Max 10 per day per IP)
-    const headersList = headers();
+    const headersList = await headers();
     const ip = headersList.get("x-forwarded-for") || "unknown";
     const today = new Date().toISOString().split("T")[0];
     
@@ -73,13 +73,68 @@ export async function POST(req: Request) {
       });
     }
 
+    // --- INPUT SANITIZER (SECURITY / PROMPT INJECTION PROTECTION) ---
+    const lastMessageRaw = messages[messages.length - 1].content;
+    const lastMessage = lastMessageRaw.toLowerCase();
     
+    // 1. Basic XSS / HTML sanitization
+    if (lastMessage.includes("<script") || lastMessage.includes("</")) {
+      return NextResponse.json({ role: "model", content: "Invalid characters detected in your message." });
+    }
+
+    // 2. Prompt Injection Detection
+    const maliciousPatterns = [
+      "ignore all previous",
+      "ignore previous",
+      "system prompt",
+      "forget your instructions",
+      "you are now",
+      "jailbreak",
+      "disregard"
+    ];
+
+    if (maliciousPatterns.some(pattern => lastMessage.includes(pattern))) {
+      return NextResponse.json({ 
+        role: "model", 
+        content: "I am Corona Marine's AI Assistant and can only assist you with inquiries related to marine spare parts and our business." 
+      });
+    }
+    // ----------------------------------------------------------------
+
+    // --- INTENT ROUTING (COST OPTIMIZATION) ---
+    
+    // Words that indicate they are looking for a product (route to Gemini)
+    const productKeywords = ["have", "stock", "price", "buy", "product", "part", "plc", "engine", "pump", "motor", "search", "looking", "need", "cost"];
+    const isAskingForProduct = productKeywords.some(kw => lastMessage.includes(kw));
+
+    if (!isAskingForProduct) {
+      if (lastMessage.includes("email") || lastMessage.includes("contact") || lastMessage.includes("phone")) {
+        return NextResponse.json({ role: "model", content: "You can reach our team directly at sales@coronamarineparts.com." });
+      }
+      if (lastMessage.includes("shipping") || lastMessage.includes("ship") || lastMessage.includes("delivery")) {
+        return NextResponse.json({ role: "model", content: "We ship worldwide from Alang Shipyard. All parts are securely packaged, certified, and tested before dispatch." });
+      }
+      if (lastMessage.includes("location") || lastMessage.includes("where are you") || lastMessage.includes("address")) {
+        return NextResponse.json({ role: "model", content: "We are based in Alang Shipyard, India, which allows us to source top-quality refurbished marine parts." });
+      }
+      if (lastMessage === "hi" || lastMessage === "hello" || lastMessage === "hey") {
+        return NextResponse.json({ role: "model", content: "Hello! How can I help you today? You can ask me to search for specific marine spare parts or ask about our business." });
+      }
+    }
+    // ------------------------------------------
+
     // Check settings for preferred model
     const settings = await Settings.findOne();
     const modelName = settings?.geminiModel || "gemini-2.5-flash";
 
-    // Format history for Gemini
-    const contents = messages.map((msg: any) => ({
+    // Format history for Gemini. Gemini API requires the first message to be from a 'user'.
+    // We remove any leading 'model' messages (like the initial greeting).
+    const validMessages = [...messages];
+    while (validMessages.length > 0 && validMessages[0].role !== "user") {
+      validMessages.shift();
+    }
+
+    const contents = validMessages.map((msg: any) => ({
       role: msg.role === "user" ? "user" : "model",
       parts: [{ text: msg.content }],
     }));
