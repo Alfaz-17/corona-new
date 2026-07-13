@@ -136,3 +136,11 @@ const SettingsSchema = new Schema({
 
 export const Settings = models?.Settings || model('Settings', SettingsSchema);
 
+const ChatRateLimitSchema = new Schema({
+  ip: { type: String, required: true },
+  count: { type: Number, default: 0 },
+  date: { type: String, required: true }
+});
+
+export const ChatRateLimit = models?.ChatRateLimit || model('ChatRateLimit', ChatRateLimitSchema);
+

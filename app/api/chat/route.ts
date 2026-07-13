@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { GoogleGenAI, Type } from "@google/genai";
 import connectDB from "@/lib/db";
-import { Product, Settings } from "@/lib/models";
+import { Product, Settings, ChatRateLimit } from "@/lib/models";
 
 const apiKey = process.env.GEMINI_API_KEY || "";
 const ai = new GoogleGenAI({ apiKey });
@@ -53,6 +54,25 @@ export async function POST(req: Request) {
     }
 
     await connectDB();
+    
+    // Rate Limiting (Max 10 per day per IP)
+    const headersList = headers();
+    const ip = headersList.get("x-forwarded-for") || "unknown";
+    const today = new Date().toISOString().split("T")[0];
+    
+    const rateLimit = await ChatRateLimit.findOneAndUpdate(
+      { ip, date: today },
+      { $inc: { count: 1 } },
+      { upsert: true, new: true }
+    );
+    
+    if (rateLimit.count > 10) {
+      return NextResponse.json({ 
+        role: "model",
+        content: "I apologize, but you have reached the maximum number of daily messages (10). Please contact us directly at sales@coronamarineparts.com for further assistance, or try again tomorrow!"
+      });
+    }
+
     
     // Check settings for preferred model
     const settings = await Settings.findOne();
