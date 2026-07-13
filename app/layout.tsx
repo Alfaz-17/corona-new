@@ -95,6 +95,8 @@ export const viewport: Viewport = {
   themeColor: '#0E2A47',
 }
 
+import { AiChatWidget } from "@/components/chat/ai-chat-widget"
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -111,6 +113,7 @@ export default function RootLayout({
             </div>
             <Footer />
             <FloatingWhatsappButton />
+            <AiChatWidget />
           </AuthProvider>
         <Analytics />
       </body>
