@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
-import api from '@/lib/api'
+import connectToDatabase from '@/lib/db'
+import { Product, Category, Blog, Brand } from '@/lib/models'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://coronamarineparts.com'
@@ -16,8 +17,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   try {
-    // Dynamic Product routes - high priority for e-commerce SEO
-    const { data: products } = await api.get('/products')
+    await connectToDatabase()
+
+    // 1. Dynamic Product routes - highest priority for e-commerce SEO
+    const products = await Product.find({}, '_id slug updatedAt').lean()
     const productRoutes: MetadataRoute.Sitemap = products.map((p: any) => ({
       url: `${baseUrl}/product/${p.slug || p._id}`,
       lastModified: new Date(p.updatedAt || new Date()),
@@ -25,38 +28,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     }))
 
-    // Dynamic Blog routes
-    const { data: blogs } = await api.get('/blogs')
-    const blogRoutes: MetadataRoute.Sitemap = blogs.map((b: any) => ({
-      url: `${baseUrl}/blog/${b.slug || b._id}`,
-      lastModified: new Date(b.date || new Date()),
-      changeFrequency: 'monthly' as const,
-      priority: 0.65,
-    }))
-
-    // Dynamic Category routes - CRITICAL for SEO
-    // Category landing pages rank for keywords like "marine automation parts", "ship engine spares"
-    const { data: categories } = await api.get('/categories')
+    // 2. Dynamic Category routes - key for category keyword searches
+    const categories = await Category.find({}, '_id slug updatedAt').lean()
     const categoryRoutes: MetadataRoute.Sitemap = categories.map((c: any) => ({
       url: `${baseUrl}/products/${c.slug || c._id}`,
       lastModified: new Date(c.updatedAt || new Date()),
       changeFrequency: 'weekly' as const,
-      priority: 0.88, // Very high - category pages are key for ranking
+      priority: 0.88,
     }))
 
-    // Dynamic Brand routes
-    let brandRoutes: MetadataRoute.Sitemap = []
-    try {
-      const { data: brands } = await api.get('/brands')
-      brandRoutes = brands.map((b: any) => ({
-        url: `${baseUrl}/brand/${encodeURIComponent(b.name)}`,
-        lastModified: new Date(b.updatedAt || new Date()),
-        changeFrequency: 'monthly' as const,
-        priority: 0.7,
-      }))
-    } catch (e) {
-      // Brands may not have a listing endpoint
-    }
+    // 3. Dynamic Blog routes
+    const blogs = await Blog.find({}, '_id slug date updatedAt').lean()
+    const blogRoutes: MetadataRoute.Sitemap = blogs.map((b: any) => ({
+      url: `${baseUrl}/blog/${b.slug || b._id}`,
+      lastModified: new Date(b.date || b.updatedAt || new Date()),
+      changeFrequency: 'monthly' as const,
+      priority: 0.65,
+    }))
+
+    // 4. Dynamic Brand routes
+    const brands = await Brand.find({}, 'name updatedAt').lean()
+    const brandRoutes: MetadataRoute.Sitemap = brands.map((b: any) => ({
+      url: `${baseUrl}/brand/${encodeURIComponent(b.name)}`,
+      lastModified: new Date(b.updatedAt || new Date()),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }))
 
     return [...staticRoutes, ...categoryRoutes, ...productRoutes, ...blogRoutes, ...brandRoutes]
   } catch (error) {

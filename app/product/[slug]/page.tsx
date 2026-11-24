@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
-import api from "@/lib/api"
+import connectToDatabase from '@/lib/db'
+import { Product } from '@/lib/models'
 import ProductDetailContent from './product-detail-content'
 import ProductStructuredData from '@/components/seo/product-structured-data'
 
@@ -9,15 +10,32 @@ type Props = {
   params: Promise<{ slug: string }>
 }
 
+async function getProduct(slug: string) {
+  try {
+    await connectToDatabase()
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(slug)
+    const product = isObjectId
+      ? await Product.findById(slug).populate('category brand').lean()
+      : await Product.findOne({ slug }).populate('category brand').lean()
+
+    return product ? JSON.parse(JSON.stringify(product)) : null
+  } catch (err) {
+    console.error('Error fetching product for SEO:', err)
+    return null
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   
   try {
-    const { data: product } = await api.get(`/products/${slug}`)
+    const product = await getProduct(slug)
     
     if (!product) {
+      const readableTitle = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
       return {
-        title: 'Product Not Found',
+        title: `${readableTitle} | Marine Spare Parts | Corona Marine`,
+        description: `Buy genuine ${readableTitle} marine spare parts from Alang Shipyard. Certified quality, worldwide shipping. Contact Corona Marine Parts for best prices.`,
       }
     }
 
@@ -40,7 +58,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           : product.description)
       : `Buy genuine ${product.title}${brandName ? ` by ${brandName}` : ''} from Alang Shipyard. ${categoryName} - certified, tested & shipped worldwide. Best price marine spare parts from Corona Marine Parts.`)
 
-    const ogImage = product.image.startsWith('http') ? product.image : `https://coronamarineparts.com${product.image}`
+    const ogImage = product.image 
+      ? (product.image.startsWith('http') ? product.image : `https://coronamarineparts.com${product.image}`)
+      : 'https://coronamarineparts.com/hero-bg.webp'
 
     // Build keyword list from product data
     const keywords: string[] = [
@@ -97,7 +117,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     }
   } catch (error) {
-    // Even error fallback should have good SEO
     const readableTitle = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
     return {
       title: `${readableTitle} | Marine Spare Parts | Corona Marine`,
@@ -107,12 +126,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-
 export async function generateStaticParams() {
   try {
-    const { data: products } = await api.get('/products')
+    await connectToDatabase()
+    const products = await Product.find({}, '_id slug').lean()
     return products.map((product: any) => ({
-      slug: product.slug || product._id,
+      slug: (product.slug || product._id.toString()) as string,
     }))
   } catch (error) {
     return []
@@ -121,19 +140,12 @@ export async function generateStaticParams() {
 
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
-  
-  try {
-    const { data: product } = await api.get(`/products/${slug}`);
-    
-    if (!product) return <ProductDetailContent slug={slug} />;
+  const product = await getProduct(slug);
 
-    return (
-      <>
-        <ProductStructuredData product={product} slug={slug} />
-        <ProductDetailContent slug={slug} />
-      </>
-    );
-  } catch (err) {
-    return <ProductDetailContent slug={slug} />;
-  }
+  return (
+    <>
+      {product && <ProductStructuredData product={product} slug={slug} />}
+      <ProductDetailContent slug={slug} initialProduct={product} />
+    </>
+  );
 }

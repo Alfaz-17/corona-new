@@ -10,10 +10,10 @@ import { OrderForm } from "@/components/order-form"
 import { motion } from "framer-motion"
 import Breadcrumbs from "@/components/seo/breadcrumbs"
 
-export default function ProductDetailContent({ slug }: { slug: string }) {
-  const [product, setProduct] = useState<any>(null)
+export default function ProductDetailContent({ slug, initialProduct }: { slug: string; initialProduct?: any }) {
+  const [product, setProduct] = useState<any>(initialProduct || null)
   const [relatedProducts, setRelatedProducts] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!initialProduct)
   const [openAccordion, setOpenAccordion] = useState<string | null>("details")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
@@ -54,7 +54,7 @@ export default function ProductDetailContent({ slug }: { slug: string }) {
     }
   }, [product, slug]);
 
-  if (loading) return <MarineLoader />;
+  if (loading && !product) return <MarineLoader />;
   if (!product) return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-6">
       <h2 className="text-3xl font-bold text-primary">System Not Found</h2>
