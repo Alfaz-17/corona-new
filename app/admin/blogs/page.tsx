@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Trash2, Edit2, FileText, Search, Calendar } from 'lucide-react';
+import { Plus, Trash2, Edit2, FileText, Search, Calendar, ExternalLink } from 'lucide-react';
 import api from '@/lib/api';
 
 export default function AdminBlogListPage() {
@@ -89,12 +89,17 @@ export default function AdminBlogListPage() {
                      <p className="text-[10px] text-muted-foreground italic line-clamp-3 mb-6">{blog.excerpt}</p>
                   </div>
                   <div className="flex justify-between items-center border-t border-border pt-4">
-                     <span className="text-[9px] font-extrabold text-accent uppercase tracking-widest">Published</span>
+                     <span className={`text-[9px] font-extrabold uppercase tracking-widest ${blog.metaTitle && blog.metaDescription && blog.slug ? 'text-green-700' : 'text-amber-600'}`}>
+                       {blog.metaTitle && blog.metaDescription && blog.slug ? 'SEO Ready' : 'Missing SEO Meta'}
+                     </span>
                      <div className="flex gap-2">
-                        <Link href={`/admin/blogs/${blog._id}`} className="p-2 text-primary hover:bg-muted transition-colors">
+                        <Link href={`/blog/${blog.slug || blog._id}`} target="_blank" className="p-2 text-muted-foreground hover:text-primary transition-colors" title="View Live Post">
+                           <ExternalLink className="w-4 h-4" />
+                        </Link>
+                        <Link href={`/admin/blogs/${blog._id}`} className="p-2 text-primary hover:bg-muted transition-colors" title="Edit Post">
                            <Edit2 className="w-4 h-4" />
                         </Link>
-                        <button onClick={() => handleDelete(blog._id)} className="p-2 text-red-500 hover:bg-red-50 transition-colors">
+                        <button onClick={() => handleDelete(blog._id)} className="p-2 text-red-500 hover:bg-red-50 transition-colors" title="Delete Post">
                            <Trash2 className="w-4 h-4" />
                         </button>
                      </div>

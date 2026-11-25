@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import BrandDetailContent from './brand-detail-content'
-import api from '@/lib/api'
+import ItemListStructuredData from '@/components/seo/item-list-structured-data'
+import { getBrandInfoAndProducts, getBrands } from '@/lib/catalog-data'
 
 export const revalidate = 3600
 
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export async function generateStaticParams() {
   try {
-    const { data: brands } = await api.get('/brands')
+    const brands = await getBrands()
     return brands.map((b: any) => ({
       brandName: encodeURIComponent(b.name),
     }))
@@ -58,6 +59,21 @@ export async function generateStaticParams() {
   }
 }
 
-export default function BrandPage() {
-  return <BrandDetailContent />
+export default async function BrandPage({ params }: Props) {
+  const { brandName } = await params
+  const { brandInfo, products } = await getBrandInfoAndProducts(brandName)
+  const displayName =
+    brandInfo?.name ||
+    decodeURIComponent(brandName).replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
+
+  return (
+    <>
+      <ItemListStructuredData
+        products={products}
+        listName={`${displayName} Marine Spare Parts`}
+        listUrl={`https://coronamarineparts.com/brand/${brandName}`}
+      />
+      <BrandDetailContent initialProducts={products} initialBrandInfo={brandInfo} />
+    </>
+  )
 }

@@ -11,16 +11,23 @@ import { ChevronLeft } from 'lucide-react';
 import { ProductCard } from '@/components/product-card';
 import Breadcrumbs from '@/components/seo/breadcrumbs';
 
-export default function BrandDetailContent() {
+export default function BrandDetailContent({
+  initialProducts,
+  initialBrandInfo,
+}: {
+  initialProducts?: any[];
+  initialBrandInfo?: any;
+}) {
   const params = useParams();
   const brandName = params.brandName as string;
-  const [products, setProducts] = useState<any[]>([]);
-  const [brandInfo, setBrandInfo] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<any[]>(initialProducts || []);
+  const [brandInfo, setBrandInfo] = useState<any>(initialBrandInfo || null);
+  const [loading, setLoading] = useState(initialProducts === undefined);
 
-  const displayName = decodeURIComponent(brandName).replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const displayName = brandInfo?.name || decodeURIComponent(brandName).replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   useEffect(() => {
+    if (initialProducts !== undefined) return;
     const fetchBrandProducts = async () => {
       try {
         setLoading(true);
@@ -44,7 +51,7 @@ export default function BrandDetailContent() {
       }
     };
     if (brandName) fetchBrandProducts();
-  }, [brandName]);
+  }, [brandName, initialProducts]);
 
   if (loading) return <MarineLoader />;
 
@@ -61,8 +68,14 @@ export default function BrandDetailContent() {
               {displayName}
             </h1>
             <p className="text-muted-foreground text-sm mt-4 max-w-2xl leading-relaxed">
-              Browse genuine <strong>{displayName}</strong> marine spare parts and ship equipment sourced from 
-              Alang Shipyard. All components are tested and certified by Corona Marine Parts.
+              {brandInfo?.description?.trim() ? (
+                brandInfo.description
+              ) : (
+                <>
+                  Browse genuine <strong>{displayName}</strong> marine spare parts and ship equipment sourced from 
+                  Alang Shipyard. All components are tested and certified by Corona Marine Parts.
+                </>
+              )}
             </p>
             <p className="text-muted-foreground uppercase tracking-widest text-xs font-bold mt-4">
               {products.length} {displayName} products in inventory

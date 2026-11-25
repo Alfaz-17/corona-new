@@ -5,11 +5,12 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import api from "@/lib/api";
 
-export function BrandGrid() {
-  const [brands, setBrands] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export function BrandGrid({ initialBrands }: { initialBrands?: any[] }) {
+  const [brands, setBrands] = useState<any[]>(initialBrands || []);
+  const [loading, setLoading] = useState(!initialBrands);
 
   useEffect(() => {
+    if (initialBrands && initialBrands.length > 0) return;
     const fetchBrands = async () => {
       try {
         const res = await api.get("/brands");
@@ -22,7 +23,7 @@ export function BrandGrid() {
     };
 
     fetchBrands();
-  }, []);
+  }, [initialBrands]);
 
   if (loading || brands.length === 0) return null;
 
@@ -47,16 +48,17 @@ export function BrandGrid() {
       <div className="relative flex overflow-hidden">
         <div className="flex animate-infinite-scroll gap-12 whitespace-nowrap py-4">
           {duplicatedBrands.map((brand, index) => (
-            <div
+            <Link
               key={`${brand._id}-${index}`}
-              className="flex-none w-48 h-24 relative group bg-white border border-border/10 hover:border-accent/40 transition-all duration-700 p-6"
+              href={`/brand/${encodeURIComponent(brand.name)}`}
+              className="flex-none w-48 h-24 relative group bg-white border border-border/10 hover:border-accent/40 transition-all duration-700 p-6 block"
             >
               <img
                 src={brand.logo}
-                alt={brand.name}
+                alt={`${brand.name} Marine Spare Parts`}
                 className="w-full h-full object-contain opacity-60 group-hover:opacity-100 transition-all duration-700"
               />
-            </div>
+            </Link>
           ))}
         </div>
         

@@ -8,6 +8,7 @@ interface ProductCardProps {
     slug?: string
     title: string
     image: string
+    imageAlt?: string
     brandName?: string
     brand?: {
       name: string
@@ -25,7 +26,7 @@ export function ProductCard({ product }: ProductCardProps) {
   // Build keyword-rich alt text for Google Image SEO
   const brandName = product.brandName || product.brand?.name || ''
   const categoryName = product.category?.name || 'Marine Parts'
-  const altText = `${product.title}${brandName ? ` by ${brandName}` : ''} - ${categoryName} | Marine Spare Parts Supplier | Corona Marine Parts`
+  const altText = product.imageAlt?.trim() || `${product.title}${brandName ? ` by ${brandName}` : ''} - ${categoryName} | Marine Spare Parts Supplier | Corona Marine Parts`
 
   return (
     <Link href={`/product/${product.slug || product._id}`} className="group block h-full bg-white border border-border hover:border-accent transition-all relative">

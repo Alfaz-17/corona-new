@@ -3,6 +3,9 @@ import { SEOIntro } from "@/components/boty/seo-intro"
 import { ProductGrid } from "@/components/boty/product-grid"
 import dynamic from 'next/dynamic'
 import { Metadata } from 'next'
+import { getBrands, getFeaturedProductsOrLatest } from '@/lib/catalog-data'
+
+export const revalidate = 3600
 
 // Dynamic imports for sections below the fold to boost mobile scores
 const BrandGrid = dynamic(() => import("@/components/boty/brands-grid").then(m => m.BrandGrid), { ssr: true })
@@ -53,13 +56,18 @@ export const metadata: Metadata = {
   },
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [initialProducts, initialBrands] = await Promise.all([
+    getFeaturedProductsOrLatest(8),
+    getBrands(),
+  ]);
+
   return (
     <main>
       <Hero />
       <SEOIntro />
-      <ProductGrid />
-      <BrandGrid />
+      <ProductGrid initialProducts={initialProducts} />
+      <BrandGrid initialBrands={initialBrands} />
       <FeatureSection />
       <Testimonials />
       <CTABanner />

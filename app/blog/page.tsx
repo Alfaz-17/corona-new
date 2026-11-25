@@ -1,5 +1,8 @@
 import { Metadata } from 'next'
 import BlogContent from './blog-content'
+import { getBlogs } from '@/lib/catalog-data'
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'Industry Insights & Marine Technical Guides | Corona Marine Parts',
@@ -14,6 +17,7 @@ export const metadata: Metadata = {
   }
 }
 
-export default function BlogPage() {
-  return <BlogContent />
+export default async function BlogPage() {
+  const blogs = await getBlogs();
+  return <BlogContent initialBlogs={blogs} />
 }

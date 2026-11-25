@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Settings,
+  TrendingUp,
   X
 } from 'lucide-react';
 import { Logo } from '@/components/common/logo';
@@ -38,6 +39,7 @@ export function AdminSidebar({ sidebarOpen, setSidebarOpen, collapsed, setCollap
     { name: 'Categories', href: '/admin/categories', icon: Grid3X3 },
     { name: 'Brands', href: '/admin/brands', icon: Award },
     { name: 'Blogs', href: '/admin/blogs', icon: FileText },
+    { name: 'SEO Center', href: '/admin/seo', icon: TrendingUp },
   ];
 
   const handleLogout = async () => {

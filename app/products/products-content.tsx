@@ -9,16 +9,23 @@ import { MarineLoader } from "@/components/common/marine-loader"
 import { motion, AnimatePresence } from "framer-motion"
 import { ProductCard } from "@/components/product-card"
 
-export default function ProductsContent() {
+export default function ProductsContent({
+  initialProducts,
+  initialCategories,
+}: {
+  initialProducts?: any[]
+  initialCategories?: any[]
+}) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
   
-  const [products, setProducts] = useState<any[]>([])
-  const [categories, setCategories] = useState<any[]>([])
-  const [searchTerm, setSearchTerm] = useState("")
+  const [products, setProducts] = useState<any[]>(initialProducts || [])
+  const [categories, setCategories] = useState<any[]>(initialCategories || [])
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || "")
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || "all")
-  const [loading, setLoading] = useState(true)
+  const [selectedBrand, setSelectedBrand] = useState(searchParams.get('brand') || "")
+  const [loading, setLoading] = useState(!initialProducts)
   const [showFilters, setShowFilters] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
@@ -26,11 +33,21 @@ export default function ProductsContent() {
   // Sync state with URL search params
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category') || "all"
+    const queryFromUrl = searchParams.get('q') || ""
+    const brandFromUrl = searchParams.get('brand') || ""
     if (categoryFromUrl !== selectedCategory) {
       setSelectedCategory(categoryFromUrl)
-      setCurrentPage(1) // Reset to page 1 on category change
+      setCurrentPage(1)
     }
-  }, [searchParams, selectedCategory])
+    if (queryFromUrl !== searchTerm) {
+      setSearchTerm(queryFromUrl)
+      setCurrentPage(1)
+    }
+    if (brandFromUrl !== selectedBrand) {
+      setSelectedBrand(brandFromUrl)
+      setCurrentPage(1)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     setCurrentPage(1); // Reset to page 1 when search changes
@@ -47,6 +64,7 @@ export default function ProductsContent() {
   }
 
   useEffect(() => {
+    if (initialProducts && initialCategories) return;
     const fetchData = async () => {
       try {
         const [productsRes, categoriesRes] = await Promise.all([
@@ -62,13 +80,19 @@ export default function ProductsContent() {
       }
     };
     fetchData();
-  }, []);
+  }, [initialProducts, initialCategories]);
 
   const filteredProducts = useMemo(() => {
+    const term = searchTerm.toLowerCase();
     return products.filter((product) => {
       const matchesSearch =
-        product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase());
+        !term ||
+        product.title?.toLowerCase().includes(term) ||
+        product.description?.toLowerCase().includes(term) ||
+        product.brandName?.toLowerCase().includes(term) ||
+        product.modelNumber?.toLowerCase().includes(term) ||
+        product.sku?.toLowerCase().includes(term) ||
+        product.primaryKeyword?.toLowerCase().includes(term);
 
       const matchesCategory =
         selectedCategory === "all" ||
@@ -84,9 +108,15 @@ export default function ProductsContent() {
           );
         })();
 
-      return matchesSearch && matchesCategory;
+      const productBrand = (product.brandName || product.brand?.name || "").toLowerCase();
+      const matchesBrand =
+        !selectedBrand ||
+        productBrand === selectedBrand.toLowerCase() ||
+        product.brand?._id === selectedBrand;
+
+      return matchesSearch && matchesCategory && matchesBrand;
     });
-  }, [products, searchTerm, selectedCategory, categories]);
+  }, [products, searchTerm, selectedCategory, selectedBrand, categories]);
 
   // Pagination Logic
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);

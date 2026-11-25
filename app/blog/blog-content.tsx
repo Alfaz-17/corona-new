@@ -7,12 +7,13 @@ import { Search, Calendar, ArrowRight } from 'lucide-react';
 import api from '@/lib/api';
 import { MarineLoader } from '@/components/common/marine-loader';
 
-export default function BlogContent() {
+export default function BlogContent({ initialBlogs }: { initialBlogs?: any[] }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [blogs, setBlogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [blogs, setBlogs] = useState<any[]>(initialBlogs || []);
+  const [loading, setLoading] = useState(initialBlogs === undefined);
 
   useEffect(() => {
+    if (initialBlogs !== undefined) return;
     const fetchBlogs = async () => {
       try {
         const { data } = await api.get('/blogs');
@@ -24,7 +25,7 @@ export default function BlogContent() {
       }
     };
     fetchBlogs();
-  }, []);
+  }, [initialBlogs]);
 
   const filteredBlogs = useMemo(() => {
     return blogs.filter(blog =>

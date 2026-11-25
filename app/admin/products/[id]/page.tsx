@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { MarineLoader } from '@/components/common/marine-loader';
 import CropModal from '@/components/common/CropModal';
+import { ProductSeoFields } from '@/components/admin/product-seo-fields';
 
 export default function AdminProductEditPage() {
   const params = useParams();
@@ -19,8 +20,21 @@ export default function AdminProductEditPage() {
 
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
+    metaTitle: '',
+    metaDescription: '',
+    primaryKeyword: '',
+    imageAlt: '',
     description: '',
     category: '',
+    brandName: '',
+    modelNumber: '',
+    sku: '',
+    condition: 'refurbished',
+    availability: 'in-stock',
+    price: 0,
+    keywords: [] as string[],
+    specifications: {} as Record<string, any>,
     featured: false
   });
   
@@ -66,8 +80,21 @@ export default function AdminProductEditPage() {
         const prod = prodRes.data;
         setFormData({
           title: prod.title || '',
+          slug: prod.slug || '',
+          metaTitle: prod.metaTitle || '',
+          metaDescription: prod.metaDescription || '',
+          primaryKeyword: prod.primaryKeyword || '',
+          imageAlt: prod.imageAlt || '',
           description: prod.description || '',
           category: prod.category?._id || prod.category || '',
+          brandName: prod.brandName || prod.brand?.name || '',
+          modelNumber: prod.modelNumber || '',
+          sku: prod.sku || '',
+          condition: prod.condition || 'refurbished',
+          availability: prod.availability || 'in-stock',
+          price: Number(prod.price) || 0,
+          keywords: Array.isArray(prod.keywords) ? prod.keywords : [],
+          specifications: prod.specifications || {},
           featured: prod.featured || false
         });
         setExistingImage(prod.image || '');
@@ -131,6 +158,16 @@ export default function AdminProductEditPage() {
         ...prev,
         title: data.title || prev.title,
         description: data.description || prev.description,
+        slug: data.slug || prev.slug,
+        metaTitle: data.metaTitle || data.title || prev.metaTitle,
+        metaDescription: data.metaDescription || prev.metaDescription,
+        primaryKeyword: data.primaryKeyword || prev.primaryKeyword,
+        imageAlt: data.imageAlt || prev.imageAlt,
+        brandName: data.brand || prev.brandName,
+        modelNumber: data.modelNumber || prev.modelNumber,
+        sku: data.sku || prev.sku,
+        keywords: Array.isArray(data.keywords) ? data.keywords : prev.keywords,
+        specifications: data.specifications || prev.specifications,
       }));
 
       if (data.categoryName && categories.length > 0) {
@@ -303,10 +340,9 @@ export default function AdminProductEditPage() {
       
       setIsUploading(false);
 
-      setIsUploading(false);
-
       const payload = {
         ...formData,
+        price: Number(formData.price) || 0,
         category: formData.category || undefined,
         image: mainImageUrl,
         images: secondaryImageUrls
@@ -343,83 +379,156 @@ export default function AdminProductEditPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div className="space-y-8 bg-white p-10 border border-border">
-          <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-primary">Product Details</h2>
-            {imageFile && (
-              <button
-                type="button"
-                onClick={() => analyzeImage(imageFile)}
-                disabled={isAiAnalyzing}
-                className="flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-all rounded-sm disabled:opacity-50"
-              >
-                {isAiAnalyzing ? (
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                ) : (
-                  <Sparkles className="w-3 h-3" />
-                )}
-                <span className="text-[10px] font-bold uppercase tracking-widest">AI Analyze</span>
-              </button>
-            )}
-          </div>
-          
-          <div className="space-y-4">
-             <div className="space-y-2">
-                <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Product Name *</label>
-                <input
-                  name="title"
-                  className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
-                  value={formData.title}
-                  onChange={handleChange}
-                  required
-                />
-             </div>
-
-             <div className="space-y-2">
-                <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Description *</label>
-                <textarea
-                  name="description"
-                  className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs h-32"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                />
-             </div>
-
-             <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Category *</label>
-                  <select
-                    name="category"
-                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold tracking-widest uppercase"
-                    value={formData.category}
+      <form onSubmit={handleSubmit} className="space-y-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="space-y-8 bg-white p-10 border border-border">
+            <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-primary">Product Details</h2>
+              {imageFile && (
+                <button
+                  type="button"
+                  onClick={() => analyzeImage(imageFile)}
+                  disabled={isAiAnalyzing}
+                  className="flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-all rounded-sm disabled:opacity-50"
+                >
+                  {isAiAnalyzing ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-3 h-3" />
+                  )}
+                  <span className="text-[10px] font-bold uppercase tracking-widest">AI Analyze</span>
+                </button>
+              )}
+            </div>
+            
+            <div className="space-y-4">
+               <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Product Name *</label>
+                  <input
+                    name="title"
+                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                    value={formData.title}
                     onChange={handleChange}
                     required
-                  >
-                    <option value="">Select Category</option>
-                    {categories.map(cat => (
-                      <option key={cat._id} value={cat._id}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
-             </div>
+                  />
+               </div>
 
-             <div className="flex items-center gap-4 pt-4">
-                <input
-                  type="checkbox"
-                  name="featured"
-                  id="featured"
-                  className="w-4 h-4 border-primary accent-accent"
-                  checked={formData.featured}
-                  onChange={handleChange}
-                />
-                <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Show on Home Page</label>
-             </div>
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Brand</label>
+                    <input
+                      name="brandName"
+                      placeholder="e.g. Siemens"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                      value={formData.brandName}
+                      onChange={handleChange}
+                    />
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Model Number</label>
+                    <input
+                      name="modelNumber"
+                      placeholder="e.g. Type XYZ-100"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                      value={formData.modelNumber}
+                      onChange={handleChange}
+                    />
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">SKU / Part No.</label>
+                    <input
+                      name="sku"
+                      placeholder="e.g. SMP-001"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                      value={formData.sku}
+                      onChange={handleChange}
+                    />
+                 </div>
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Condition</label>
+                    <select
+                      name="condition"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold uppercase tracking-widest"
+                      value={formData.condition}
+                      onChange={handleChange}
+                    >
+                      <option value="refurbished">Refurbished</option>
+                      <option value="new">New</option>
+                      <option value="used">Used</option>
+                    </select>
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Availability</label>
+                    <select
+                      name="availability"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold uppercase tracking-widest"
+                      value={formData.availability}
+                      onChange={handleChange}
+                    >
+                      <option value="in-stock">In Stock</option>
+                      <option value="on-demand">On Demand</option>
+                      <option value="out-of-stock">Out of Stock</option>
+                    </select>
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Price (USD)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      name="price"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                      value={formData.price}
+                      onChange={handleChange}
+                    />
+                 </div>
+               </div>
+
+               <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Description *</label>
+                  <textarea
+                    name="description"
+                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs h-44"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                  />
+               </div>
+
+               <div className="space-y-2">
+                 <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Category *</label>
+                 <select
+                   name="category"
+                   className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold tracking-widest uppercase"
+                   value={formData.category}
+                   onChange={handleChange}
+                   required
+                 >
+                   <option value="">Select Category</option>
+                   {categories.map(cat => (
+                     <option key={cat._id} value={cat._id}>{cat.name}</option>
+                   ))}
+                 </select>
+               </div>
+
+               <div className="flex items-center gap-4 pt-4">
+                  <input
+                    type="checkbox"
+                    name="featured"
+                    id="featured"
+                    className="w-4 h-4 border-primary accent-accent"
+                    checked={formData.featured}
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="featured" className="text-[10px] font-bold text-primary uppercase tracking-widest cursor-pointer">Show on Home Page</label>
+               </div>
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-8">
+          <div className="space-y-8">
            <div className="bg-white p-10 border border-border">
               <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
                 <h2 className="text-sm font-bold uppercase tracking-widest text-primary">Main Image</h2>
@@ -593,25 +702,36 @@ export default function AdminProductEditPage() {
                      <input type="file" accept="image/*" multiple onChange={handleImagesChange} className="hidden" />
                   </label>
               </div>
-           </div>
-
-           <button
-              type="submit"
-              disabled={isSaving || isUploading}
-              className="w-full py-5 bg-primary text-white font-bold uppercase tracking-[0.3em] text-xs hover:bg-accent transition-all shadow-2xl flex items-center justify-center gap-4"
-           >
-              {isSaving || isUploading ? (
-                <>
-                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
-                  Updating...
-                </>
-              ) : (
-                <>
-                  <Save className="w-5 h-5" /> Save Changes
-                </>
-              )}
-           </button>
+          </div>
         </div>
+        </div>
+
+        <ProductSeoFields
+          formData={formData}
+          categoryName={categories.find(c => c._id === formData.category)?.name}
+          onChange={handleChange}
+          onKeywordsChange={(keywords) => setFormData(prev => ({ ...prev, keywords }))}
+          onSpecificationsChange={(specifications) => setFormData(prev => ({ ...prev, specifications }))}
+          onSlugGenerate={(slug) => setFormData(prev => ({ ...prev, slug }))}
+          onApplyAiSeo={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
+        />
+
+        <button
+          type="submit"
+          disabled={isSaving || isUploading}
+          className="w-full py-5 bg-primary text-white font-bold uppercase tracking-[0.3em] text-xs hover:bg-accent transition-all shadow-2xl flex items-center justify-center gap-4"
+        >
+          {isSaving || isUploading ? (
+            <>
+              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
+              Updating...
+            </>
+          ) : (
+            <>
+              <Save className="w-5 h-5" /> Save Changes
+            </>
+          )}
+        </button>
       </form>
 
       {cropTarget && (

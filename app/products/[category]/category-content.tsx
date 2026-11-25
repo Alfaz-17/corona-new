@@ -11,19 +11,28 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ProductCard } from "@/components/product-card"
 import Breadcrumbs from "@/components/seo/breadcrumbs"
 
-export default function CategoryContent() {
+export default function CategoryContent({
+  initialProducts,
+  initialCategory,
+  initialAllCategories,
+}: {
+  initialProducts?: any[]
+  initialCategory?: any
+  initialAllCategories?: any[]
+}) {
   const params = useParams()
   const categorySlug = params.category as string
   
-  const [products, setProducts] = useState<any[]>([])
-  const [categoryInfo, setCategoryInfo] = useState<any>(null)
-  const [allCategories, setAllCategories] = useState<any[]>([])
+  const [products, setProducts] = useState<any[]>(initialProducts || [])
+  const [categoryInfo, setCategoryInfo] = useState<any>(initialCategory || null)
+  const [allCategories, setAllCategories] = useState<any[]>(initialAllCategories || [])
   const [searchTerm, setSearchTerm] = useState("")
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(initialProducts === undefined)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
 
   useEffect(() => {
+    if (initialProducts !== undefined && initialCategory !== undefined) return;
     const fetchData = async () => {
       try {
         setLoading(true)
@@ -60,7 +69,7 @@ export default function CategoryContent() {
       }
     }
     fetchData()
-  }, [categorySlug])
+  }, [categorySlug, initialProducts, initialCategory])
 
   const filteredProducts = useMemo(() => {
     if (!searchTerm) return products

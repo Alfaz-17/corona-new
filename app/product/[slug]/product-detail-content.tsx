@@ -10,15 +10,24 @@ import { OrderForm } from "@/components/order-form"
 import { motion } from "framer-motion"
 import Breadcrumbs from "@/components/seo/breadcrumbs"
 
-export default function ProductDetailContent({ slug, initialProduct }: { slug: string; initialProduct?: any }) {
+export default function ProductDetailContent({
+  slug,
+  initialProduct,
+  initialRelatedProducts,
+}: {
+  slug: string;
+  initialProduct?: any;
+  initialRelatedProducts?: any[];
+}) {
   const [product, setProduct] = useState<any>(initialProduct || null)
-  const [relatedProducts, setRelatedProducts] = useState<any[]>([])
+  const [relatedProducts, setRelatedProducts] = useState<any[]>(initialRelatedProducts || [])
   const [loading, setLoading] = useState(!initialProduct)
   const [openAccordion, setOpenAccordion] = useState<string | null>("details")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
   useEffect(() => {
+    if (initialProduct) return;
     const fetchProduct = async () => {
       try {
         setLoading(true);
@@ -43,7 +52,7 @@ export default function ProductDetailContent({ slug, initialProduct }: { slug: s
     };
 
     if (slug) fetchProduct();
-  }, [slug]);
+  }, [slug, initialProduct]);
 
   // SEO URL Redirect/Cleanup
   useEffect(() => {
@@ -78,6 +87,17 @@ export default function ProductDetailContent({ slug, initialProduct }: { slug: s
     setSelectedImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
   };
 
+  const brandLabel = product.brandName || product.brand?.name || '';
+  const conditionLabel =
+    product.condition === 'new'
+      ? 'Brand New Unit'
+      : product.condition === 'used'
+        ? 'Pre-Owned Unit'
+        : 'Certified Refurbished';
+  const mainImageAlt =
+    product.imageAlt?.trim() ||
+    `${product.title}${brandLabel ? ` by ${brandLabel}` : ''} - ${product.category?.name || 'Marine Equipment'} | Buy Marine Spare Parts from Alang Shipyard | Corona Marine Parts`;
+
   return (
     <main className="min-h-screen pb-20 pt-32">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-12">
@@ -85,8 +105,11 @@ export default function ProductDetailContent({ slug, initialProduct }: { slug: s
         <Breadcrumbs 
           items={[
             { label: 'Inventory', href: '/products' },
-            { label: product.category?.name || 'General', href: `/products?category=${product.category?.slug || product.category?._id}` },
-            { label: product.title, href: `/product/${slug}` }
+            ...(product.category ? [{
+              label: product.category.name,
+              href: `/products/${product.category.slug || product.category._id}`
+            }] : []),
+            { label: product.title, href: `/product/${product.slug || slug}` }
           ]} 
         />
 
@@ -107,7 +130,7 @@ export default function ProductDetailContent({ slug, initialProduct }: { slug: s
             >
               <Image
                 src={selectedImageIndex === 0 ? product.image : product.images[selectedImageIndex - 1]}
-                alt={`${product.title}${product.brandName ? ` by ${product.brandName}` : ''} - ${product.category?.name || 'Marine Equipment'} | Buy Marine Spare Parts from Alang Shipyard | Corona Marine Parts`}
+                alt={mainImageAlt}
                 title={`${product.title} - ${product.category?.name || 'Marine Equipment'} - Genuine Marine Spare Part`}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -211,22 +234,24 @@ export default function ProductDetailContent({ slug, initialProduct }: { slug: s
             className="flex flex-col"
           >
             <div className="mb-10 lg:pt-8">
-              <span className="text-accent tracking-[0.3em] uppercase text-xs font-bold mb-4 block">Refurbished Unit</span>
+              <span className="text-accent tracking-[0.3em] uppercase text-xs font-bold mb-4 block">{conditionLabel}</span>
               <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6 leading-tight uppercase tracking-tight">
                 {product.title}
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed italic mb-8 border-l-4 border-accent pl-6">
+              <p className="text-lg text-muted-foreground leading-relaxed italic mb-8 border-l-4 border-accent pl-6 whitespace-pre-line">
                 {product.description}
               </p>
 
               {/* Tags for Internal Linking */}
               <div className="flex flex-wrap gap-2 mb-8">
-                <Link href={`/products?category=${product.category?._id}`} className="px-3 py-1 bg-muted text-[10px] font-bold uppercase tracking-widest hover:bg-accent hover:text-white transition-colors">
-                  {product.category?.name || 'Marine Parts'}
-                </Link>
-                {product.brandName && (
-                  <Link href={`/products?brand=${product.brandName}`} className="px-3 py-1 bg-muted text-[10px] font-bold uppercase tracking-widest hover:bg-accent hover:text-white transition-colors">
-                    {product.brandName}
+                {product.category && (
+                  <Link href={`/products/${product.category.slug || product.category._id}`} className="px-3 py-1 bg-muted text-[10px] font-bold uppercase tracking-widest hover:bg-accent hover:text-white transition-colors">
+                    {product.category.name || 'Marine Parts'}
+                  </Link>
+                )}
+                {brandLabel && (
+                  <Link href={`/brand/${encodeURIComponent(brandLabel)}`} className="px-3 py-1 bg-muted text-[10px] font-bold uppercase tracking-widest hover:bg-accent hover:text-white transition-colors">
+                    {brandLabel}
                   </Link>
                 )}
                 <span className="px-3 py-1 bg-muted text-[10px] font-bold uppercase tracking-widest">
@@ -277,16 +302,22 @@ export default function ProductDetailContent({ slug, initialProduct }: { slug: s
               <div className="grid grid-cols-1 gap-1 border border-border">
                 <div className="grid grid-cols-2 bg-muted/30 py-3 px-4 border-b border-border">
                   <span className="text-[10px] uppercase font-bold text-muted-foreground">Condition</span>
-                  <span className="text-[10px] uppercase font-bold text-primary">Certified Refurbished</span>
+                  <span className="text-[10px] uppercase font-bold text-primary">{conditionLabel}</span>
                 </div>
                 <div className="grid grid-cols-2 py-3 px-4 border-b border-border">
                   <span className="text-[10px] uppercase font-bold text-muted-foreground">Sourcing</span>
                   <span className="text-[10px] uppercase font-bold text-primary">Alang Shipyard, India</span>
                 </div>
-                {product.brandName && (
+                {brandLabel && (
                   <div className="grid grid-cols-2 bg-muted/30 py-3 px-4 border-b border-border">
                     <span className="text-[10px] uppercase font-bold text-muted-foreground">Manufacturer</span>
-                    <span className="text-[10px] uppercase font-bold text-primary">{product.brandName}</span>
+                    <span className="text-[10px] uppercase font-bold text-primary">{brandLabel}</span>
+                  </div>
+                )}
+                {product.modelNumber && (
+                  <div className="grid grid-cols-2 py-3 px-4 border-b border-border">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Model</span>
+                    <span className="text-[10px] uppercase font-bold text-primary">{product.modelNumber}</span>
                   </div>
                 )}
                 {product.sku && (

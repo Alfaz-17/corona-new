@@ -19,6 +19,7 @@ import { removeBackgroundClient } from '@/lib/background-removal-client';
 import api from '@/lib/api';
 import Link from 'next/link';
 import CropModal from '@/components/common/CropModal';
+import { ProductSeoFields } from '@/components/admin/product-seo-fields';
 
 export default function AdminProductFormPage() {
   const [formData, setFormData] = useState({
@@ -26,12 +27,18 @@ export default function AdminProductFormPage() {
     slug: '',
     metaTitle: '',
     metaDescription: '',
+    primaryKeyword: '',
+    imageAlt: '',
     description: '',
     category: '',
     brandName: '',
+    modelNumber: '',
     sku: '',
+    condition: 'refurbished',
+    availability: 'in-stock',
+    price: 0,
     keywords: [] as string[],
-    specifications: {} as any,
+    specifications: {} as Record<string, any>,
     featured: false
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -128,11 +135,14 @@ export default function AdminProductFormPage() {
         title: data.title || prev.title,
         description: data.description || prev.description,
         slug: data.slug || prev.slug,
-        metaTitle: data.title || prev.metaTitle,
+        metaTitle: data.metaTitle || data.title || prev.metaTitle,
         metaDescription: data.metaDescription || prev.metaDescription,
+        primaryKeyword: data.primaryKeyword || prev.primaryKeyword,
+        imageAlt: data.imageAlt || prev.imageAlt,
         brandName: data.brand || prev.brandName,
+        modelNumber: data.modelNumber || prev.modelNumber,
         sku: data.sku || prev.sku,
-        keywords: data.keywords || prev.keywords,
+        keywords: Array.isArray(data.keywords) ? data.keywords : prev.keywords,
         specifications: data.specifications || prev.specifications,
       }));
 
@@ -274,6 +284,7 @@ export default function AdminProductFormPage() {
       
       const payload = {
         ...formData,
+        price: Number(formData.price) || 0,
         category: formData.category || undefined,
         image: mainImageUrl,
         images: secondaryImageUrls
@@ -290,10 +301,16 @@ export default function AdminProductFormPage() {
         slug: '',
         metaTitle: '',
         metaDescription: '',
+        primaryKeyword: '',
+        imageAlt: '',
         description: '',
         category: '',
         brandName: '',
+        modelNumber: '',
         sku: '',
+        condition: 'refurbished',
+        availability: 'in-stock',
+        price: 0,
         keywords: [],
         specifications: {},
         featured: false
@@ -517,7 +534,7 @@ export default function AdminProductFormPage() {
                   />
                </div>
 
-               <div className="grid grid-cols-2 gap-4">
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                  <div className="space-y-2">
                     <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Brand</label>
                     <input
@@ -529,12 +546,63 @@ export default function AdminProductFormPage() {
                     />
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">SKU</label>
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Model Number</label>
+                    <input
+                      name="modelNumber"
+                      placeholder="e.g. Type XYZ-100"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                      value={formData.modelNumber}
+                      onChange={handleChange}
+                    />
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">SKU / Part No.</label>
                     <input
                       name="sku"
                       placeholder="e.g. SMP-001"
                       className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
                       value={formData.sku}
+                      onChange={handleChange}
+                    />
+                 </div>
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Condition</label>
+                    <select
+                      name="condition"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold uppercase tracking-widest"
+                      value={formData.condition}
+                      onChange={handleChange}
+                    >
+                      <option value="refurbished">Refurbished</option>
+                      <option value="new">New</option>
+                      <option value="used">Used</option>
+                    </select>
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Availability</label>
+                    <select
+                      name="availability"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-bold uppercase tracking-widest"
+                      value={formData.availability}
+                      onChange={handleChange}
+                    >
+                      <option value="in-stock">In Stock</option>
+                      <option value="on-demand">On Demand</option>
+                      <option value="out-of-stock">Out of Stock</option>
+                    </select>
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Price (USD, 0 = Quote)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      name="price"
+                      className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                      value={formData.price}
                       onChange={handleChange}
                     />
                  </div>
@@ -570,57 +638,29 @@ export default function AdminProductFormPage() {
             </div>
           </div>
 
-          <div className="space-y-8 bg-white p-10 border border-border">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">SEO & Meta</h2>
-            
-            <div className="space-y-6">
-               <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">URL Slug</label>
-                  <input
-                    name="slug"
-                    placeholder="product-url-slug"
-                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
-                    value={formData.slug}
-                    onChange={handleChange}
-                  />
-               </div>
-
-               <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Meta Title</label>
-                  <input
-                    name="metaTitle"
-                    placeholder="Google Search Title"
-                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
-                    value={formData.metaTitle}
-                    onChange={handleChange}
-                  />
-               </div>
-
-               <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Meta Description</label>
-                  <textarea
-                    name="metaDescription"
-                    placeholder="Short summary for search results (max 160 chars)"
-                    className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs min-h-[100px]"
-                    value={formData.metaDescription}
-                    onChange={handleChange}
-                  />
-               </div>
-            </div>
-          </div>
-
           <div className="bg-white p-10 border border-border flex flex-col">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Description</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest text-primary border-b border-border pb-4 mb-6">Description *</h2>
             <textarea
               name="description"
-              placeholder="Enter comprehensive product description"
-              className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs flex-grow min-h-[200px]"
+              placeholder="Enter comprehensive, original product description (150-300+ words recommended)"
+              className="w-full px-4 py-4 bg-muted/20 border border-border focus:border-accent outline-none text-xs flex-grow min-h-[300px]"
               value={formData.description}
               onChange={handleChange}
               required
             />
           </div>
         </div>
+
+        {/* Full-Width SEO, Keywords, Google Preview & Specifications */}
+        <ProductSeoFields
+          formData={formData}
+          categoryName={categories.find(c => c._id === formData.category)?.name}
+          onChange={handleChange}
+          onKeywordsChange={(keywords) => setFormData(prev => ({ ...prev, keywords }))}
+          onSpecificationsChange={(specifications) => setFormData(prev => ({ ...prev, specifications }))}
+          onSlugGenerate={(slug) => setFormData(prev => ({ ...prev, slug }))}
+          onApplyAiSeo={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
+        />
 
         {/* Bottom Section: Save */}
         <div className="flex justify-end">

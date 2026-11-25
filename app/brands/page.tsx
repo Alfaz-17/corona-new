@@ -1,5 +1,8 @@
 import { Metadata } from 'next'
 import BrandsContent from './brands-content'
+import { getBrands } from '@/lib/catalog-data'
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'Marine Equipment Brands | Trusted Manufacturers | Corona Marine Parts',
@@ -35,6 +38,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function BrandsPage() {
-  return <BrandsContent />
+export default async function BrandsPage() {
+  const brands = await getBrands();
+  return <BrandsContent initialBrands={brands} />
 }

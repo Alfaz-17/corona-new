@@ -7,13 +7,14 @@ import { ArrowRight, Box } from "lucide-react"
 import api from "@/lib/api"
 import { motion, AnimatePresence } from "framer-motion"
 
-export function ProductGrid() {
-  const [products, setProducts] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+export function ProductGrid({ initialProducts }: { initialProducts?: any[] }) {
+  const [products, setProducts] = useState<any[]>(initialProducts || [])
+  const [loading, setLoading] = useState(!initialProducts)
   const [headerVisible, setHeaderVisible] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (initialProducts && initialProducts.length > 0) return;
     const fetchData = async () => {
       try {
         const [prodRes] = await Promise.all([
@@ -36,7 +37,7 @@ export function ProductGrid() {
       }
     };
     fetchData();
-  }, []);
+  }, [initialProducts]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -97,19 +98,19 @@ export function ProductGrid() {
                 className="w-[260px] sm:w-[300px] md:w-[400px] flex-none snap-center"
                 layout
               >
-                <Link href={`/product/${product._id}`} className="group block relative bg-white border border-border/50 transition-all duration-700 hover:shadow-[inset_0_0_60px_rgba(0,0,0,0.05)] h-full">
+                <Link href={`/product/${product.slug || product._id}`} className="group block relative bg-white border border-border/50 transition-all duration-700 hover:shadow-[inset_0_0_60px_rgba(0,0,0,0.05)] h-full">
                   <div className="aspect-[3/4] relative overflow-hidden bg-[#f3f3f3]">
                     {product.images?.[0] && (
                       <Image
                         src={product.images[0]}
-                        alt={`${product.title} - High-Resolution Technical Image | Corona Marine Parts`}
+                        alt={product.imageAlt?.trim() || `${product.title} - High-Resolution Technical Image | Corona Marine Parts`}
                         fill
                         className="object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                       />
                     )}
                     <Image
                       src={product.image || "/placeholder.svg"}
-                      alt={`${product.title} - Genuine Marine Spare Part sourced from Alang Shipyard | Corona Marine`}
+                      alt={product.imageAlt?.trim() || `${product.title} - Genuine Marine Spare Part sourced from Alang Shipyard | Corona Marine`}
                       fill
                       priority={index < 2}
                       className={`object-cover transition-all duration-700 scale-100 group-hover:scale-110 ${product.images?.[0] ? 'group-hover:opacity-0' : ''}`}

@@ -13,6 +13,7 @@ type ProductStructuredDataProps = {
     condition?: string;
     brandName?: string;
     brand?: any;
+    modelNumber?: string;
     sku?: string;
     mpn?: string;
     keywords?: string[];
@@ -45,10 +46,14 @@ export default function ProductStructuredData({ product, slug }: ProductStructur
     "image": allImages.length > 0 ? allImages : [`https://coronamarineparts.com/placeholder.jpg`],
     "description": product.description || `Genuine ${product.title} - ${categoryName} sourced from Alang Shipyard by Corona Marine Parts.`,
     "sku": product.sku || `CMP-${slug.toUpperCase().slice(0, 20)}`,
-    "mpn": product.mpn || product.sku || slug,
+    "mpn": product.mpn || product.modelNumber || product.sku || slug,
     "category": categoryName,
     "url": `https://coronamarineparts.com/product/${slug}`,
   };
+
+  if (product.modelNumber) {
+    productData["model"] = product.modelNumber;
+  }
 
   // Only add brand if we have a real brand name
   if (brandName) {
@@ -58,18 +63,23 @@ export default function ProductStructuredData({ product, slug }: ProductStructur
     };
   }
 
+  const itemCondition =
+    product.condition === 'new'
+      ? "https://schema.org/NewCondition"
+      : product.condition === 'used'
+        ? "https://schema.org/UsedCondition"
+        : "https://schema.org/RefurbishedCondition";
+
   // Build offers - only include price if it's a real price > 0
   const offerData: Record<string, any> = {
     "@type": "Offer",
     "url": `https://coronamarineparts.com/product/${slug}`,
-    "availability": product.availability === 'in-stock' 
-      ? "https://schema.org/InStock" 
+    "availability": product.availability === 'in-stock'
+      ? "https://schema.org/InStock"
       : product.availability === 'out-of-stock'
         ? "https://schema.org/OutOfStock"
         : "https://schema.org/PreOrder",
-    "itemCondition": product.condition === 'new' 
-      ? "https://schema.org/NewCondition" 
-      : "https://schema.org/RefurbishedCondition",
+    "itemCondition": itemCondition,
     "seller": {
       "@type": "Organization",
       "name": "Corona Marine Parts",
@@ -149,38 +159,6 @@ export default function ProductStructuredData({ product, slug }: ProductStructur
     ]
   };
 
-  // Breadcrumb - proper hierarchy
-  const breadcrumbData = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://coronamarineparts.com"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Products",
-        "item": "https://coronamarineparts.com/products"
-      },
-      ...(product.category?.name ? [{
-        "@type": "ListItem",
-        "position": 3,
-        "name": product.category.name,
-        "item": `https://coronamarineparts.com/products/${product.category?.slug || product.category?._id}`
-      }] : []),
-      {
-        "@type": "ListItem",
-        "position": product.category?.name ? 4 : 3,
-        "name": product.title,
-        "item": `https://coronamarineparts.com/product/${slug}`
-      }
-    ]
-  };
-
   return (
     <>
       <script
@@ -190,10 +168,6 @@ export default function ProductStructuredData({ product, slug }: ProductStructur
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
       />
     </>
   );

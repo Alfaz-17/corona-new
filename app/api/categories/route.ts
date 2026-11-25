@@ -1,7 +1,7 @@
-
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectToDatabase from '@/lib/db';
-import { Category } from '@/lib/models';
+import { Category, slugifyText } from '@/lib/models';
 import { getSession } from '@/lib/auth';
 
 export async function GET() {
@@ -28,7 +28,18 @@ export async function POST(req: Request) {
 
     await connectToDatabase();
     const body = await req.json();
+    if (body.slug) {
+      body.slug = slugifyText(body.slug);
+    } else if (body.name) {
+      body.slug = slugifyText(body.name);
+    }
     const category = await Category.create(body);
+
+    revalidatePath('/');
+    revalidatePath('/products');
+    revalidatePath('/sitemap.xml');
+    revalidatePath(`/products/${category.slug || category._id}`);
+
     return NextResponse.json(category);
   } catch (error) {
     console.error('Categories POST error:', error);

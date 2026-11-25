@@ -7,11 +7,12 @@ import api from '@/lib/api';
 import { MarineLoader } from '@/components/common/marine-loader';
 import Breadcrumbs from '@/components/seo/breadcrumbs';
 
-export default function BrandsContent() {
-  const [brands, setBrands] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function BrandsContent({ initialBrands }: { initialBrands?: any[] }) {
+  const [brands, setBrands] = useState<any[]>(initialBrands || []);
+  const [loading, setLoading] = useState(initialBrands === undefined);
 
   useEffect(() => {
+    if (initialBrands !== undefined) return;
     const fetchBrands = async () => {
       try {
         const res = await api.get("/brands");
@@ -23,7 +24,7 @@ export default function BrandsContent() {
       }
     };
     fetchBrands();
-  }, []);
+  }, [initialBrands]);
 
   if (loading) return <MarineLoader />;
 

@@ -11,7 +11,7 @@ const fetcher = (url: string) => api.get(url).then(res => res.data);
 export default function AdminBrandPage() {
   const { data: brands = [], error, mutate } = useSWR('/brands', fetcher);
   
-  const [newBrand, setNewBrand] = useState({ name: '', logo: '' });
+  const [newBrand, setNewBrand] = useState({ name: '', logo: '', description: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState('');
@@ -32,14 +32,14 @@ export default function AdminBrandPage() {
 
   const handleEdit = (brand: any) => {
     setEditingId(brand._id);
-    setNewBrand({ name: brand.name, logo: brand.logo });
+    setNewBrand({ name: brand.name, logo: brand.logo, description: brand.description || '' });
     setLogoPreview(brand.logo);
     setLogoFile(null);
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setNewBrand({ name: '', logo: '' });
+    setNewBrand({ name: '', logo: '', description: '' });
     setLogoPreview('');
     setLogoFile(null);
   };
@@ -58,7 +58,8 @@ export default function AdminBrandPage() {
       if (editingId) {
         await api.put(`/brands/${editingId}`, { 
           name: newBrand.name, 
-          logo: logoUrl 
+          logo: logoUrl,
+          description: newBrand.description
         });
         mutate();
         setEditingId(null);
@@ -66,13 +67,14 @@ export default function AdminBrandPage() {
       } else {
         await api.post('/brands', { 
           name: newBrand.name, 
-          logo: logoUrl 
+          logo: logoUrl,
+          description: newBrand.description
         });
         mutate();
         setMessage({ type: 'success', text: 'Brand added successfully.' });
       }
       
-      setNewBrand({ name: '', logo: '' });
+      setNewBrand({ name: '', logo: '', description: '' });
       setLogoFile(null);
       setLogoPreview('');
     } catch (error) {
@@ -143,6 +145,15 @@ export default function AdminBrandPage() {
                   )}
                </div>
             </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Brand SEO Description (Optional)</label>
+              <textarea
+                placeholder="Unique description shown on /brand/[brandName] for SEO"
+                className="w-full px-6 py-3 bg-muted/20 border border-border focus:border-accent outline-none text-xs min-h-[70px]"
+                value={newBrand.description}
+                onChange={(e) => setNewBrand({ ...newBrand, description: e.target.value })}
+              />
+            </div>
             <button type="submit" disabled={isUploading} className="w-full py-4 bg-primary text-white text-[10px] font-bold uppercase tracking-widest hover:bg-accent transition-colors shadow-xl">
                {isUploading ? 'Saving...' : editingId ? 'Save Changes' : 'Add Brand'}
             </button>
@@ -150,7 +161,7 @@ export default function AdminBrandPage() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-         {brands.map(brand => (
+         {brands.map((brand: any) => (
             <div key={brand._id} className="bg-white p-6 border border-border flex flex-col items-center group relative h-48">
                <div className="flex-1 flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
                   <img src={brand.logo} alt={brand.name} className="max-h-16 max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-700" />

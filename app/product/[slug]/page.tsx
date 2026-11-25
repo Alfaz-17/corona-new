@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
-import connectToDatabase from '@/lib/db'
-import { Product } from '@/lib/models'
+import { permanentRedirect } from 'next/navigation'
 import ProductDetailContent from './product-detail-content'
 import ProductStructuredData from '@/components/seo/product-structured-data'
+import { getProductBySlugOrId, getProducts } from '@/lib/catalog-data'
 
 export const revalidate = 3600 // Revalidate every 1 hour
 
@@ -10,27 +10,12 @@ type Props = {
   params: Promise<{ slug: string }>
 }
 
-async function getProduct(slug: string) {
-  try {
-    await connectToDatabase()
-    const isObjectId = /^[0-9a-fA-F]{24}$/.test(slug)
-    const product = isObjectId
-      ? await Product.findById(slug).populate('category brand').lean()
-      : await Product.findOne({ slug }).populate('category brand').lean()
-
-    return product ? JSON.parse(JSON.stringify(product)) : null
-  } catch (err) {
-    console.error('Error fetching product for SEO:', err)
-    return null
-  }
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  
+
   try {
-    const product = await getProduct(slug)
-    
+    const product = await getProductBySlugOrId(slug)
+
     if (!product) {
       const readableTitle = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
       return {
@@ -39,70 +24,65 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       }
     }
 
+    const canonicalSlug = product.slug || slug
     const brandName = product.brandName || (product.brand?.name) || ''
     const categoryName = product.category?.name || 'Marine Equipment'
-    
-    // Build SEO-optimized title with keywords
-    // Pattern: "{Product} by {Brand} | {Category} | Buy Marine Spare Parts | Corona Marine"
+
     const titleParts = [product.title]
     if (brandName) titleParts.push(`by ${brandName}`)
     titleParts.push(categoryName)
-    titleParts.push('Buy Marine Spare Parts Online')
-    
+    titleParts.push('Corona Marine Parts')
+
     const title = product.metaTitle || titleParts.join(' | ')
-    
-    // Build SEO description with long-tail keywords
-    const description = product.metaDescription || (product.description 
-      ? (product.description.length > 155 
-          ? product.description.substring(0, 152) + "..." 
+
+    const description = product.metaDescription || (product.description
+      ? (product.description.length > 155
+          ? product.description.substring(0, 152) + "..."
           : product.description)
       : `Buy genuine ${product.title}${brandName ? ` by ${brandName}` : ''} from Alang Shipyard. ${categoryName} - certified, tested & shipped worldwide. Best price marine spare parts from Corona Marine Parts.`)
 
-    const ogImage = product.image 
+    const ogImage = product.image
       ? (product.image.startsWith('http') ? product.image : `https://coronamarineparts.com${product.image}`)
       : 'https://coronamarineparts.com/hero-bg.webp'
 
-    // Build keyword list from product data
     const keywords: string[] = [
+      product.primaryKeyword || '',
       product.title,
       ...(product.keywords || []),
+      product.modelNumber || '',
       categoryName,
       brandName,
       'marine spare parts',
       'ship spare parts',
       'Alang shipyard parts',
-      'marine automation',
       `buy ${product.title}`,
-      `${product.title} price`,
-      `${product.title} supplier`,
-      'marine equipment supplier',
       'Corona Marine Parts',
     ].filter(Boolean)
 
     return {
       title,
       description,
-      keywords: keywords,
+      keywords,
       alternates: {
-        canonical: `https://coronamarineparts.com/product/${slug}`,
+        canonical: `https://coronamarineparts.com/product/${canonicalSlug}`,
       },
       openGraph: {
-        title: `${product.title}${brandName ? ` by ${brandName}` : ''} | ${categoryName}`,
-        description: description,
+        title,
+        description,
         images: [{
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: `${product.title} - ${categoryName} | Marine Spare Parts from Alang Shipyard`,
+          alt: product.imageAlt?.trim() || `${product.title} - ${categoryName} | Marine Spare Parts from Alang Shipyard`,
         }],
-        url: `https://coronamarineparts.com/product/${slug}`,
+        url: `https://coronamarineparts.com/product/${canonicalSlug}`,
         type: 'article',
         siteName: 'Corona Marine Parts',
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${product.title} | ${categoryName} | Corona Marine Parts`,
-        description: description,
+        title,
+        description,
         images: [ogImage],
       },
       robots: {
@@ -128,8 +108,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export async function generateStaticParams() {
   try {
-    await connectToDatabase()
-    const products = await Product.find({}, '_id slug').lean()
+    const products = await getProducts()
     return products.map((product: any) => ({
       slug: (product.slug || product._id.toString()) as string,
     }))
@@ -140,12 +119,28 @@ export async function generateStaticParams() {
 
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
-  const product = await getProduct(slug);
+  const product = await getProductBySlugOrId(slug);
+
+  if (product && product.slug && slug === product._id?.toString() && slug !== product.slug) {
+    permanentRedirect(`/product/${product.slug}`);
+  }
+
+  let relatedProducts: any[] = [];
+  if (product?.category?._id) {
+    const sameCategory = await getProducts({ categoryId: product.category._id, limit: 8 });
+    relatedProducts = sameCategory.filter((p: any) => p._id !== product._id).slice(0, 4);
+  }
+
+  const canonicalSlug = product?.slug || slug;
 
   return (
     <>
-      {product && <ProductStructuredData product={product} slug={slug} />}
-      <ProductDetailContent slug={slug} initialProduct={product} />
+      {product && <ProductStructuredData product={product} slug={canonicalSlug} />}
+      <ProductDetailContent
+        slug={canonicalSlug}
+        initialProduct={product}
+        initialRelatedProducts={relatedProducts}
+      />
     </>
   );
 }

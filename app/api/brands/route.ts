@@ -1,5 +1,5 @@
-
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectToDatabase from '@/lib/db';
 import { Brand } from '@/lib/models';
 import { getSession } from '@/lib/auth';
@@ -29,6 +29,12 @@ export async function POST(req: Request) {
     await connectToDatabase();
     const body = await req.json();
     const brand = await Brand.create(body);
+
+    revalidatePath('/');
+    revalidatePath('/brands');
+    revalidatePath('/sitemap.xml');
+    revalidatePath(`/brand/${encodeURIComponent(brand.name)}`);
+
     return NextResponse.json(brand);
   } catch (error) {
     console.error('Brands POST error:', error);

@@ -1,7 +1,7 @@
-
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectToDatabase from '@/lib/db';
-import { Blog } from '@/lib/models';
+import { Blog, slugifyText } from '@/lib/models';
 import { getSession } from '@/lib/auth';
 
 export async function GET() {
@@ -24,7 +24,17 @@ export async function POST(req: Request) {
 
     await connectToDatabase();
     const body = await req.json();
+    if (body.slug) {
+      body.slug = slugifyText(body.slug);
+    } else if (body.title) {
+      body.slug = slugifyText(body.title);
+    }
     const blog = await Blog.create(body);
+
+    revalidatePath('/blog');
+    revalidatePath('/sitemap.xml');
+    revalidatePath(`/blog/${blog.slug || blog._id}`);
+
     return NextResponse.json(blog);
   } catch (error) {
     console.error('Blogs POST error:', error);

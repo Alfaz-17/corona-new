@@ -16,6 +16,9 @@ export default function AdminBlogEditPage() {
 
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
+    metaTitle: '',
+    metaDescription: '',
     excerpt: '',
     content: ''
   });
@@ -34,6 +37,9 @@ export default function AdminBlogEditPage() {
         const { data } = await api.get(`/blogs/${id}`);
         setFormData({
           title: data.title || '',
+          slug: data.slug || '',
+          metaTitle: data.metaTitle || '',
+          metaDescription: data.metaDescription || '',
           excerpt: data.excerpt || '',
           content: data.content || ''
         });
@@ -134,6 +140,41 @@ export default function AdminBlogEditPage() {
                         onChange={handleChange}
                         required
                      />
+                  </div>
+                  <div className="pt-4 border-t border-border space-y-4">
+                    <h3 className="text-xs font-bold text-primary uppercase tracking-widest">SEO & Meta (Optional)</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-primary uppercase tracking-widest">URL Slug</label>
+                        <input
+                          name="slug"
+                          placeholder="auto-generated-from-title"
+                          className="w-full px-4 py-3 bg-muted/20 border border-border focus:border-accent outline-none text-xs font-mono"
+                          value={formData.slug}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-primary uppercase tracking-widest">SEO Title</label>
+                        <input
+                          name="metaTitle"
+                          placeholder="Custom title for Google"
+                          className="w-full px-4 py-3 bg-muted/20 border border-border focus:border-accent outline-none text-xs"
+                          value={formData.metaTitle}
+                          onChange={handleChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Meta Description</label>
+                      <textarea
+                        name="metaDescription"
+                        placeholder="140-160 character summary for search results"
+                        className="w-full px-4 py-3 bg-muted/20 border border-border focus:border-accent outline-none text-xs h-20"
+                        value={formData.metaDescription}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
                </div>
             </div>

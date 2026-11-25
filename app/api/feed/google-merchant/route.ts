@@ -70,8 +70,9 @@ export async function GET() {
       }
 
       // SKU/MPN
-      if (p.sku) {
-        xml += `      <g:mpn>${escapeXml(p.sku)}</g:mpn>
+      const mpnValue = p.mpn || p.modelNumber || p.sku;
+      if (mpnValue) {
+        xml += `      <g:mpn>${escapeXml(mpnValue)}</g:mpn>
 `
       }
 

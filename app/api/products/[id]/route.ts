@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
-import { Product } from '@/lib/models';
+import { Product, slugifyText } from '@/lib/models';
 import { getSession } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { isValidObjectId } from 'mongoose';
@@ -12,14 +12,14 @@ export async function GET(
   try {
     const { id } = await params;
     await connectToDatabase();
-    
+
     let product;
     if (isValidObjectId(id)) {
-      product = await Product.findById(id).populate('category');
+      product = await Product.findById(id).populate('category brand');
     } else {
-      product = await Product.findOne({ slug: id }).populate('category');
+      product = await Product.findOne({ slug: id }).populate('category brand');
     }
-    
+
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
@@ -43,7 +43,7 @@ export async function DELETE(
 
     const { id } = await params;
     await connectToDatabase();
-    
+
     let deletedProduct;
     if (isValidObjectId(id)) {
       deletedProduct = await Product.findByIdAndDelete(id);
@@ -55,8 +55,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // Revalidate paths for SEO
+    revalidatePath('/');
     revalidatePath('/products');
+    revalidatePath('/sitemap.xml');
+    revalidatePath('/image-sitemap.xml');
     revalidatePath(`/product/${deletedProduct.slug || id}`);
 
     return NextResponse.json({ message: 'Product deleted successfully' });
@@ -79,7 +81,17 @@ export async function PUT(
     const { id } = await params;
     await connectToDatabase();
     const body = await req.json();
-    
+
+    if (typeof body.slug === 'string') {
+      if (body.slug.trim()) {
+        body.slug = slugifyText(body.slug);
+      } else if (body.title) {
+        body.slug = slugifyText(body.title);
+      } else {
+        delete body.slug;
+      }
+    }
+
     let updatedProduct;
     if (isValidObjectId(id)) {
       updatedProduct = await Product.findByIdAndUpdate(id, body, { new: true });
@@ -91,8 +103,11 @@ export async function PUT(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // Revalidate paths for SEO
+    revalidatePath('/');
     revalidatePath('/products');
+    revalidatePath('/brands');
+    revalidatePath('/sitemap.xml');
+    revalidatePath('/image-sitemap.xml');
     revalidatePath(`/product/${updatedProduct.slug || id}`);
 
     return NextResponse.json(updatedProduct);

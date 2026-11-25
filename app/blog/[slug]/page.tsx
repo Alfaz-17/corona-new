@@ -1,9 +1,10 @@
 import { Metadata } from 'next'
-import api from '@/lib/api'
 import BlogDetailContent from './blog-detail-content'
 import BlogStructuredData from '@/components/seo/blog-structured-data'
-import { MarineLoader } from '@/components/common/marine-loader'
 import Link from 'next/link'
+import { getBlogBySlugOrId, getBlogs } from '@/lib/catalog-data'
+
+export const revalidate = 3600
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -11,28 +12,35 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  
+
   try {
-    const { data: blog } = await api.get(`/blogs/${slug}`)
-    
+    const blog = await getBlogBySlugOrId(slug)
+
     if (!blog) return { title: 'Article Not Found' }
 
+    const canonicalSlug = (blog as any).slug || slug
+    const title = (blog as any).metaTitle || `${(blog as any).title} | Marine Engineering Blog`
+    const description = (blog as any).metaDescription || (blog as any).excerpt
+
     return {
-      title: `${blog.title} | Marine Engineering Blog`,
-      description: blog.excerpt,
+      title,
+      description,
+      alternates: {
+        canonical: `/blog/${canonicalSlug}`,
+      },
       openGraph: {
-        title: blog.title,
-        description: blog.excerpt,
-        images: [blog.image],
+        title,
+        description,
+        images: (blog as any).image ? [(blog as any).image] : undefined,
         type: 'article',
-        publishedTime: blog.date,
-        url: `https://coronamarineparts.com/blog/${slug}`,
+        publishedTime: (blog as any).date,
+        url: `https://coronamarineparts.com/blog/${canonicalSlug}`,
       },
       twitter: {
         card: 'summary_large_image',
-        title: blog.title,
-        description: blog.excerpt,
-        images: [blog.image],
+        title,
+        description,
+        images: (blog as any).image ? [(blog as any).image] : undefined,
       }
     }
   } catch (error) {
@@ -40,11 +48,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-
-
 export async function generateStaticParams() {
   try {
-    const { data: blogs } = await api.get('/blogs')
+    const blogs = await getBlogs()
     return blogs.map((blog: any) => ({
       slug: blog.slug || blog._id,
     }))
@@ -56,8 +62,8 @@ export async function generateStaticParams() {
 export default async function BlogDetailPage({ params }: Props) {
   try {
     const { slug } = await params;
-    const { data: blog } = await api.get(`/blogs/${slug}`);
-    
+    const blog = await getBlogBySlugOrId(slug);
+
     if (!blog) {
       return (
         <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-6">
@@ -67,9 +73,11 @@ export default async function BlogDetailPage({ params }: Props) {
       );
     }
 
+    const canonicalSlug = (blog as any).slug || slug;
+
     return (
       <>
-        <BlogStructuredData blog={blog} slug={slug} />
+        <BlogStructuredData blog={blog as any} slug={canonicalSlug} />
         <BlogDetailContent blog={blog} />
       </>
     );

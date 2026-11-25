@@ -1,5 +1,8 @@
 
 import mongoose, { Schema, model, models } from 'mongoose';
+import { slugifyText } from './utils';
+
+export { slugifyText };
 
 const UserSchema = new Schema({
   name: { type: String, required: true },
@@ -17,12 +20,10 @@ const CategorySchema = new Schema({
 }, { timestamps: true });
 
 CategorySchema.pre('save', function(this: any) {
-  if (this.isModified('name') && (!this.slug || this.isNew)) {
-    this.slug = this.name
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w ]+/g, '')
-      .replace(/ +/g, '-');
+  if (this.slug) {
+    this.slug = slugifyText(this.slug);
+  } else if (this.isModified('name') && (!this.slug || this.isNew)) {
+    this.slug = slugifyText(this.name);
   }
 });
 
@@ -33,14 +34,19 @@ const ProductSchema = new Schema({
   slug: { type: String, unique: true, sparse: true },
   metaTitle: { type: String },
   metaDescription: { type: String },
+  primaryKeyword: { type: String },
+  imageAlt: { type: String },
   description: { type: String },
   category: { type: Schema.Types.ObjectId, ref: 'Category' },
   brand: { type: Schema.Types.ObjectId, ref: 'Brand' },
-  brandName: { type: String }, // Fallback for AI generated brand
+  brandName: { type: String }, // Fallback for AI generated / manual brand string
+  modelNumber: { type: String },
+  mpn: { type: String },
   specifications: { type: Schema.Types.Mixed },
   keywords: [{ type: String }],
   sku: { type: String },
   price: { type: Number, default: 0 },
+  condition: { type: String, enum: ['refurbished', 'new', 'used'], default: 'refurbished' },
   availability: { type: String, enum: ['in-stock', 'out-of-stock', 'on-demand'], default: 'in-stock' },
   image: { type: String },
   images: [{ type: String }],
@@ -61,12 +67,10 @@ const ProductSchema = new Schema({
 }, { timestamps: true });
 
 const preSaveProduct = function(this: any) {
-  if (this.isModified('title') && (!this.slug || this.isNew)) {
-    this.slug = this.title
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w ]+/g, '')
-      .replace(/ +/g, '-');
+  if (this.slug) {
+    this.slug = slugifyText(this.slug);
+  } else if (this.isModified('title') && (!this.slug || this.isNew)) {
+    this.slug = slugifyText(this.title);
   }
 };
 
@@ -85,6 +89,8 @@ export const Brand = models?.Brand || model('Brand', BrandSchema);
 const BlogSchema = new Schema({
   title: { type: String, required: true },
   slug: { type: String, unique: true, sparse: true },
+  metaTitle: { type: String },
+  metaDescription: { type: String },
   excerpt: { type: String },
   content: { type: String },
   image: { type: String },
@@ -92,12 +98,10 @@ const BlogSchema = new Schema({
 }, { timestamps: true });
 
 const preSaveBlog = function(this: any) {
-  if (this.isModified('title') && (!this.slug || this.isNew)) {
-    this.slug = this.title
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w ]+/g, '')
-      .replace(/ +/g, '-');
+  if (this.slug) {
+    this.slug = slugifyText(this.slug);
+  } else if (this.isModified('title') && (!this.slug || this.isNew)) {
+    this.slug = slugifyText(this.title);
   }
 };
 

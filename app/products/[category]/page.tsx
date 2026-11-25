@@ -2,7 +2,8 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 import CategoryContent from './category-content'
 import { MarineLoader } from '@/components/common/marine-loader'
-import api from '@/lib/api'
+import ItemListStructuredData from '@/components/seo/item-list-structured-data'
+import { getCategories, getCategoryBySlugOrId, getProducts } from '@/lib/catalog-data'
 
 export const revalidate = 3600
 
@@ -63,36 +64,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category } = await params
   const decodedCategory = decodeURIComponent(category)
   
-  // Try to find category info from API
   try {
-    const { data: categories } = await api.get('/categories')
-    const categoryObj = categories.find((c: any) => 
-      c.slug === decodedCategory || c._id === decodedCategory || c.name.toLowerCase().replace(/\s+/g, '-') === decodedCategory
-    )
-
-    const categoryName = categoryObj?.name || decodedCategory.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
+    const categoryObj = await getCategoryBySlugOrId(decodedCategory)
+    const categoryName = (categoryObj as any)?.name || decodedCategory.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
     
     // Check for predefined SEO content
     const seoData = categoryDescriptions[decodedCategory] || categoryDescriptions[decodedCategory.toLowerCase()]
     
     const title = seoData?.title || `${categoryName} | Marine Spare Parts | Corona Marine Parts`
-    const description = seoData?.description || `Buy genuine ${categoryName} marine spare parts from Alang Shipyard. Certified quality ${categoryName.toLowerCase()} with worldwide shipping. Best prices from Corona Marine Parts.`
+    const description = (categoryObj as any)?.description || seoData?.description || `Buy genuine ${categoryName} marine spare parts from Alang Shipyard. Certified quality ${categoryName.toLowerCase()} with worldwide shipping. Best prices from Corona Marine Parts.`
     const keywords = seoData?.keywords || [categoryName, 'marine spare parts', `${categoryName} supplier`, 'ship parts', 'Alang shipyard']
+    const canonicalSlug = (categoryObj as any)?.slug || category
 
     return {
       title: `${title} | Buy Online | Corona Marine Parts`,
       description,
       keywords: [...keywords, 'Corona Marine Parts', 'Alang Shipyard', 'buy marine parts online'],
       alternates: {
-        canonical: `/products/${category}`,
+        canonical: `/products/${canonicalSlug}`,
       },
       openGraph: {
         title: `${title} | Corona Marine Parts`,
         description,
-        url: `https://coronamarineparts.com/products/${category}`,
+        url: `https://coronamarineparts.com/products/${canonicalSlug}`,
         type: 'website',
         images: [{
-          url: categoryObj?.image || 'https://coronamarineparts.com/products-hero.png',
+          url: (categoryObj as any)?.image || 'https://coronamarineparts.com/products-hero.png',
           width: 1200,
           height: 630,
           alt: `${categoryName} - Marine Spare Parts from Alang Shipyard`,
@@ -120,7 +117,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export async function generateStaticParams() {
   try {
-    const { data: categories } = await api.get('/categories')
+    const categories = await getCategories()
     return categories.map((c: any) => ({
       category: c.slug || c._id,
     }))
@@ -129,10 +126,32 @@ export async function generateStaticParams() {
   }
 }
 
-export default function CategoryPage() {
+export default async function CategoryPage({ params }: Props) {
+  const { category } = await params
+  const [categoryObj, allCategories] = await Promise.all([
+    getCategoryBySlugOrId(category),
+    getCategories(),
+  ])
+  const products = categoryObj
+    ? await getProducts({ categoryId: (categoryObj as any)._id })
+    : []
+
+  const categoryName = (categoryObj as any)?.name || decodeURIComponent(category).replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
+
   return (
-    <Suspense fallback={<MarineLoader />}>
-      <CategoryContent />
-    </Suspense>
+    <>
+      <ItemListStructuredData
+        products={products}
+        listName={`${categoryName} - Corona Marine Parts`}
+        listUrl={`https://coronamarineparts.com/products/${(categoryObj as any)?.slug || category}`}
+      />
+      <Suspense fallback={<MarineLoader />}>
+        <CategoryContent
+          initialProducts={products}
+          initialCategory={categoryObj}
+          initialAllCategories={allCategories}
+        />
+      </Suspense>
+    </>
   )
 }

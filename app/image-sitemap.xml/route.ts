@@ -24,7 +24,7 @@ export async function GET() {
       const categoryName = (product as any).category?.name || 'Marine Equipment'
 
       // Keyword-rich image title and caption - critical for Google Image ranking
-      const imageTitle = `${(product as any).title}${brandName ? ` by ${brandName}` : ''} - ${categoryName} | Marine Spare Parts from Alang Shipyard`
+      const imageTitle = (product as any).imageAlt?.trim() || `${(product as any).title}${brandName ? ` by ${brandName}` : ''} - ${categoryName} | Marine Spare Parts from Alang Shipyard`
       const imageCaption = (product as any).description
         ? (product as any).description.substring(0, 250)
         : `Buy genuine ${(product as any).title} marine spare parts sourced from Alang Shipyard. ${categoryName} - tested, certified, and shipped worldwide by Corona Marine Parts.`

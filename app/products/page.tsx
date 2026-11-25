@@ -2,6 +2,10 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 import ProductsContent from './products-content'
 import { MarineLoader } from '@/components/common/marine-loader'
+import ItemListStructuredData from '@/components/seo/item-list-structured-data'
+import { getCategories, getProducts } from '@/lib/catalog-data'
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'Marine Spare Parts Inventory | Ship Engine Parts, Automation Systems | Corona Marine Parts',
@@ -50,10 +54,22 @@ export const metadata: Metadata = {
   },
 }
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const [products, categories] = await Promise.all([
+    getProducts(),
+    getCategories(),
+  ]);
+
   return (
-    <Suspense fallback={<MarineLoader />}>
-      <ProductsContent />
-    </Suspense>
+    <>
+      <ItemListStructuredData
+        products={products}
+        listName="Marine Spare Parts Inventory"
+        listUrl="https://coronamarineparts.com/products"
+      />
+      <Suspense fallback={<MarineLoader />}>
+        <ProductsContent initialProducts={products} initialCategories={categories} />
+      </Suspense>
+    </>
   )
 }
