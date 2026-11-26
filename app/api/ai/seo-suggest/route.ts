@@ -25,6 +25,9 @@ export async function POST(req: NextRequest) {
       specifications: body.specifications,
     });
 
+
+
+    
     return NextResponse.json(suggestions);
   } catch (error: any) {
     console.error("AI SEO Suggest Error:", error);
